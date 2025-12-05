@@ -1,0 +1,154 @@
+import { useState, useEffect } from "react";
+
+// Estructura para el Select de Proveedores
+interface ProveedorOption {
+  IdProveedor: number;
+  NombreProveedor: string;
+}
+
+
+interface ModalNuevoRegistroProps {
+  onClose: () => void;
+  onSave: (nuevo: any) => void;
+}
+
+export default function ModalNuevoRegistro({ onClose, onSave }: ModalNuevoRegistroProps) {
+  // Estado del formulario
+  const [fecha, setFecha] = useState(new Date().toISOString().split("T")[0]);
+  const [idProveedor, setIdProveedor] = useState<number | "">("");
+  const [totalIngresado, setTotalIngresado] = useState<number | "">("");
+  const [costoTotal, setCostoTotal] = useState<number | "">("");
+
+  // Datos auxiliares
+  const [listaProveedores, setListaProveedores] = useState<ProveedorOption[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  // Cargar proveedores para el select
+  useEffect(() => {
+    fetch("http://127.0.0.1:8001/proveedores/")
+      .then((res) => res.json())
+      .then((data) => setListaProveedores(data))
+      .catch((err) => console.error("Error cargando proveedores:", err));
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!idProveedor || !totalIngresado || !costoTotal) {
+      alert("Por favor completa todos los campos.");
+      return;
+    }
+
+    setLoading(true);
+
+    const payload = {
+      Fecha: new Date(fecha).toISOString(),
+      IdProveedor: Number(idProveedor),
+      TotalIngresado: Number(totalIngresado),
+      CostoTotal: Number(costoTotal) // Enviamos como número
+    };
+
+    try {
+      const response = await fetch("http://127.0.0.1:8001/registros/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) throw new Error("Error al crear el registro");
+
+      const data = await response.json();
+      onSave(data.IdRegistro ? data : payload); 
+      onClose();
+    } catch (error) {
+      console.error(error);
+      alert("Error al guardar.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 animate-in fade-in duration-300">
+      <div className="bg-gray-900 p-6 rounded-xl text-white max-w-lg w-full shadow-2xl border border-gray-700 relative">
+        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
+        
+        <h2 className="text-2xl font-bold mb-1 text-blue-400">Nuevo Registro</h2>
+        <p className="text-gray-400 text-sm mb-6">Ingresa los detalles de la compra o abastecimiento.</p>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          
+          {/* Fecha */}
+          <div>
+            <label className="block text-sm text-gray-300 mb-1">Fecha de Ingreso</label>
+            <input 
+              type="date" 
+              className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white outline-none focus:border-blue-500"
+              value={fecha} 
+              onChange={(e) => setFecha(e.target.value)} 
+              required 
+            />
+          </div>
+
+          {/* Proveedor */}
+          <div>
+            <label className="block text-sm text-gray-300 mb-1">Proveedor</label>
+            <div className="relative">
+                <select 
+                    className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white outline-none focus:border-blue-500 appearance-none cursor-pointer"
+                    value={idProveedor} 
+                    onChange={(e) => setIdProveedor(Number(e.target.value))} 
+                    required
+                >
+                    <option value="">-- Seleccionar Proveedor --</option>
+                    {listaProveedores.map((p, i) => (
+                        <option key={i} value={p.IdProveedor}>
+                            {p.NombreProveedor}
+                        </option>
+                    ))}
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none text-gray-400">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"></path></svg>
+                </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            {/* Cantidad */}
+            <div>
+                <label className="block text-sm text-gray-300 mb-1">Total Ingresado (Cant.)</label>
+                <input 
+                  type="number" 
+                  className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white outline-none focus:border-blue-500"
+                  placeholder="0" 
+                  value={totalIngresado} 
+                  onChange={(e) => setTotalIngresado(Number(e.target.value))} 
+                  required 
+                />
+            </div>
+
+            {/* Costo */}
+            <div>
+                <label className="block text-sm text-gray-300 mb-1">Costo Total ($)</label>
+                <input 
+                  type="number" 
+                  step="0.01" 
+                  className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white outline-none focus:border-blue-500"
+                  placeholder="0.00" 
+                  value={costoTotal} 
+                  onChange={(e) => setCostoTotal(Number(e.target.value))} 
+                  required 
+                />
+            </div>
+          </div>
+
+          <div className="flex gap-3 pt-4 mt-2 border-t border-gray-700">
+            <button type="button" onClick={onClose} className="flex-1 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 text-white font-medium">Cancelar</button>
+            <button type="submit" disabled={loading} className={`flex-1 py-2 rounded-lg font-bold text-white shadow-lg ${loading ? "bg-gray-600" : "bg-blue-600 hover:bg-blue-500 shadow-blue-900/20"}`}>
+              {loading ? "Guardando..." : "Registrar Entrada"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
