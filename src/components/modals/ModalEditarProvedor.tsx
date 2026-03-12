@@ -69,8 +69,7 @@ export default function ModalEditarProveedor({ proveedor, onClose, onSave }: Mod
             <div className="relative">
                 <select name="Tipo" value={formData.Tipo} onChange={handleChange} className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white focus:ring-2 focus:ring-blue-500 outline-none appearance-none cursor-pointer">
                     <option value="FIJO">FIJO</option>
-                    <option value="VARIABLE">VARIABLE</option>
-                    <option value="OCASIONAL">OCASIONAL</option>
+                    <option value="ESPORANEO">ESPORANEO</option>
                 </select>
                 <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none text-gray-400">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"></path></svg>

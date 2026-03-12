@@ -127,11 +127,6 @@ export default function TablaRegistros({ data }: TablaRegistrosProps) {
     else { setSortKey(key); setSortOrder("asc"); }
   };
 
-  const handleCreate = (nuevo: Registro) => {
-    setRegistros(prev => [nuevo, ...prev]);
-    setShowCreate(false);
-  };
-
   const handleUpdate = (updated: Registro) => {
     setRegistros(prev => prev.map(r => r.IdRegistro === updated.IdRegistro ? updated : r));
     setSelectedRegistro(null);
@@ -209,7 +204,7 @@ export default function TablaRegistros({ data }: TablaRegistrosProps) {
         </div>
       </div>
 
-      {showCreate && <ModalNuevoRegistro onClose={() => setShowCreate(false)} onSave={handleCreate} />}
+      {showCreate && <ModalNuevoRegistro onClose={() => setShowCreate(false)}  />}
       {selectedRegistro && <ModalEditarRegistro registro={selectedRegistro} onClose={() => setSelectedRegistro(null)} onSave={handleUpdate} />}
     </div>
   );

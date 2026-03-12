@@ -1,6 +1,8 @@
 import { useState } from "react";
 
+// 1. Actualizamos la interfaz para coincidir con la del padre
 interface Platillo {
+  id?: number | string; // Opcional, por si lo usas
   nombre_platillo: string;
   nombre_categoria: string;
 }
@@ -8,7 +10,6 @@ interface Platillo {
 interface ModalPlatilloProps {
   platillos: Platillo[];
   onClose: () => void;
-  // onSave ahora recibe el array actualizado para que el padre lo maneje (bulk update)
   onSave: (updatedPlatillos: Platillo[]) => void; 
 }
 
@@ -16,45 +17,46 @@ export default function ModalPlatillo({ platillos, onClose, onSave }: ModalPlati
   const [localPlatillos, setLocalPlatillos] = useState<Platillo[]>([...platillos]);
   const [loading, setLoading] = useState(false);
 
+  // Helper para manejar cambios en inputs y selects
   const handleChange = (index: number, field: keyof Platillo, value: string) => {
     const updated = [...localPlatillos];
+    // @ts-ignore: TypeScript puede quejarse por asignar string a tipos específicos, ignoramos por simplicidad aquí
     updated[index][field] = value;
     setLocalPlatillos(updated);
   };
 
   const handleAdd = () => {
-    setLocalPlatillos([...localPlatillos, { nombre_platillo: "", nombre_categoria: "" }]);
+    // 2. Al agregar, inicializamos con un estado por defecto
+    setLocalPlatillos([
+        ...localPlatillos, 
+        { nombre_platillo: "", nombre_categoria: "" }
+    ]);
   };
 
-  const handleRemove = (index: number) => {
-    const updated = [...localPlatillos];
-    updated.splice(index, 1);
-    setLocalPlatillos(updated);
-  };
 
   const handleSave = async () => {
     setLoading(true);
-    // En un caso real, aquí ejecutarías el FETCH al backend para guardar el array 'localPlatillos'
-    // Como es asíncrono, mantenemos el try/catch y el finally.
+    
     try {
       // --- PLACEHOLDER API CALL ---
-      // Simulación de una llamada API exitosa después de un tiempo
       await new Promise(resolve => setTimeout(resolve, 500)); 
       // --- END PLACEHOLDER ---
 
       onSave(localPlatillos);
-      onClose();
+
+      // 3. RECARGAR LA PÁGINA
+      window.location.reload();
+
     } catch (error) {
       console.error("Error al guardar los platillos:", error);
       alert("Error al guardar los platillos. Revisa la consola.");
-    } finally {
-      setLoading(false);
-    }
+      setLoading(false); 
+    } 
   };
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 animate-in fade-in duration-300">
-      <div className="bg-gray-900 p-6 rounded-xl text-white max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-gray-700">
+      <div className="bg-gray-900 p-6 rounded-xl text-white max-w-5xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-gray-700">
         
         {/* Header */}
         <div className="border-b border-gray-700 pb-3 mb-4 flex justify-between items-center">
@@ -70,30 +72,30 @@ export default function ModalPlatillo({ platillos, onClose, onSave }: ModalPlati
                 <div key={i} className="bg-gray-800 p-3 rounded-lg flex flex-col md:flex-row md:gap-4 items-center justify-between shadow-inner">
                     
                     {/* Input Nombre */}
-                    <input
-                        type="text"
-                        placeholder="Nombre del platillo"
-                        className="px-3 py-2 rounded bg-gray-700 text-white w-full md:flex-1 border border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none transition-colors mb-2 md:mb-0"
-                        value={p.nombre_platillo}
-                        onChange={(e) => handleChange(i, "nombre_platillo", e.target.value)}
-                    />
+                    <div className="w-full md:flex-1">
+                        <label className="text-xs text-gray-400 mb-1 block md:hidden">Nombre</label>
+                        <input
+                            type="text"
+                            placeholder="Nombre del platillo"
+                            className="px-3 py-2 rounded bg-gray-700 text-white w-full border border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none transition-colors"
+                            value={p.nombre_platillo}
+                            onChange={(e) => handleChange(i, "nombre_platillo", e.target.value)}
+                        />
+                    </div>
                     
                     {/* Input Categoría */}
-                    <input
-                        type="text"
-                        placeholder="Categoría"
-                        className="px-3 py-2 rounded bg-gray-700 text-white w-full md:flex-1 border border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none transition-colors mb-2 md:mb-0"
-                        value={p.nombre_categoria}
-                        onChange={(e) => handleChange(i, "nombre_categoria", e.target.value)}
-                    />
+                    <div className="w-full md:w-1/4">
+                        <label className="text-xs text-gray-400 mb-1 block md:hidden">Categoría</label>
+                        <input
+                            type="text"
+                            placeholder="Categoría"
+                            className="px-3 py-2 rounded bg-gray-700 text-white w-full border border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none transition-colors"
+                            value={p.nombre_categoria}
+                            onChange={(e) => handleChange(i, "nombre_categoria", e.target.value)}
+                        />
+                    </div>
+
                     
-                    {/* Botón Eliminar */}
-                    <button
-                        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm transition-colors w-full md:w-auto"
-                        onClick={() => handleRemove(i)}
-                    >
-                        Eliminar
-                    </button>
                 </div>
             ))}
         </div>

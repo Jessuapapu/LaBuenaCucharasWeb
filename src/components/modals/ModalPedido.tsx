@@ -34,7 +34,7 @@ interface ModalPedidoProps {
     onSave: (updatedPedido: any) => void;
 }
 
-export default function ModalPedido({ pedido, onClose, onSave }: ModalPedidoProps) {
+export default function ModalPedido({ pedido, onClose }: ModalPedidoProps) {
     const [clientes, setClientes] = useState<Cliente[]>([]);
     
     // Inicialización de estados
@@ -45,15 +45,13 @@ export default function ModalPedido({ pedido, onClose, onSave }: ModalPedidoProp
         telefono: pedido.cliente.telefono || ""
     });
     
-    // Estado ahora es editable
     const [estado, setEstado] = useState(pedido.estado_pedido); 
-    const [fecha] = useState(pedido.fecha); // Fecha sigue solo lectura
+    const [fecha] = useState(pedido.fecha); 
     const [detalles, setDetalles] = useState<Detalle[]>(pedido.detalles);
     
     const [platillos, setPlatillos] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
 
-    // Variable reactiva: si seleccionas ANULADO en el dropdown, se bloquean los platillos
     const isAnulado = estado === "ANULADO";
 
     // Fetch clientes
@@ -103,10 +101,10 @@ export default function ModalPedido({ pedido, onClose, onSave }: ModalPedidoProp
         setDetalles(newDetalles);
     };
 
+    // --- LÓGICA DE GUARDADO ACTUALIZADA ---
     const handleSave = async () => {
         setLoading(true);
 
-        // Payload actualizado incluyendo el estado
         const payload = {
             nombre_cliente: cliente.nombre,
             estado: estado,
@@ -129,20 +127,24 @@ export default function ModalPedido({ pedido, onClose, onSave }: ModalPedidoProp
 
             if (!response.ok) throw new Error("Error al actualizar el pedido");
 
-            const data = await response.json();
-            onSave(data); 
-            onClose();
+            // Esperamos a que termine de procesar la respuesta
+            await response.json(); 
+            
+            // --- AQUÍ RECARGAMOS LA PÁGINA ---
+            window.location.reload();
+            
         } catch (error) {
             console.error(error);
             alert("Hubo un error al guardar los cambios.");
-        } finally {
-            setLoading(false);
+            // Solo desactivamos el loading si falló. 
+            // Si tuvo éxito, dejamos el loading activo mientras la página se recarga.
+            setLoading(false); 
         }
     };
 
     return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 overflow-auto">
-            <div className="bg-gray-800 p-4 rounded-lg text-white max-w-3xl w-full min-w-[300px] max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 overflow-auto animate-in fade-in duration-300">
+            <div className="bg-gray-800 p-4 rounded-lg text-white max-w-3xl w-full min-w-[300px] max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-700">
                 
                 {/* CABECERA CON ID DE PEDIDO */}
                 <div className="flex justify-between items-center mb-4 border-b border-gray-600 pb-2">

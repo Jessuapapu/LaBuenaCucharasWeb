@@ -86,10 +86,7 @@ export default function TablaProveedores({ data }: TablaProveedoresProps) {
     else { setSortKey(key); setSortOrder("asc"); }
   };
 
-  const handleCreate = (nuevo: Proveedor) => {
-    setProveedores(prev => [nuevo, ...prev]);
-    setShowCreate(false);
-  };
+
 
   const handleUpdate = (updated: Proveedor) => {
     setProveedores(prev => prev.map(p => p.IdProveedor === updated.IdProveedor ? updated : p));
@@ -195,7 +192,7 @@ export default function TablaProveedores({ data }: TablaProveedoresProps) {
       </div>
 
       {/* Modales */}
-      {showCreate && <ModalNuevoProveedor onClose={() => setShowCreate(false)} onSave={handleCreate} />}
+      {showCreate && <ModalNuevoProveedor onClose={() => setShowCreate(false)}  />}
       {selectedProveedor && <ModalEditarProveedor proveedor={selectedProveedor} onClose={() => setSelectedProveedor(null)} onSave={handleUpdate} />}
     </div>
   );

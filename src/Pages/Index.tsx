@@ -45,11 +45,6 @@ export default function IndexPage() {
 
     const totalPedidosSemana = datosVentas.reduce((acc, curr) => acc + curr.y, 0);
 
-    // Manejadores genéricos para refrescar o notificar éxito
-    const handleSuccessCliente = () => {
-        // Aquí podrías recargar datos globales si fuera necesario
-        alert("Cliente registrado correctamente desde el Panel.");
-    };
 
     const handleSuccessPedido = () => {
         alert("Pedido creado correctamente desde el Panel.");
@@ -57,9 +52,6 @@ export default function IndexPage() {
         window.location.reload(); 
     };
 
-    const handleSuccessContrato = () => {
-        alert("Contrato registrado correctamente.");
-    };
 
     return (
         <div className="space-y-6 animate-in fade-in duration-500 relative">
@@ -175,7 +167,7 @@ export default function IndexPage() {
 
             {/* --- RENDERIZADO CONDICIONAL DE MODALES --- */}
             {showModalCliente && (
-                <ModalNuevoCliente onClose={() => setShowModalCliente(false)} onSave={handleSuccessCliente} />
+                <ModalNuevoCliente onClose={() => setShowModalCliente(false)} />
             )}
 
             {showModalPedido && (
@@ -183,7 +175,7 @@ export default function IndexPage() {
             )}
 
             {showModalContrato && (
-                <ModalNuevoContrato onClose={() => setShowModalContrato(false)} onSave={handleSuccessContrato} />
+                <ModalNuevoContrato onClose={() => setShowModalContrato(false)} />
             )}
 
         </div>

@@ -96,15 +96,7 @@ export default function TablaContratos({ data }: TablaContratosProps) {
     else { setSortKey(key); setSortOrder("asc"); }
   };
 
-  const handleCreate = (nuevo: Contrato) => {
-    setContratos(prev => [nuevo, ...prev]);
-    setShowCreate(false);
-  };
 
-  const handleUpdate = (updated: Contrato) => {
-    setContratos(prev => prev.map(c => c.IdContrato === updated.IdContrato ? updated : c));
-    setSelectedContrato(null);
-  };
 
   const getStatusColor = (estado: string) => {
       if (!estado) return 'bg-gray-700 text-gray-400';
@@ -172,14 +164,13 @@ export default function TablaContratos({ data }: TablaContratosProps) {
         </table>
       </div>
 
-      {showCreate && <ModalNuevoContrato onClose={() => setShowCreate(false)} onSave={handleCreate} />}
+      {showCreate && <ModalNuevoContrato onClose={() => setShowCreate(false)}  />}
       
       {/* Aseguramos que solo renderizamos el modal si IdContrato existe */}
       {selectedContrato && selectedContrato.IdContrato && (
         <ModalEditarContrato 
             contrato={selectedContrato as Contrato & { IdContrato: number }} 
             onClose={() => setSelectedContrato(null)} 
-            onSave={handleUpdate} 
         />
       )}
     </div>

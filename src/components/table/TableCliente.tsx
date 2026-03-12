@@ -79,10 +79,6 @@ export default function TablaClientes({ data }: TablaClientesProps) {
     else { setSortKey(key); setSortOrder("asc"); }
   };
 
-  const handleCreate = (nuevo: Cliente) => {
-    setClientes(prev => [nuevo, ...prev]);
-    setShowCreate(false);
-  };
 
   const handleUpdate = (updated: Cliente) => {
     setClientes(prev => prev.map(c => 
@@ -172,7 +168,7 @@ export default function TablaClientes({ data }: TablaClientesProps) {
         </div>
       </div>
 
-      {showCreate && <ModalNuevoCliente onClose={() => setShowCreate(false)} onSave={handleCreate} />}
+      {showCreate && <ModalNuevoCliente onClose={() => setShowCreate(false)} />}
       {selectedCliente && <ModalEditarCliente cliente={selectedCliente} onClose={() => setSelectedCliente(null)} onSave={handleUpdate} />}
     </div>
   );

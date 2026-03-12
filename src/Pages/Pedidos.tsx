@@ -76,10 +76,17 @@ export default function PedidosPage() {
     // Calcular KPIs
     const kpis = useMemo(() => {
         const totalPedidos = data.length;
-        const pendientes = data.filter((p: any) => p.estado_pedido === 'PENDIENTE').length;
-        const entregados = data.filter((p: any) => p.estado_pedido === 'ENTREGADO').length;
+        // Filtro insensible a mayúsculas/minúsculas para mayor seguridad
+        const pendientes = data.filter((p: any) => p.estado_pedido?.toUpperCase() === 'PENDIENTE').length;
+        const entregados = data.filter((p: any) => p.estado_pedido?.toUpperCase() === 'ENTREGADO').length;
         
         const ingresos = data.reduce((acc, curr) => {
+            // --- CORRECCIÓN CLAVE ---
+            // Si el pedido está ANULADO, retornamos el acumulador sin sumar nada.
+            if (curr.estado_pedido?.toUpperCase() === 'ANULADO') {
+                return acc;
+            }
+
             const totalPedido = curr.detalles?.reduce((sum: number, det: any) => sum + (det.cantidad * det.precio_unitario), 0) || 0;
             return acc + totalPedido;
         }, 0);
@@ -121,7 +128,7 @@ export default function PedidosPage() {
                 {/* Columna Izquierda: Tarjetas de Métricas (CLICKABLES) */}
                 <div className="lg:col-span-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
                     <KpiCard 
-                        title="Ingresos Totales" value={formatMoney(kpis.ingresos)} sub="Acumulado actual" color="emerald" borderColor="emerald" 
+                        title="Ingresos Totales (Neto)" value={formatMoney(kpis.ingresos)} sub="Excluye anulados" color="emerald" borderColor="emerald" 
                         icon={<DollarSign className="w-6 h-6" />} 
                         onClick={() => handleFilterClick("")} 
                         isActive={false} 

@@ -2,6 +2,7 @@ import { useState } from "react";
 import Sidebar from "../components/sidebar/sidebar";
 import NavbarMobile from "../components/NavbarMobiles/NavbarMobile";
 import { Outlet } from "react-router-dom";
+import favicon from '../assets/Favicon.png'
 
 export default function Layout() {
     const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -28,16 +29,22 @@ export default function Layout() {
             ></div>
             
             {/* Sidebar (z-index 50) */}
-            <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+            
+            <Sidebar 
+                sidebarOpen={sidebarOpen} 
+                setSidebarOpen={setSidebarOpen} 
+                logoSrc={favicon} 
+                businessName="La Buena Cuchara" // <-- ¡AQUÍ ESTÁ LA SOLUCIÓN!
+            />
 
             {/* Contenedor Principal (z-index 10) */}
             <div
                 className={`transition-all duration-300 ease-in-out min-h-screen flex flex-col relative z-10
-                  ${sidebarOpen ? "lg:ml-64" : "lg:ml-0"}`}
+                    ${sidebarOpen ? "lg:ml-64" : "lg:ml-0"}`}
             >
                 {/* Navbar Mobile (solo visible en pantallas pequeñas) */}
                 <div className="lg:hidden">
-                     <NavbarMobile setSidebarOpen={setSidebarOpen} />
+                        <NavbarMobile setSidebarOpen={setSidebarOpen} />
                 </div>
 
                 {/* Contenido de la Página */}
