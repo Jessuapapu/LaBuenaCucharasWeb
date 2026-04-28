@@ -16,8 +16,8 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, logoSrc, business
 
     const getLinkClass = (path: string) => {
         const isActive = location.pathname === path;
-        return `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 font-medium ${isActive
-            ? "bg-white/10 text-white border-l-4 border-white shadow-lg"
+        return `flex items-center gap-3 px-4 py-3 rounded-full transition-all duration-200 font-medium ${isActive
+            ? "bg-[#2179e9]/90 text-white  border-white shadow-lg "
             : "text-blue-100 hover:bg-white/5 hover:text-white"
             }`;
     };
@@ -30,7 +30,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, logoSrc, business
 
     // --- CÓDIGO DEL LOGO ---
     const LogoDisplay = () => (
-        <div className="flex items-center justify-center h-20 border-b border-white/10 bg-black/10 p-3">
+        <div className="flex items-center justify-center h-20 border-b border-white/10  p-3">
             {logoSrc ? (
                 // Usamos la etiqueta <img> para mostrar el logo
                 <img 
@@ -52,12 +52,12 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, logoSrc, business
             <aside
                 className={`hidden lg:flex flex-col fixed left-0 top-0 h-screen w-64 text-white shadow-2xl z-50 transition-transform duration-300 ease-in-out
                 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
-                style={{ backgroundColor: '#004aad' }} // COLOR EXACTO DEL LOGO
+                style={{ backgroundColor: '#0b1323' }} // COLOR EXACTO DE LOGO
             >
                 {/* Nuevo Componente de Logo */}
                 <LogoDisplay /> 
 
-                <nav className="flex-1 px-4 py-6 space-y-2">
+                <nav className="flex-1 px-2 py-6 space-y-2">
                     <LinkItem to="/" icon={<span role="img" aria-label="Inicio">🏠</span>} label="Inicio" />
                     <LinkItem to="/Pedidos" icon={<span role="img" aria-label="Pedidos">📝</span>} label="Pedidos" />
                     <LinkItem to="/Facturas" icon={<span role="img" aria-label="Facturas">📒</span>} label="Facturas" />

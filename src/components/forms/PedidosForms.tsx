@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { data } from "react-router-dom";
 
 // Interfaces para los datos que cargamos
 interface ClienteOption {
@@ -40,14 +41,28 @@ export default function FormularioNuevoPedido({ onClose, onSave }: FormularioNue
     // Cargar Clientes
     fetch("http://127.0.0.1:8001/clientes/")
       .then((res) => res.json())
-      .then((data) => setListaClientes(data))
-      .catch(console.error);
+      //.then((data) => setListaClientes(data))
+      //.catch(console.error);
+      .then((data)=> {
+        setListaClientes(Array.isArray(data) ? data: []); //Es para que no dalle la funcion map lo hacems array a como lo hicimos en ComidasPage
+      })
+      .catch((err) => {
+        console.error("Error cliente: ", err);
+        setListaClientes([]);
+      })
 
     // Cargar Platillos
     fetch("http://127.0.0.1:8001/platillos/")
       .then((res) => res.json())
-      .then((data) => setListaPlatillos(data))
-      .catch(console.error);
+      //.then((data) => setListaPlatillos(data))
+      //.catch(console.error);
+      .then((data)=> {
+        setListaPlatillos(Array.isArray(data) ? data: []);
+      })
+      .catch((err) => {
+        console.error("Error platillo: ", err);
+        setListaPlatillos([]);
+      });
   }, []);
 
   // 2. Manejadores de Detalles (Agregar / Quitar / Cambiar)
@@ -81,7 +96,7 @@ export default function FormularioNuevoPedido({ onClose, onSave }: FormularioNue
     const payload = {
       nombre_cliente: cliente,
       fecha: fecha,
-      detalle: items.map((item) => ({
+      detalle: items.map((item) => ({ //items.map
         nombre_platillo: item.nombre_platillo,
         cantidad: Number(item.cantidad),
         precio_unitario: Number(item.precio_unitario),
@@ -117,8 +132,9 @@ export default function FormularioNuevoPedido({ onClose, onSave }: FormularioNue
   const totalEstimado = items.reduce((acc, item) => acc + item.cantidad * item.precio_unitario, 0);
 
   return (
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 overflow-hidden rounded-xl"> 
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
-      <div className="bg-gray-800 text-white w-full max-w-2xl rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="bg-gray-800 rounded-xl shadow-2xl overflow-y-auto max-h-[90vh]"> {/*"bg-gray-800 text-white w-full max-w-2xl rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"*/}
         
         {/* Header */}
         <div className="bg-gray-900 p-4 border-b border-gray-700 flex justify-between items-center">
@@ -126,8 +142,10 @@ export default function FormularioNuevoPedido({ onClose, onSave }: FormularioNue
           <button onClick={onClose} className="text-gray-400 hover:text-white">✕</button>
         </div>
 
-        {/* Form Body - Scrollable */}
-        <div className="p-6 overflow-y-auto custom-scrollbar flex-1">
+        {/*Columna 1*/}
+        <div className="lg:col-span-7 p-6 bg-gray-800 overflow-y-auto max-h-[80vh]">
+         {/* Form Body - Scrollable */}
+        <div className="lg:col-span-7 p-6 overflow-y-auto custom-scrollbar">
           <form id="form-pedido" onSubmit={handleSubmit} className="space-y-6">
             
             {/* Fila 1: Cliente y Fecha */}
@@ -236,14 +254,36 @@ export default function FormularioNuevoPedido({ onClose, onSave }: FormularioNue
             </div>
 
           </form>
+        </div> 
+        </div>
+        
+        {/*Columna 2*/}
+        <div className="lg:col-span-5 bg-gray-900 p-6 border-l border-gray-700 flex flex-col justify-between">
+          <div>
+            <h3 className="text-center text-gray-400 uppercase tracking-widest text-sm mb-4">Resumen</h3>
+            {/* Lista de productos estilo Ticket */}
+            <div className="space-y-2">
+              {items.map((item, i) => (
+              <div key={i} className="flex justify-between text-sm">
+                 <span>{item.cantidad}x {item.nombre_platillo || '...'}</span>
+                 <span>${(item.cantidad * item.precio_unitario).toFixed(2)}</span>
+              </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Totalizador al final de la columna derecha */}
+          <div className="mt-6 border-t border-dashed border-gray-600 pt-4">
+              <div className="flex justify-between text-xl font-bold">
+                <span>TOTAL:</span>
+                <span className="text-green-400">${totalEstimado.toFixed(2)}</span>
+              </div>
+          </div>
         </div>
 
         {/* Footer */}
         <div className="bg-gray-900 p-4 border-t border-gray-700 flex justify-between items-center">
-          <div className="text-lg font-mono text-gray-300">
-            Total: <span className="text-white font-bold">${totalEstimado.toFixed(2)}</span>
-          </div>
-          <div className="flex gap-3">
+          <div className="flex ml-auto gap-3 ">
             <button
               onClick={onClose}
               className="px-4 py-2 rounded-lg text-gray-300 hover:bg-gray-800 transition-colors"
@@ -263,6 +303,7 @@ export default function FormularioNuevoPedido({ onClose, onSave }: FormularioNue
         </div>
 
       </div>
+    </div>
     </div>
   );
 }

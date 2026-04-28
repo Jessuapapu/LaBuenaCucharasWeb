@@ -42,14 +42,50 @@ export default function CardGraficoLinealSemanal({ datos }: { datos: FormatoDato
         xScale={{ type: "point" }}
         yScale={{ type: "linear", min: "auto", max: "auto" }}
         curve="monotoneX"
+      
+        colors={['#8cd9d4']}
+        lineWidth={3}
+        enableArea={true} // Activa el sombreado
+        areaOpacity={0.2}
+        
+        // 1. Definimos el degradado
+        defs={[
+          {
+            id: "gradientA",
+            type: "linearGradient",
+            colors: [
+              { offset: 0, color: "#10b981", opacity: 1 },   // Color sólido arriba
+              { offset: 1, color: "#10b981", opacity: 0.1 }, // Casi transparente abajo
+            ],
+          },
+        ]}
+
+        // 2. Aplicamos el degradado al área
+        fill={[
+          { match: { id: "Ventas Semanales" }, id: "gradientA" },
+        ]}
+
+        // --- Resto de configuraciones ---
         axisBottom={{
           tickRotation: 0,
         }}
-        colors={{ scheme: "category10" }}
         pointSize={8}
         pointBorderWidth={2}
         pointLabelYOffset={-12}
         useMesh={true}
+        pointColor={'#ffff'}
+        pointBorderColor={{ from: "serieColor"}}
+
+        // Tema para que combine con modo oscuro (opcional)
+        theme={{
+          axis: {
+            domain: { line: { stroke: "#4b5563" } },
+            ticks: { text: { fill: "#9ca3af" } },
+          },
+          grid: {
+            line: { stroke: "#374151", strokeWidth: 1 }
+          }
+        }}
       />
     </div>
   );

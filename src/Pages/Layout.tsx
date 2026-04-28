@@ -2,7 +2,8 @@ import { useState } from "react";
 import Sidebar from "../components/sidebar/sidebar";
 import NavbarMobile from "../components/NavbarMobiles/NavbarMobile";
 import { Outlet } from "react-router-dom";
-import favicon from '../assets/Favicon.png'
+//import favicon from '../assets/Favicon.png'
+import labuenacuchara from '../assets/Labuenacucharalogo.png'
 
 export default function Layout() {
     const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -33,7 +34,7 @@ export default function Layout() {
             <Sidebar 
                 sidebarOpen={sidebarOpen} 
                 setSidebarOpen={setSidebarOpen} 
-                logoSrc={favicon} 
+                logoSrc={labuenacuchara} 
                 businessName="La Buena Cuchara" // <-- ¡AQUÍ ESTÁ LA SOLUCIÓN!
             />
 

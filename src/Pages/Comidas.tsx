@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import TablaPlatillos from "../components/table/TablePlatillos";
 import GraficoPlatillosVendidos from "../components/Graficos/GraficoPlatillosVendidos"; 
 import { Utensils, TrendingUp } from "lucide-react";
+import { FoodCard } from "../components/cards/FoodCard";
 
 export default function ComidasPage() {
   const [dataPlatillos, setDataPlatillos] = useState<any[]>([]);
@@ -15,15 +16,20 @@ export default function ComidasPage() {
         // 1. Cargar Lista de Platillos (Para la tabla)
         const resPlatillos = await fetch("http://127.0.0.1:8001/platillos/");
         const jsonPlatillos = await resPlatillos.json();
-        setDataPlatillos(jsonPlatillos);
+        setDataPlatillos(Array.isArray(jsonPlatillos) ? jsonPlatillos: []);
+        //setDataPlatillos(jsonPlatillos);
 
         // 2. Cargar Estadísticas de Ventas (Para la gráfica)
         const resVentas = await fetch("http://127.0.0.1:8001/pedidos/platillos/conteo");
         const jsonVentas = await resVentas.json();
-        setDataVentas(jsonVentas);
+        //setDataVentas(jsonVentas);
+        setDataVentas(Array.isArray(jsonVentas) ? jsonVentas: []);
 
     } catch (error) {
         console.error("Error cargando datos:", error);
+        //cambio
+        setDataPlatillos([]);
+        setDataVentas([]);
     } finally {
         setLoading(false);
     }
@@ -32,6 +38,8 @@ export default function ComidasPage() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const destacados= dataPlatillos.slice(0,4);
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
@@ -57,6 +65,30 @@ export default function ComidasPage() {
         )}
       </div>
 
+        <div className="space-y-4">
+        <div className="flex items-center gap-2 text-white">
+          <h2 className="text-xl font-bold">Platillos Destacados</h2>
+        </div>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {loading ? (
+            [1, 2, 3, 4].map((i) => (
+              <div key={i} className="h-64 bg-gray-900 animate-pulse rounded-2xl border border-gray-800" />
+            ))
+          ) : (
+            destacados.map((item) => (
+              <FoodCard 
+                key={item.id}
+                titulo={item.nombre_platillo}
+                icon_img={item.imagen_url}
+                precio={item.precio}
+                ventas={true}
+              />
+            ))
+          )}
+        </div>
+      </div> 
+
       {/* 2. Sección de Análisis (Gráfica Completa) */}
       {/* Se eliminó el grid de columnas para que la gráfica ocupe el 100% del ancho */}
       <div className="bg-gray-900 p-6 rounded-2xl border border-gray-800 shadow-lg flex flex-col">
@@ -66,7 +98,7 @@ export default function ComidasPage() {
                   Ranking de Ventas Global
               </h3>
           </div>
-          
+             
           {/* Aumentamos la altura mínima a 400px para mejor visualización */}
           <div className="flex-1 w-full min-h-[400px] bg-gray-950/30 rounded-xl border border-gray-800/50 p-4 relative">
               {loading ? (

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import CardComponentsLink from "../components/cards/cardTextoLink";
+//import CardComponentsLink from "../components/cards/cardTextoLink";
+import AnimatedKpiCard from "../components/cards/KPICardAnimado";
 import CardGraficoLinealSemanal from "../components/cards/CardsLineales/CardGrapLineal";
 
 // Importamos los modales necesarios
@@ -7,6 +8,8 @@ import ModalNuevoCliente from "../components/modals/ModalNuevoCliente";
 import ModalNuevoContrato from "../components/modals/ModalNuevoContrato";
 // Asumiendo que guardaste el formulario de pedidos aquí en pasos anteriores
 import FormularioNuevoPedido from "../components/forms/PedidosForms"; 
+import { ShoppingCart, Users, FileText } from "lucide-react";
+import { data } from "react-router-dom";
 
 // Interfaces
 interface DatoGrafico {
@@ -14,20 +17,25 @@ interface DatoGrafico {
   y: number;
 }
 
-const Icono = ({ path }: { path: string }) => (
+{/*const Icono = ({ path }: { path: string }) => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 inline-block mr-2 text-blue-400">
         <path strokeLinecap="round" strokeLinejoin="round" d={path} />
     </svg>
-);
+);*/}
 
 export default function IndexPage() {
     const [datosVentas, setDatosVentas] = useState<DatoGrafico[]>([]);
     const [loading, setLoading] = useState(true);
+    const [Clientes, setClientes] = useState([]);
+    const [Facturas, setFacturas] = useState([]);
 
     // --- ESTADOS PARA MODALES ---
     const [showModalCliente, setShowModalCliente] = useState(false);
     const [showModalPedido, setShowModalPedido] = useState(false);
     const [showModalContrato, setShowModalContrato] = useState(false);
+
+     
+    
 
     useEffect(() => {
         fetch("http://127.0.0.1:8001/pedidos/conteo/semanal")
@@ -41,10 +49,20 @@ export default function IndexPage() {
             })
             .catch((err) => console.error("Error cargando estadísticas:", err))
             .finally(() => setLoading(false));
+
+            fetch("http://127.0.0.1:8001/pedidos/facturas")
+                .then((res) => res.json())
+                .then((data) => setFacturas(data))
+            
+            fetch("http://127.0.0.1:8001/clientes/")
+                .then((res) => res.json())
+                .then((data) => setClientes(data))
     }, []);
 
+    
     const totalPedidosSemana = datosVentas.reduce((acc, curr) => acc + curr.y, 0);
-
+    const totalFacturas = Facturas.length;
+    const totalClientes= Clientes.length;
 
     const handleSuccessPedido = () => {
         alert("Pedido creado correctamente desde el Panel.");
@@ -76,10 +94,35 @@ export default function IndexPage() {
                     </div>
                 </div>
             </header>
-
+ 
             {/* 2. GRID DE NAVEGACIÓN */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <CardComponentsLink 
+                <AnimatedKpiCard
+                titulo="Total Pedidos"
+                value={loading ? "Cargando..." : totalPedidosSemana}
+                    icon={<ShoppingCart size={24} />}
+                    to="/pedidos"
+                    colorPrincipal="#5db8c3"
+                    colorSecundario="#3b5bc6"
+                />
+
+                <AnimatedKpiCard
+                titulo="Total clientes"
+                value={loading ? 'Cargando': totalClientes}
+                icon= {<Users size={24}/>}
+                to="/Clientes"
+                colorPrincipal="#3b5bc6"
+                colorSecundario="#5db8c3"
+                 />
+
+                 <AnimatedKpiCard
+                 titulo="Facturas"
+                 value={loading? 'Cargando': totalFacturas}
+                 icon={<FileText size={24}/>} to="/Facturas"
+                 colorPrincipal="#5db8c3"
+                 colorSecundario="#3b5bc6" />
+                 
+                {/*<CardComponentsLink 
                     href={"/Pedidos"}
                     Titulo={<span className="flex items-center font-bold text-white"><Icono path="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />Pedidos</span>} 
                     Contenido="Gestiona las órdenes activas y el historial."
@@ -98,7 +141,7 @@ export default function IndexPage() {
                     href={"/Facturas"}
                     Titulo={<span className="flex items-center font-bold text-white"><Icono path="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />Facturas</span>} 
                     Contenido="Revisa la facturación y reportes."
-                />
+                />*/}
             </div>
 
             {/* 3. SECCIÓN DE ANÁLISIS Y GRÁFICAS */}

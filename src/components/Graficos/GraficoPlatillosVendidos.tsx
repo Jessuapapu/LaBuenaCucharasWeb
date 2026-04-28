@@ -1,8 +1,11 @@
 import { ResponsiveBar } from "@nivo/bar";
+import { useMemo } from "react";
 
 interface DatosPlatillo {
   nombre_platillo: string;
   total_vendido: number;
+  [key: string]: string | number; //pARA evitar la advertencia de TS ya que Nivo intenta buscar una clave 
+  // o sea lo que uno le pasa tipo ['clave']
 }
 
 interface GraficoPlatillosVendidosProps {
@@ -20,10 +23,20 @@ export default function GraficoPlatillosVendidos({ data }: GraficoPlatillosVendi
     );
   }
 
+  //Por seguridad, y que no haya problemas con el data hacemos una validacion, a como lo heos estado haciendo
+  //Por si acaso, construimos 
+  const xData= Array.isArray(data)? data: [];//Ahora si podemos utilizarlo
+
+
+
   // Ordenamos los datos para que se vean mejor (Mayor a menor) y tomamos los Top 15 si son muchos
-  const chartData = [...data]
-    .sort((a, b) => a.total_vendido - b.total_vendido) // Nivo los apila de abajo hacia arriba en horizontal
-    .slice(-15); // Mostramos solo los top 15 para que no se sature
+  //const chartData = [...data]
+    const chartData = useMemo(() =>{
+      return [...xData]
+      .sort((a, b) => a.total_vendido - b.total_vendido) // Nivo los apila de abajo hacia arriba en horizontal
+      .slice(-15); // Mostramos solo los top 15 para que no se sature
+    }, [xData]);
+    
 
   return (
     <div className="w-full h-80">

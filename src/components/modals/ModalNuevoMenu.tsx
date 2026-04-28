@@ -27,7 +27,9 @@ export default function ModalNuevoMenu({ onClose }: ModalNuevoMenuProps) {
     useEffect(() => {
         fetch("http://127.0.0.1:8001/platillos/")
             .then((res) => res.json())
-            .then((data) => setListaPlatillos(data))
+            .then((data) =>{ //setListaPlatillos(data))
+            setListaPlatillos(Array.isArray(data)? data: []) //Lo mismo en pedidosForm
+            })
             .catch((err) => console.error("Error cargando platillos:", err));
     }, []);
 
