@@ -19,6 +19,7 @@ interface Pedido {
   numero_pedido: number;
   fecha: string;
   estado_pedido: string;
+  estado: string;
   cliente: {
     nombre_cliente: string;
     direccion_cliente: string;

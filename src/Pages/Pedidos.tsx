@@ -50,7 +50,7 @@ export default function PedidosPage() {
 
     // Fetch de Pedidos
     const fetchPedidos = () => {
-        fetch("http://127.0.0.1:8001/pedidos/")
+        fetch("http://127.0.0.1:8001/pedidos/?pagina=1&rows=10&todo=true")
             .then((res) => res.json())
             .then((json) => setData(json))
             .catch((err) => console.error("Error cargando pedidos:", err));

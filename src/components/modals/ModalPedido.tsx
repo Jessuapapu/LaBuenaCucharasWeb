@@ -1,3 +1,4 @@
+import { ChartNoAxesColumnIcon } from "lucide-react";
 import { useState, useEffect } from "react";
 
 interface Cliente {
@@ -16,7 +17,7 @@ interface Detalle {
 interface PedidoEntrante {
     id_pedido: number;
     numero_pedido: number;
-    estado_pedido: string;
+    estado: string;
     fecha: string;
     cliente: {
         nombre_cliente: string;
@@ -45,7 +46,7 @@ export default function ModalPedido({ pedido, onClose }: ModalPedidoProps) {
         telefono: pedido.cliente.telefono || ""
     });
     
-    const [estado, setEstado] = useState(pedido.estado_pedido); 
+    const [estado, setEstado] = useState(pedido.estado); 
     const [fecha] = useState(pedido.fecha); 
     const [detalles, setDetalles] = useState<Detalle[]>(pedido.detalles);
     
@@ -114,7 +115,7 @@ export default function ModalPedido({ pedido, onClose }: ModalPedidoProps) {
                 precio_unitario: d.precio_unitario
             }))
         };
-
+        console.log(payload)
         try {
             const response = await fetch(
                 `http://127.0.0.1:8001/pedidos/detalles/${pedido.id_pedido}`, 
@@ -125,7 +126,7 @@ export default function ModalPedido({ pedido, onClose }: ModalPedidoProps) {
                 }
             );
 
-            if (!response.ok) throw new Error("Error al actualizar el pedido");
+            if (!response.ok) throw new Error("Error al actualizzzzzar el pedido");
 
             // Esperamos a que termine de procesar la respuesta
             await response.json(); 
@@ -135,7 +136,7 @@ export default function ModalPedido({ pedido, onClose }: ModalPedidoProps) {
             
         } catch (error) {
             console.error(error);
-            alert("Hubo un error al guardar los cambios.");
+            alert("Hubo un error al guardaaaaar los cambios.");
             // Solo desactivamos el loading si falló. 
             // Si tuvo éxito, dejamos el loading activo mientras la página se recarga.
             setLoading(false); 
@@ -196,9 +197,9 @@ export default function ModalPedido({ pedido, onClose }: ModalPedidoProps) {
                             value={estado}
                             onChange={e => setEstado(e.target.value)}
                         >
-                            <option value="Pendiente">PENDIENTE</option>
-                            <option value="Entregado">ENTREGADO</option>
-                            <option value="Anulado">ANULADO</option>
+                            <option value="PENDIENTE">PENDIENTE</option>
+                            <option value="ENTREGADO">ENTREGADO</option>
+                            <option value="ANULADO">ANULADO</option>
                         </select>
                     </div>
 
