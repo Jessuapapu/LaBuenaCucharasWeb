@@ -1,15 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 //import CardComponentsLink from "../components/cards/cardTextoLink";
 import AnimatedKpiCard from "../components/cards/KPICardAnimado";
 import CardGraficoLinealSemanal from "../components/cards/CardsLineales/CardGrapLineal";
+import GraficoRadioplatillos from "../components/Graficos/GraficoRadioplatillo";
 
 // Importamos los modales necesarios
 import ModalNuevoCliente from "../components/modals/ModalNuevoCliente";
 import ModalNuevoContrato from "../components/modals/ModalNuevoContrato";
-// Asumiendo que guardaste el formulario de pedidos aquí en pasos anteriores
+// formulario de pedidos
 import FormularioNuevoPedido from "../components/forms/PedidosForms"; 
 import { ShoppingCart, Users, FileText } from "lucide-react";
-import { data } from "react-router-dom";
+
 
 // Interfaces
 interface DatoGrafico {
@@ -63,6 +64,13 @@ export default function IndexPage() {
     const totalPedidosSemana = datosVentas.reduce((acc, curr) => acc + curr.y, 0);
     const totalFacturas = Facturas.length;
     const totalClientes= Clientes.length;
+    const radialData = useMemo(()=> {
+        return datosVentas.map(d =>({
+            dia: d.x,
+            total_vendido: d.y,
+            nombre_platillo: "Top"
+        }))
+    }, [datosVentas])
 
     const handleSuccessPedido = () => {
         alert("Pedido creado correctamente desde el Panel.");
@@ -121,6 +129,14 @@ export default function IndexPage() {
                  icon={<FileText size={24}/>} to="/Facturas"
                  colorPrincipal="#5db8c3"
                  colorSecundario="#3b5bc6" />
+
+                 <div className="w-full h-100 ">
+                        {loading ? (
+                            <span className="text-blue-400 animate-pulse">Cargando gráfica...</span>
+                        ) : (
+                            <GraficoRadioplatillos data={radialData} />
+                        )}
+                    </div>
                  
                 {/*<CardComponentsLink 
                     href={"/Pedidos"}

@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
-import ModalPlatillo from "../modals/ModalPlatillo";
+//import ModalPlatillo from "../modals/ModalPlatillo";
 import ModalNuevoPlatillo from "../modals/ModalAgregarPlatillos"
+import ModalEditPlatillo from "../modals/ModalEditPlatillos";
 
 // --- Interfaces y Tipos ---
 interface Platillo {
@@ -8,7 +9,8 @@ interface Platillo {
   nombre_platillo: string;
   nombre_categoria: string;
   // Eliminado: estado
-  precio?: number; // Opcional para filtros avanzados
+  precio: number; // Opcional para filtros avanzados
+  imagenurl?: string;
 }
 
 interface TablaComidasProps {
@@ -43,6 +45,7 @@ export default function TablaComidas({ data }: TablaComidasProps) {
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
   // --- Modales ---
+  const [editingPlatillo, setEditingPlatillo] = useState<Platillo | null>(null);
   const [selectedPlatillos, setSelectedPlatillos] = useState<Platillo[] | null>(null);
   const [showNewModal, setShowNewModal] = useState(false);
 
@@ -76,8 +79,8 @@ export default function TablaComidas({ data }: TablaComidasProps) {
         // @ts-ignore
         const valB = b[sortKey] || "";
         return sortOrder === "asc"
-          ? String(valA).localeCompare(String(valB))
-          : String(valB).localeCompare(String(valA));
+          ? String(valA).localeCompare(String(valB), undefined, {numeric: true})
+          : String(valB).localeCompare(String(valA), undefined, {numeric: true});
       });
     }
     return rows;
@@ -111,6 +114,16 @@ export default function TablaComidas({ data }: TablaComidasProps) {
         ));
     }
     setSelectedPlatillos(null);
+  };
+
+  const handleSaveEdit = (editado: Platillo) => {
+    setPlatillos(prev => prev.map(p => 
+      // Comparamos por ID si existe, o por nombre como fallback
+      (p.id === editado.id || p.nombre_platillo === editingPlatillo?.nombre_platillo) 
+      ? editado 
+      : p
+    ));
+    setEditingPlatillo(null);
   };
   
   const handleCreateNew = (nuevo: Platillo) => {
@@ -204,9 +217,14 @@ export default function TablaComidas({ data }: TablaComidasProps) {
           <tbody>
             {paginatedRows.length > 0 ? (
               paginatedRows.map((p, i) => (
-                <tr key={i} className="bg-gray-900 border-b border-gray-800 hover:bg-gray-800/60 transition-colors">
+                <tr key={p.id || i} className="bg-gray-900 border-b border-gray-800 hover:bg-gray-800/40 transition-colors group">
                   <td className="px-6 py-4 font-medium text-white text-base">
-                    {p.nombre_platillo}
+                    <div className="flex items-center gap-3">
+                        {p.imagenurl && (
+                            <img src={p.imagenurl} alt="" className="w-8 h-8 rounded-full object-cover border border-gray-700" />
+                        )}
+                        {p.nombre_platillo}
+                    </div>
                   </td>
                   <td className="px-6 py-4">
                     <span className="text-blue-300 bg-blue-900/20 px-2 py-1 rounded text-xs border border-blue-800/50">
@@ -215,7 +233,7 @@ export default function TablaComidas({ data }: TablaComidasProps) {
                   </td>
                   <td className="px-6 py-4 text-center">
                     <button
-                      onClick={() => setSelectedPlatillos([p])}
+                      onClick={() => setEditingPlatillo(p)}
                       className="text-gray-400 hover:text-white bg-gray-800 hover:bg-blue-600 p-2 rounded-lg transition-colors"
                       title="Editar"
                     >
@@ -282,12 +300,12 @@ export default function TablaComidas({ data }: TablaComidasProps) {
         />
       )}
 
-      {selectedPlatillos && (
-        <ModalPlatillo
-          platillos={selectedPlatillos}
+      {editingPlatillo && (
+        <ModalEditPlatillo
+          platillo={editingPlatillo}
           onClose={() => setSelectedPlatillos(null)}
           //@ts-ignore
-          onSave={handleUpdateList}
+          onSave={handleSaveEdit}
         />
       )}
     </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 // Interfaz para la respuesta del endpoint de categorías
 interface CategoriaOption {
@@ -9,17 +9,25 @@ interface CategoriaOption {
 interface Platillo {
     nombre_platillo: string;
     nombre_categoria: string;
+    precio: number;
+    foto?: File | null;
 }
 
 interface ModalNuevoPlatilloProps {
     onClose: () => void;
-    // CORRECCIÓN: Restauramos onSave para que el padre pueda actualizar la tabla
+    // Restauramos onSave para que el padre pueda actualizar la tabla
     onSave: (nuevo: Platillo) => void; 
 }
 
 export default function ModalNuevoPlatillo({ onClose, onSave }: ModalNuevoPlatilloProps) {
     const [nombre, setNombre] = useState("");
     const [categoria, setCategoria] = useState("");
+    const [precio, setprecio]= useState<string>("");
+
+    // Estados para la imagen
+    const [imageFile, setImageFile] = useState<File | null>(null);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
     
     const [listaCategorias, setListaCategorias] = useState<CategoriaOption[]>([]);
     const [loading, setLoading] = useState(false);
@@ -36,6 +44,17 @@ export default function ModalNuevoPlatillo({ onClose, onSave }: ModalNuevoPlatil
             .catch((err) => console.error("Error cargando categorías:", err));
     }, []);
 
+    // Manejador de cambio de imagen
+    const CambioImagen = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setImageFile(file);
+            const reader = new FileReader();
+            reader.onloadend = () => setImagePreview(reader.result as string);
+            reader.readAsDataURL(file);
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         
@@ -51,13 +70,19 @@ export default function ModalNuevoPlatillo({ onClose, onSave }: ModalNuevoPlatil
             nombre_categoria: categoria
         };
 
+        const formData = new FormData();
+        formData.append("nombre_platillo", nombre);
+        formData.append("nombre_categoria", categoria);
+        formData.append("precio", precio);
+        if (imageFile) formData.append("imagen", imageFile);
+
         try {
             const response = await fetch("http://127.0.0.1:8001/platillos/", {
                 method: "POST",
-                headers: {
+                /*headers: {
                     "Content-Type": "application/json",
-                },
-                body: JSON.stringify(payload),
+                },*/
+                body: formData, //para que lo detecte
             });
 
             if (!response.ok) {
@@ -99,7 +124,34 @@ export default function ModalNuevoPlatillo({ onClose, onSave }: ModalNuevoPlatil
                 <p className="text-gray-400 text-sm mb-6">Ingresa los datos para registrar un nuevo platillo.</p>
 
                 <form onSubmit={handleSubmit} className="space-y-5">
-                    
+
+                    <div>
+                        {/* SECCIÓN DE FOTO */}
+                    <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-700 rounded-xl p-4 bg-gray-800/50 hover:bg-gray-800 transition-colors group relative">
+                        {imagePreview ? (
+                            <div className="relative w-full h-32">
+                                <img src={imagePreview} alt="Preview" className="w-full h-full object-cover rounded-lg" />
+                                <button 
+                                    type="button"
+                                    onClick={() => {setImageFile(null); setImagePreview(null);}}
+                                    className="absolute -top-2 -right-2 bg-red-500 rounded-full p-1 shadow-lg hover:bg-red-400"
+                                >
+                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="white"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" /></svg>
+                                </button>
+                            </div>
+                        ) : (
+                            <button 
+                                type="button" 
+                                onClick={() => fileInputRef.current?.click()}
+                                className="flex flex-col items-center gap-2 text-gray-400 group-hover:text-blue-400 transition-colors"
+                            >
+                                <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                <span className="text-xs font-bold uppercase tracking-wider">Agregar Foto</span>
+                            </button>
+                        )}
+                        <input type="file" ref={fileInputRef} onChange={CambioImagen} accept="image/*" className="hidden" />
+                    </div>
+                    </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-300 mb-1">Nombre del Platillo</label>
                         <input
@@ -132,7 +184,24 @@ export default function ModalNuevoPlatillo({ onClose, onSave }: ModalNuevoPlatil
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"></path></svg>
                             </div>
                         </div>
+
+                        
                     </div>
+                    {/* PRECIO */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-400 mb-1">Precio</label>
+                            <div className="relative">
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    className="w-full pl-7 pr-4 py-2.5 rounded-lg bg-gray-800 border border-gray-700 text-white focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                                    placeholder="0.00"
+                                    value={precio}
+                                    onChange={(e) => setprecio(e.target.value)}
+                                />
+                            </div>
+                        </div>
 
                     <div className="flex gap-3 pt-4 mt-2">
                         <button

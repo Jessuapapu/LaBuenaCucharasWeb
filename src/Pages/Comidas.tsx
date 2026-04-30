@@ -66,8 +66,8 @@ export default function ComidasPage() {
       </div>
 
         <div className="space-y-4">
-        <div className="flex items-center gap-2 text-white">
-          <h2 className="text-xl font-bold">Platillos Destacados</h2>
+        <div className="flex items-center gap-2 p-2 text-white bg-gray-500/60 rounded-2xl h-16">
+          <h2 className="text-xl font-bold text-blue-500">Platillos Destacados</h2>
         </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -79,9 +79,7 @@ export default function ComidasPage() {
             destacados.map((item) => (
               <FoodCard 
                 key={item.id}
-                titulo={item.nombre_platillo}
-                icon_img={item.imagen_url}
-                precio={item.precio}
+                platillo={item}
                 ventas={true}
               />
             ))

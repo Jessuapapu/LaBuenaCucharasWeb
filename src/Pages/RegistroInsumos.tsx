@@ -2,17 +2,51 @@ import { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import TablaRegistros from "../components/table/TableRegistro";
 import { ArrowDownCircle, Truck, ArrowRight, DollarSign } from "lucide-react";
+import { Cardstockmin } from "../components/cards/CardBar";
 
 export default function RegistrosPage() {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-
+  const [stockAlerts, setStockAlerts] = useState<any[]>([]); // Para el grid de cards
+  
   useEffect(() => {
-    fetch("http://127.0.0.1:8001/bodega/") 
-      .then((res) => res.json())
-      .then((json) => setData(json))
-      .catch((err) => console.error("Error cargando registros:", err))
+    //Ejecuta paralelamente
+    Promise.all([
+      fetch("http://127.0.0.1:8001/bodega/"),
+      fetch("http://127.0.0.1:8001/ingredientes"), 
+      fetch("http://127.0.0.1:8001/insumos")
+    ])
+      .then(async ([resBodega, resIng, resPrio]) => {
+        const jsonBodega = await resBodega.json();
+        const jsonIng = await resIng.json();
+        const jsonPrio = await resPrio.json();
+
+        setData(jsonBodega);
+
+        // --- NORMALIZACIÓN DE DATOS ---
+        const alerts = [
+          ...jsonIng.map((i: any) => ({
+            id: `ing-${i.id}`,
+            nombre: i.nombre_ingrediente,
+            tipo: "Ingrediente",
+            actual: i.cantidad,
+            minimo: i.stock_minimo
+          })),
+          ...jsonPrio.map((p: any) => ({
+            id: `prio-${p.id}`,
+            nombre: p.nombreinsumo,
+            tipo: "Prioridad",
+            // Convertimos el string "True"/"False" a booleano real
+            actual: String(p.prioridad).toLowerCase() === "true", 
+            minimo: 30 // Valor base para la gráfica
+          }))
+        ];
+        
+        setStockAlerts(alerts);
+      })
+      .catch((err) => console.error("Error cargando datos:", err))
       .finally(() => setLoading(false));
+
   }, []);
 
   // Calculamos el total gastado para mostrar un dato útil
@@ -73,6 +107,25 @@ export default function RegistrosPage() {
                 <Truck className="w-8 h-8" />
             </div>
         </Link>
+      </div>
+
+      {/*Stock minimo*/}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {loading? (// Skeleton simple para las cards mientras se carga
+            Array(4).fill(0).map((_, i) => (
+              <div key={i} className="h-[300px] bg-gray-900/50 animate-pulse rounded-2xl border border-gray-800" />
+            ))
+          ) : (
+            stockAlerts.map((alerta) => (
+              <Cardstockmin 
+                key={alerta.id}
+                nombre={alerta.nombre}
+                tipo={alerta.tipo}
+                stockactual={alerta.actual}
+                stockmin={alerta.minimo}
+              />
+            ))
+          )}
       </div>
 
       {/* Tabla de Registros */}
