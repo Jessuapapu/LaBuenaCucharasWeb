@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import TablaMenus from "../components/table/TableMenu";
+import CalendarioPlatillo from "../components/Calendar/Calendarioplatillo";
 
 export default function MenusPage() {
   const [data, setData] = useState<any[]>([]);
@@ -30,6 +31,10 @@ export default function MenusPage() {
         <p className="text-gray-400 mt-1 text-sm">Gestiona qué platillos se servirán cada día.</p>
       </div>
 
+      <div>
+        <CalendarioPlatillo dataInicial={data}/> 
+      </div>
+
       {loading ? (
         <div className="h-64 bg-gray-900 rounded-xl border border-gray-800 flex items-center justify-center text-blue-400">
             Cargando calendario...
@@ -37,6 +42,7 @@ export default function MenusPage() {
       ) : (
         <TablaMenus data={data} />
       )}
+
     </div>
   );
 }

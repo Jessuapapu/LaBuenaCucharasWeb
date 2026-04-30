@@ -66,7 +66,7 @@ export default function ComidasPage() {
       </div>
 
         <div className="space-y-4">
-        <div className="flex items-center gap-2 p-2 text-white bg-gray-500/60 rounded-2xl h-16">
+        <div className="flex items-center gap-2 p-2 text-white rounded-2xl h-16">
           <h2 className="text-xl font-bold text-blue-500">Platillos Destacados</h2>
         </div>
         
