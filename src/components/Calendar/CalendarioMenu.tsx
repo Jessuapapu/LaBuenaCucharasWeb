@@ -1,0 +1,162 @@
+import React from "react";
+import { useState } from "react";
+import ModalEditarMenu from "../modals/ModalEditarMenu";
+import ModalNuevoMenu from "../modals/ModalNuevoMenu";
+import { Utensils, Edit2, ChevronLeft, ChevronRight} from "lucide-react";
+
+
+interface Menu{
+    idplatillo: number;
+    NombrePlatillo: string;
+    color: string;
+    Fecha: string;
+}
+
+interface MenuProps{
+    Datos: Menu[];
+}
+
+const Plus = ({ size }: { size: number }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+);
+
+const Calendario: React.FC<MenuProps>= ({Datos})=>{
+    //para obtener el dia
+    const diaHoy= new Date();
+    const [fecha, setfecha] = useState(new Date())
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [selectedMenu, setSelectedMenu] = useState<any | null>(null);
+    const [fechaSeleccionada, setFechaSeleccionada] = useState<string>("");
+
+    const cambiarMes= (off: number) => {
+        setfecha(new Date(Anio, meses + off, 1))
+    }
+
+
+    //conteo de semanas, years
+    const diasSemanas= ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado']
+    const Mes= fecha.toLocaleString('es-ES', {month: 'long', year: 'numeric'}) //Obtener el mes actual
+    const meses= fecha.getMonth()
+    const Anio= fecha.getFullYear()
+
+    const primerDia = new Date(Anio, meses, 1).getDay();
+    const diasEnMes = new Date( Anio, meses + 1, 0).getDate();
+        //Espacios
+    const celdas = [
+        ...Array(primerDia).fill(null),
+        ...Array.from({ length: diasEnMes }, (_, i) => i + 1)
+    ];
+
+    const obtenerPlatilloDia = (dia: number) => {
+        if (!dia) return null;
+        // Formateamos el día para que coincida con el formato YYYY-MM-DD de la API
+        const fechaStr = `${Anio}-${String(meses + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+        return Datos.find(item => item.Fecha === fechaStr);
+    };
+
+    const manejarClickDia = (dia: number) => {
+        if (!dia) return;
+        const fechaStr = `${Anio}-${String(meses + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+        setFechaSeleccionada(fechaStr);
+        setShowCreateModal(true);
+    };
+    
+    return(
+        <div className="bg-gray-900 rounded-xl border border-gray-800 p-2 shadow-2xl">
+            {/* Cabecera del Calendario */}
+            <div className="flex justify-center items-center mb-6">
+                <button 
+                    onClick={() => cambiarMes(-1)}
+                    className="p-2 hover:bg-gray-800 rounded-full text-gray-400 transition-colors"
+                >
+                    <ChevronLeft size={24} />
+                </button>
+                <h2 className="text-xl font-bold text-white capitalize">
+                    {Mes}
+                </h2>
+                <button onClick={()=> cambiarMes(1)} className="p-2 hover:bg-gray-800 rounded-full text-gray-400 transition-colors">
+                    <ChevronRight size={24} />
+                </button>
+            </div>
+            {/*Dias de semana*/}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-4 mb-2 text-sm">
+                {diasSemanas.map(d=> (<div key={d} className="text-center text-gray-500 text-xs font-bold uppercase tracking-wider py-2">
+                    {d}</div> ))}
+            </div>
+            {/* Cuadrícula de días */}
+            <div className="grid grid-cols-7 gap-2">
+                {celdas.map((dia, idx) => {
+                    const infoMenu = dia ? obtenerPlatilloDia(dia) : null;
+                    const esHoy = dia === diaHoy.getDate() && meses=== diaHoy.getMonth() && Anio=== diaHoy.getFullYear();
+
+                    return (
+                        <div 
+                            key={idx}
+                            onClick={() => dia && !infoMenu && manejarClickDia(dia)} 
+                            className={`min-h-[100px] rounded-xl border p-2 transition-all flex flex-col justify-between
+                                ${!dia ? 'bg-transparent border-transparent' : 'bg-gray-800/40 border-gray-800 hover:border-gray-600'}
+                                ${esHoy ? 'ring-2 ring-blue-500/50 border-blue-500/50' : ''}
+                            `}
+                        >
+                            {dia && (
+                                <>
+                                    <div className="flex justify-between items-center">
+                                        <span className={`text-sm font-medium ${esHoy ? 'text-blue-400' : 'text-gray-400'}`}>
+                                            {dia}
+                                        </span>
+                                        {!infoMenu && (
+                                            <button 
+                                                onClick={() => setShowCreateModal(true)}
+                                                className="opacity-0 group-hover:opacity-100 p-1 hover:bg-gray-700 rounded text-gray-500"
+                                            >
+                                                <Plus size={12} />
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    {infoMenu ? (
+                                        <div className="mt-1 bg-blue-600/20 border border-blue-500/30 p-2 rounded-lg relative group">
+                                            <p className="text-[10px] text-blue-200 font-semibold leading-tight line-clamp-2">
+                                                {infoMenu.NombrePlatillo}
+                                            </p>
+                                            <button 
+                                                onClick={() => setSelectedMenu(infoMenu)}
+                                                className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 bg-blue-600 p-1 rounded shadow-lg transition-opacity"
+                                            >
+                                                <Edit2 size={10} className="text-white" />
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        dia && (
+                                            <div className="flex-1 flex items-center justify-center opacity-10">
+                                                <Utensils size={16} className="text-white" />
+                                            </div>
+                                        )
+                                    )}
+                                </>
+                            )}
+                        </div>
+                    );
+                })}
+            </div>
+            {/* Modales */}
+            {showCreateModal && (
+                <ModalNuevoMenu onClose={() => setShowCreateModal(false)} />
+            )}
+
+            {selectedMenu && (
+                <ModalEditarMenu 
+                    menu={{
+                        id: selectedMenu.id,
+                        Fecha: selectedMenu.Fecha,
+                        NombrePlatillo: selectedMenu.NombrePlatillo
+                    }}
+                    onClose={() => setSelectedMenu(null)}
+                />
+            )}
+        </div>
+            
+        )
+}
+
+export default Calendario;

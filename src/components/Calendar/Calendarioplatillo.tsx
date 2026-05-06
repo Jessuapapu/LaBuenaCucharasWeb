@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X, Calendar as CalendarIcon, UtensilsCrossed, Edit2, Plus } from "lucide-react";
+import { Calendar as CalendarIcon, UtensilsCrossed, Edit2, Plus } from "lucide-react";
 import ModalEditarMenu from "../modals/ModalEditarMenu";
 import ModalNuevoMenu from "../modals/ModalNuevoMenu";
 

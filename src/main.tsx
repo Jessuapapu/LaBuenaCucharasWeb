@@ -14,6 +14,7 @@ import ProveedoresPage from "./Pages/Provedores";
 import RegistrosPage from "./Pages/RegistroInsumos";
 import FacturasPage from "./Pages/Facturas";
 import InformesPage from "./Pages/infome";
+import MeasasPage from "./Pages/Mesas";
 
 
 const router = createBrowserRouter([
@@ -24,6 +25,7 @@ const router = createBrowserRouter([
       { path: "/Pedidos", element: <Pedidos /> },
       { path: "/Comidas", element: <ComidasPage />, },
       { path: "/Menu_Diario", element: <Menu_Diario /> },
+      { path: "/Mesas", element: <MeasasPage/>},
       {
         path: "/Clientes",
         children: [

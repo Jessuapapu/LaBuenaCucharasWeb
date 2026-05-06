@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import TablaMenus from "../components/table/TableMenu";
 import CalendarioPlatillo from "../components/Calendar/Calendarioplatillo";
+import Calendario from "../components/Calendar/CalendarioMenu";
 
 export default function MenusPage() {
   const [data, setData] = useState<any[]>([]);
@@ -35,6 +36,10 @@ export default function MenusPage() {
         <CalendarioPlatillo dataInicial={data}/> 
       </div>
 
+      <div>
+        <Calendario Datos={data}></Calendario>
+      </div>
+
       {loading ? (
         <div className="h-64 bg-gray-900 rounded-xl border border-gray-800 flex items-center justify-center text-blue-400">
             Cargando calendario...
@@ -43,6 +48,7 @@ export default function MenusPage() {
         <TablaMenus data={data} />
       )}
 
+      
     </div>
   );
 }

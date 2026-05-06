@@ -28,7 +28,7 @@ export default function AnimatedKpiCard({
 
         {/* Fondo con Degradado y Movimiento al Hover */}
         <div 
-          className="relative flex justify-between items-center p-6 rounded-2xl h-full transition-all duration-700 ease-in-out border border-white/10"
+          className="relative flex justify-between items-center p-6 rounded-2xl h-[150px] transition-all duration-700 ease-in-out border border-white/10"
           style={{
             // El degradado siempre está presente
             background: `linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 50%, var(--color-primary) 100%)`,

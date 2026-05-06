@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+import { X, CircleDashed } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
 import React from "react"; // Necesario para la desestructuración de props
@@ -65,6 +65,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, logoSrc, business
                     <LinkItem to="/Menu_Diario" icon={<span role="img" aria-label="Menú Diario">🧾</span>} label="Menu Diario" />
                     <LinkItem to="/Clientes" icon={<span role="img" aria-label="Clientes">👤</span>} label="Clientes" />
                     <LinkItem to="/Inventario" icon={<span role="img" aria-label="Inventario">🖥️</span>} label="Inventario" />
+                    <LinkItem to= "/Mesas" icon={<span role="img" aria-label="Mesas"><CircleDashed/></span>} label="Mesas" />
                     {/* Puedes añadir más LinkItems aquí */}
                 </nav>
 
