@@ -9,19 +9,19 @@ export default function ComedorPage() {
   const tieneMesas = mesas.length > 0;
 
   return (
-    <div className="p-8 bg-slate-950 min-h-screen text-slate-200">
+    <div className="p-8 bg-blue-900/70 min-h-screen text-slate-200 border rounded-xl">
       {/* HEADER ESTATICO */}
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
         <div className="flex items-center gap-4">
-          <div className="p-3 bg-green-600/20 rounded-2xl">
-            <LayoutDashboard className="text-green-500" size={32} />
+          <div className="p-3 bg-blue-600/50 rounded-2xl">
+            <LayoutDashboard className="text-blue-500" size={32} />
           </div>
           <div>
             <h1 className="text-4xl font-black text-white tracking-tighter">MONITOR COMEDOR</h1>
             <div className="flex items-center gap-2">
-              <p className="text-slate-500 font-medium">La Buena Cuchara</p>
+              <p className="text-white-500 font-medium">La Buena Cuchara</p>
               {error && (
-                <span className="flex items-center gap-1 text-xs text-red-400 bg-red-400/10 px-2 py-0.5 rounded-full">
+                <span className="flex items-center gap-1 text-xs text-red-500 bg-red-800/10 px-2 py-0.5 rounded-full">
                   <AlertCircle size={12} /> Error de conexión
                 </span>
               )}
@@ -40,7 +40,7 @@ export default function ComedorPage() {
           
           <button 
             onClick={agregarMesa}
-            className="flex items-center gap-2 bg-green-600 hover:bg-green-500 text-white px-6 py-3 rounded-2xl font-bold transition-all shadow-lg shadow-green-900/20 active:scale-95"
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-2xl font-bold transition-all shadow-lg shadow-blue-900/20 active:scale-95"
           >
             <Plus size={20} />
             Añadir Mesa
@@ -73,10 +73,10 @@ export default function ComedorPage() {
               <Plus size={40} className="text-slate-600" />
             </div>
             <h2 className="text-xl font-bold text-white">No hay mesas configuradas</h2>
-            <p className="text-slate-500 mb-6">El comedor está vacío para hoy.</p>
+            <p className="text-white-500 mb-6">El comedor está vacío para hoy.</p>
             <button 
               onClick={agregarMesa}
-              className="bg-white text-black px-8 py-3 rounded-xl font-bold hover:bg-slate-200 transition-colors"
+              className="bg-blue-300/66 text-black px-8 py-3 rounded-xl font-bold hover:bg-slate-200 transition-colors"
             >
               Comenzar a añadir mesas
             </button>

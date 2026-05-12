@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { data } from "react-router-dom";
 
 // Interfaces para los datos que cargamos
 interface ClienteOption {
@@ -22,13 +21,13 @@ interface FormularioNuevoPedidoProps {
   onSave: () => void; // Para recargar la tabla al guardar
 }
 
-interface MesaOption { numero_mesa: string; estado: string; }
+//interface MesaOption { numero_mesa: string; estado: string; }
 
 export default function FormularioNuevoPedido({ onClose, onSave }: FormularioNuevoPedidoProps) {
   // --- Estados de Datos (Listas para selects) ---
   const [listaClientes, setListaClientes] = useState<ClienteOption[]>([]);
   const [listaPlatillos, setListaPlatillos] = useState<PlatilloOption[]>([]);
-  const [listaMesas, setListaMesas] = useState<MesaOption[]>([]);
+  //const [listaMesas, setListaMesas] = useState<MesaOption[]>([]);
 
   // --- Estados del Formulario ---
   const [cliente, setCliente] = useState("");
@@ -38,7 +37,7 @@ export default function FormularioNuevoPedido({ onClose, onSave }: FormularioNue
   ]);
   
   const [loading, setLoading] = useState(false);
-  const [MesaSeleccionada, setMesaSeleccionada]= useState("")
+  //const [MesaSeleccionada, setMesaSeleccionada]= useState("")
 
   // 1. Cargar Clientes y Platillos al montar
   useEffect(() => {
@@ -67,16 +66,6 @@ export default function FormularioNuevoPedido({ onClose, onSave }: FormularioNue
         console.error("Error platillo: ", err);
         setListaPlatillos([]);
       });
-
-      // Cargar Mesas (Solo las disponibles para nuevos pedidos)
-    fetch("http://127.0.0.1:8001/comedor/")
-      .then((res) => res.json())
-      .then((data) => {
-        const mesasArray = Array.isArray(data) ? data : [];
-        // Filtramos para mostrar solo mesas disponibles
-        setListaMesas(mesasArray.filter((m: MesaOption) => m.estado === 'disponible'));
-      })
-      .catch(() => setListaMesas([]));
   }, []);
 
   
@@ -101,7 +90,7 @@ export default function FormularioNuevoPedido({ onClose, onSave }: FormularioNue
   // 3. Submit (POST)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!cliente ||!MesaSeleccionada || items.length === 0) {
+    if (!cliente || items.length === 0) {
       alert("Debes seleccionar un cliente, mesa y al menos un platillo.");
       return;
     }
@@ -180,22 +169,6 @@ export default function FormularioNuevoPedido({ onClose, onSave }: FormularioNue
                   ))}
                 </select>
               </div>
-
-              {/*SELECCIÓN DE MESA */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-1">Mesa</label>
-                  <select
-                    required
-                    className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white outline-none focus:ring-2 focus:ring-green-500"
-                    value={MesaSeleccionada}
-                    onChange={(e) => setMesaSeleccionada(e.target.value)}
-                  >
-                    <option value="">-- Elegir Mesa --</option>
-                    {listaMesas.map((m, i) => (
-                      <option key={i} value={m.numero_mesa}>Mesa {m.numero_mesa}</option>
-                    ))}
-                  </select>
-                </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-400 mb-1">Fecha</label>
@@ -295,12 +268,6 @@ export default function FormularioNuevoPedido({ onClose, onSave }: FormularioNue
             <h3 className="text-center text-gray-400 uppercase tracking-widest text-sm mb-4">Resumen</h3>
             {/* Lista de productos estilo Ticket */}
             <div className="space-y-3">
-              {MesaSeleccionada && (
-                 <div className="flex justify-between text-blue-400 font-bold border-b border-gray-700 pb-2">
-                   <span>Mesa:</span>
-                   <span>#{MesaSeleccionada}</span>
-                 </div>
-               )}
               {items.map((item, i) => (
               <div key={i} className="flex justify-between text-sm">
                  <span>{item.cantidad}x {item.nombre_platillo || '...'}</span>

@@ -1,4 +1,4 @@
-import { TrendingUp, Settings2 } from "lucide-react";
+import { TrendingUp } from "lucide-react";
 import ModalEditPlatillo from "../modals/ModalEditPlatillos";
 import { useState } from "react";
 
@@ -42,66 +42,38 @@ export const FoodCard = ({ platillo, onUpdate, ventas }: FoodCardProps) => {
       group
     ">
       {/* Contenedor de Imagen con altura fija */}
-      <div className="h-[200px] w-full overflow-hidden">
+      <div className="h-[200px] w-full overflow-hidden relative">
         <img
           src={imagen_url}
           alt={nombre_platillo}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
-        
         {ventas && (
-            <div className="absolute top-3 left-3 bg-orange-600 text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase flex items-center gap-1 shadow-lg">
-              <TrendingUp className="w-3 h-3" /> Popular
-            </div>
-          )}
+          <div className="absolute top-3 left-3 bg-orange-600 text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase flex items-center gap-1 shadow-lg z-10">
+            <TrendingUp className="w-3 h-3" /> Popular
+          </div>
+        )}
       </div>
 
-      {/* Cuerpo de la Card */}
-      <div className="flex flex-col flex-1 p-5 gap-2">
-        <h3 className="
-          text-[var(--text-h)] 
-          font-[var(--heading)] 
-          text-lg 
-          font-bold 
-          tracking-[-0.24px]
-          line-clamp-1
-        ">
-          {nombre_platillo}
-        </h3>
-
-        
-
-        <p className="
-          text-[var(--text)] 
-          text-sm 
-          leading-[145%] 
-          line-clamp-3
-        ">
-        </p>
-
-        {/* Precio obtenido de los datos - Empujado al final */}
-        <div className="mt-auto flex justify-between items-end">
-          <div className="flex flex-col">
-                <span className="text-[var(--text)] text-xs opacity-60 uppercase font-bold tracking-wider">Precio</span>
-                <span className="
-                  text-[var(--accent)] 
-                  text-2xl 
-                  font-bold 
-                  tracking-tight
-                ">
-                  ${precio}
-                </span>
-            </div>
-          
-          {/* Botón de Acción Estilo Gestión */}
-            <button 
-              onClick={() => setIsEditModalOpen(true)}
-              className="p-2 bg-gray-800 hover:bg-blue-600 text-gray-400 hover:text-white rounded-lg border border-gray-700 transition-all active:scale-90"
-            >
-              <Settings2 className="w-5 h-5" />
-            </button>
-            </div>
+      {/*Descripcion de la card*/}
+      <div className="bg-slate-900 p-4 border-b border-slate-800 flex justify-between items-center">
+        <div className="flex flex-col overflow-hidden">
+          <h3 className="text-white font-bold text-sm truncate uppercase tracking-tight">
+            {nombre_platillo}
+          </h3>
+          <span className="text-blue-400 font-black text-xl">
+            ${precio}
+          </span>
         </div>
+      </div>
+
+      {/* 3. CUERPO RESTANTE: DESCRIPCIÓN/ESPACIADOR */}
+      <div className="flex-1 p-4 flex flex-col justify-center">
+        <p className="text-slate-500 text-xs leading-relaxed line-clamp-2">
+          Categoría: {platillo.nombre_categoria || 'General'} <br />
+          Platillo listo para servicio en comedor.
+        </p>
+      </div>
 
       {/* Footer de la Card */}
         <div className="p-5 pt-0 flex gap-2">

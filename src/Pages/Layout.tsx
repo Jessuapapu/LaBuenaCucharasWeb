@@ -41,7 +41,7 @@ export default function Layout() {
             {/* Contenedor Principal (z-index 10) */}
             <div
                 className={`transition-all duration-300 ease-in-out min-h-screen flex flex-col relative z-10
-                    ${sidebarOpen ? "lg:ml-64" : "lg:ml-0"}`}
+                    ${sidebarOpen ? "lg:ml-64" : "lg:ml-20"}`}
             >
                 {/* Navbar Mobile (solo visible en pantallas pequeñas) */}
                 <div className="lg:hidden">

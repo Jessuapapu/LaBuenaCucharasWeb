@@ -3,6 +3,7 @@ import { useEffect, useState, useMemo } from "react";
 import CardGraficoLinealSemanal from "../components/cards/CardsLineales/CardGrapLineal";
 import FormularioNuevoPedido from "../components/forms/PedidosForms";
 import { TrendingUp, Package, Clock, CheckCircle, DollarSign, Plus } from "lucide-react";
+import CardPedido from "../components/cards/CardOrden";
 
 // Interfaces
 interface DatoGrafico {
@@ -11,33 +12,37 @@ interface DatoGrafico {
 }
 
 // Componente KpiCard Interactivo
-const KpiCard = ({ title, value, sub, icon, color, borderColor, onClick, isActive }: any) => (
-    <div 
-        onClick={onClick}
-        className={`
-            relative p-5 rounded-2xl border shadow-lg transition-all duration-300 cursor-pointer group select-none
-            ${isActive 
-                ? `bg-gray-800 border-${borderColor}-500 ring-2 ring-${borderColor}-500/50 transform scale-[1.02]` 
-                : `bg-gray-900 border-gray-800 hover:border-${borderColor}-500/50 hover:bg-gray-800/50`
-            }
-        `}
-    >
-        <div className="flex justify-between items-start">
-            <div>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${isActive ? `text-${color}-400` : 'text-gray-400'}`}>{title}</p>
-                <h3 className="text-3xl font-extrabold text-white">{value}</h3>
+const KpiCard = ({ title, value, sub, icon, color, onClick, isActive }: any) => {
+    // Mapeo de colores manual para que Tailwind los detecte
+    const colors: any = {
+        emerald: isActive ? 'bg-emerald-500 border-emerald-500 ring-emerald-500/50' : 'hover:border-emerald-500/50',
+        blue: isActive ? 'bg-blue-500 border-blue-500 ring-blue-500/50' : 'hover:border-blue-500/50',
+        yellow: isActive ? 'bg-yellow-500 border-yellow-500 ring-yellow-500/50' : 'hover:border-yellow-500/50',
+        purple: isActive ? 'bg-purple-500 border-purple-500 ring-purple-500/50' : 'hover:border-purple-500/50',
+    };
+
+    return (
+        <div 
+            onClick={onClick}
+            className={`relative p-5 rounded-2xl border shadow-lg transition-all duration-300 cursor-pointer group select-none bg-gray-900 border-gray-800 ${colors[color] || ''} ${isActive ? 'scale-[1.02] bg-gray-800 ring-2' : 'hover:bg-gray-800/50'}`}
+        >
+            <div className="flex justify-between items-start">
+                <div>
+                    <p className="text-xs font-bold uppercase tracking-wider mb-1 text-gray-400">{title}</p>
+                    <h3 className="text-3xl font-extrabold text-white">{value}</h3>
+                </div>
+                <div className={`p-3 rounded-xl ${isActive ? 'bg-white/20 text-white' : 'bg-gray-800 text-blue-400'}`}>
+                    {icon}
+                </div>
             </div>
-            <div className={`p-3 rounded-xl transition-colors ${isActive ? `bg-${color}-500 text-white` : `bg-${color}-500/10 text-${color}-400 group-hover:bg-${color}-500 group-hover:text-white`}`}>
-                {icon}
+            <div className="mt-4">
+                 <span className="text-xs font-medium px-2 py-1 rounded-md bg-white/5 text-gray-400 border border-white/10">
+                    {sub}
+                 </span>
             </div>
         </div>
-        <div className="mt-4">
-             <span className={`text-xs font-medium px-2 py-1 rounded-md bg-${color}-500/10 text-${color}-400 border border-${color}-500/20`}>
-                {sub}
-             </span>
-        </div>
-    </div>
-);
+    );
+};
 
 export default function PedidosPage() {
     const [data, setData] = useState<any[]>([]);
@@ -46,7 +51,12 @@ export default function PedidosPage() {
     const [showModal, setShowModal] = useState(false);
     
     // Filtro activo para los KPIs
-    const [activeFilter, setActiveFilter] = useState<string>(""); 
+    const [activeFilter, setActiveFilter] = useState<string>("");
+    
+    const filteredData = useMemo(() => {
+        if (!activeFilter) return data;
+        return data.filter(p => p.estado_pedido?.toUpperCase() === activeFilter.toUpperCase());
+    }, [data, activeFilter]);
 
     // Fetch de Pedidos
     const fetchPedidos = () => {
@@ -106,20 +116,30 @@ export default function PedidosPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-950 p-6 space-y-8 animate-in fade-in duration-500">
+        <div className="min-h-screen bg-gray-250 p-6 space-y-8 animate-in fade-in duration-500">
 
             {/* HEADER */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-800 pb-6">
                 <div>
-                    <h1 className="text-3xl font-bold text-white tracking-tight flex items-center gap-3">
+                    <h1 className="text-3xl font-bold text-blue-900 tracking-tight flex items-center gap-3">
                         <Package className="w-8 h-8 text-blue-500" />
                         Gestión de Pedidos
                     </h1>
-                    <p className="text-gray-400 mt-1 text-sm ml-11">Control de despacho y flujo de caja en tiempo real.</p>
+                    <p className="text-blue-400  font-bold mt-1 text-sm ml-11">Control de despacho y flujo de caja en tiempo real.</p>
                 </div>
                 <button onClick={() => setShowModal(true)} className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-blue-900/30 transition-all flex items-center gap-2">
                     <Plus className="w-5 h-5" /> Nuevo Pedido
                 </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {filteredData.map((Pedido) =>(
+                    <CardPedido Pedido={Pedido} 
+                        onUpdate={(actualizado) => {
+                            // Opcional: Actualizar la lista local si no quieres recargar
+                            console.log("Pedido actualizado:", actualizado);
+                        }}></CardPedido>
+                    ))}
             </div>
 
             {/* SECCIÓN DE RESUMEN */}

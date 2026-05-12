@@ -1,4 +1,4 @@
-import { X, CircleDashed } from "lucide-react";
+import { X, CircleDashed, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
 import React from "react"; // Necesario para la desestructuración de props
@@ -16,22 +16,36 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, logoSrc, business
 
     const getLinkClass = (path: string) => {
         const isActive = location.pathname === path;
-        return `flex items-center gap-3 px-4 py-3 rounded-full transition-all duration-200 font-medium ${isActive
-            ? "bg-[#2179e9]/90 text-white  border-white shadow-lg "
+        return `flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 font-medium ${isActive
+            ? "bg-[#2179e9]/90 text-white shadow-lg shadow-blue-900/20"
             : "text-blue-100 hover:bg-white/5 hover:text-white"
-            }`;
+            } ${!sidebarOpen ? "justify-center px-2" : ""}`;
     };
 
     const LinkItem = ({ to, icon, label }: { to: string, icon: React.ReactNode | string, label: string }) => (
-        <Link to={to} className={getLinkClass(to)}>
-            {icon} {label}
+        <Link to={to} className={getLinkClass(to)} title={!sidebarOpen ? label : ""}>
+            <span className="text-xl shrink-0">{icon}</span>
+            {/* El texto desaparece suavemente al contraer */}
+            <AnimatePresence>
+                {sidebarOpen && (
+                    <motion.span
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -10 }}
+                        className="whitespace-nowrap overflow-hidden"
+                    >
+                        {label}
+                    </motion.span>
+                )}
+            </AnimatePresence>
         </Link>
     );
 
     // --- CÓDIGO DEL LOGO ---
     const LogoDisplay = () => (
-        <div className="flex items-center justify-center h-20 border-b border-white/10  p-3">
-            {logoSrc ? (
+        <div className={`flex items-center ${sidebarOpen ? "justify-between" : "justify-center"} h-20 border-b border-white/10  p-3 transition-all duration-300`}>
+            <div className="h-10 w-10 shrink-0 flex items-center justify-center overflow-hidden">
+              {logoSrc ? (
                 // Usamos la etiqueta <img> para mostrar el logo
                 <img 
                     src={logoSrc} 
@@ -41,7 +55,17 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, logoSrc, business
             ) : (
                 // Fallback si no hay logo
                 <h1 className="text-xl font-bold tracking-wider">{businessName}</h1>
-            )}
+            )} 
+            {sidebarOpen && (
+                <motion.h1 
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                    className="text-sm font-black tracking-tighter truncate ml-2 uppercase"
+                >
+                    {businessName}
+                </motion.h1>
+            )} 
+            </div>
+            
         </div>
     );
     // ------------------------
@@ -50,9 +74,9 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, logoSrc, business
         <>
             {/* --- DESKTOP SIDEBAR --- */}
             <aside
-                className={`hidden lg:flex flex-col fixed left-0 top-0 h-screen w-64 text-white shadow-2xl z-50 transition-transform duration-300 ease-in-out
-                ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
-                style={{ backgroundColor: '#0b1323' }} // COLOR EXACTO DE LOGO
+                className={`hidden lg:flex flex-col fixed left-0 top-0 h-screen text-white shadow-2xl z-50 transition-all duration-300 ease-in-out border-r border-white/5
+                ${sidebarOpen ? "w-64" : "w-20"}`}
+                style={{ backgroundColor: '#0b1323' }} 
             >
                 {/* Nuevo Componente de Logo */}
                 <LogoDisplay /> 
@@ -69,19 +93,31 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, logoSrc, business
                     {/* Puedes añadir más LinkItems aquí */}
                 </nav>
 
-                <div className="p-4 border-t border-white/10 text-xs text-center text-blue-200">
-                    v1.0
+                {/* Botón para contraer/expandir en Desktop */}
+                <button 
+                    onClick={() => setSidebarOpen(!sidebarOpen)}
+                    className="absolute -right-3 top-1/2 translate-y-1/2 w-6 h-6 bg-blue-600 hover:bg-blue-500 rounded-full flex items-center justify-center shadow-xl border border-white/20 z-[60] transition-transform active:scale-90"
+                >
+                    {sidebarOpen ? <ChevronLeft size={14} className="text-white" /> : <ChevronRight size={14} className="text-white" />}
+                </button>
+
+                <div className="p-4 border-t border-white/5">
+                    <div className={`flex items-center justify-center bg-white/5 rounded-xl py-2 transition-all ${!sidebarOpen ? 'px-0' : 'px-4'}`}>
+                         <span className="text-[10px] font-black text-blue-400">
+                            {sidebarOpen ? "V 1.0.4" : "1.0"}
+                         </span>
+                    </div>
                 </div>
             </aside>
 
             {/* --- MOBILE SIDEBAR --- */}
             <AnimatePresence>
                 {sidebarOpen && (
-                    <>
+                    <div className="lg:hidden">
                         <motion.div
                             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                             onClick={() => setSidebarOpen(false)}
-                            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+                            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40"
                         />
 
                         <motion.aside
@@ -107,7 +143,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, logoSrc, business
                                 {/* Añade el resto de enlaces si son necesarios */}
                             </nav>
                         </motion.aside>
-                    </>
+                    </div>
                 )}
             </AnimatePresence>
         </>

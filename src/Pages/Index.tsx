@@ -104,7 +104,7 @@ export default function IndexPage() {
             </header>
  
             {/* 2. GRID DE NAVEGACIÓN */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <AnimatedKpiCard
                 titulo="Total Pedidos"
                 value={loading ? "Cargando..." : totalPedidosSemana}
@@ -130,7 +130,7 @@ export default function IndexPage() {
                  colorPrincipal="#5db8c3"
                  colorSecundario="#3b5bc6" />
 
-                 <div className="w-full h-100 ">
+                 <div className="w-full h-full ">
                         {loading ? (
                             <span className="text-blue-400 animate-pulse">Cargando gráfica...</span>
                         ) : (
@@ -161,7 +161,7 @@ export default function IndexPage() {
             </div>
 
             {/* 3. SECCIÓN DE ANÁLISIS Y GRÁFICAS */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 
                 {/* Gráfica Grande */}
                 <div className="lg:col-span-2 bg-gray-900 p-6 rounded-2xl shadow-lg border border-gray-800">

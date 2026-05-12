@@ -1,6 +1,6 @@
 import { useMemo, createContext, useContext, useState } from "react"
 import { RadialBar, RadialBarChart, ResponsiveContainer, Legend,
-  Sector, PolarAngleAxis, } from 'recharts';
+  Sector, PolarAngleAxis, Tooltip } from 'recharts';
 
 
 interface datosPlatillos {
@@ -26,19 +26,38 @@ const SelectedLabelContext = createContext<{
   setSelectedLabel: () => {},
 });
 
+
+const CustomTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+        const info = payload[0].payload;
+        return (
+            <div className="bg-gray-800 text-white p-2 px-3 rounded-lg shadow-xl border border-gray-700 text-xs animate-in fade-in zoom-in duration-200">
+                <p className="font-bold text-blue-400">{info.nombre_platillo}</p>
+                <p className="flex justify-between gap-4">
+                    <span>Ventas:</span>
+                    <span className="font-mono text-green-400">{info.value} und.</span>
+                </p>
+                {info.name && <p className="text-[10px] text-gray-400 mt-1 italic">{info.name}</p>}
+            </div>
+        );
+    }
+    return null;
+};
+
 // Componente para la forma de la barra (Sector personalizado)
 const Sectorpersonalizado = (props: any) => {
   const { selectedLabel, setSelectedLabel } = useContext(SelectedLabelContext);
   const isSelected = props.payload.nombre_platillo === selectedLabel || selectedLabel == null; //foco:platillo
-
+  const isHovered = props.active; 
+  
   return (
     <Sector
       {...props}
       className="cursor-pointer outline-none"
       onClick={() => setSelectedLabel(props.payload.nombre_platillo)}
       fill={color[props.index % color.length]}
-      opacity={isSelected ? 1 : 0.2}
-      style={{ transition: 'opacity 0.3s ease' }}
+      opacity={ isHovered ? 1:  (isSelected ? 0.8 : 0.2)}
+      style={{ transition: 'all 0.3s ease' }}
     />
   );
 };
@@ -93,6 +112,9 @@ export default function GraficoRadioplatillos({data}: datosPlatillosProps){
               angleAxisId={0}
               tick={false}
             />
+
+            {/* EL TOOLTIP: Es lo que hace aparecer el nombre al pasar el mouse */}
+              <Tooltip content={<CustomTooltip />} cursor={false} />
             
             <RadialBar
               background={{ fill: '#f3f4f6' }}
@@ -108,18 +130,23 @@ export default function GraficoRadioplatillos({data}: datosPlatillosProps){
               align="right"
               wrapperStyle={{ paddingLeft: '20px' }}
               content={({ payload }) => (
-                <ul className="text-[12px] font-medium list-none p-0">
+                <ul className="text-[11px] font-semibold list-none p-0 ml-4">
                   {payload?.map((entry: any, index) => {
                     const isSelected = selectedLabel === entry.payload.nombre_platillo || selectedLabel == null;
                     return (
                       <li
                         key={`item-${index}`}
                         className="flex items-center gap-2 mb-2 cursor-pointer transition-opacity duration-300"
-                        style={{ opacity: isSelected ? 1 : 0.3, color: entry.color }}
+                        style={{ opacity: isSelected ? 1 : 0.3, transform: isSelected? 'scale(1.05)': 'scale(1)' }}
                         onClick={() => setSelectedLabel(entry.payload.nombre_platillo === selectedLabel ? undefined : entry.payload.nombre_platillo)}
                       >
-                        <span className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color }} />
-                        {entry.value}
+                        <div 
+                          className="w-2.5 h-2.5 rounded-full shadow-sm" 
+                          style={{ backgroundColor: entry.color }} 
+                         />
+                        <span className="text-gray-700 truncate max-w-[100px]"/>
+                        {entry.payload.nombre_platillo}
+
                       </li>
                     );
                   })}

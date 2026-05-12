@@ -1,4 +1,4 @@
-import { ChartNoAxesColumnIcon } from "lucide-react";
+//import { ChartNoAxesColumnIcon } from "lucide-react";
 import { useState, useEffect } from "react";
 
 interface Cliente {
