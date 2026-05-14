@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { FileText, ClipboardList } from "lucide-react";
 
 // Interfaces para los datos que cargamos
 interface ClienteOption {
@@ -20,6 +21,8 @@ interface FormularioNuevoPedidoProps {
   onClose: () => void;
   onSave: () => void; // Para recargar la tabla al guardar
 }
+
+type TipoRegistro = "Orden" | "Contrato";
 
 //interface MesaOption { numero_mesa: string; estado: string; }
 
@@ -135,22 +138,38 @@ export default function FormularioNuevoPedido({ onClose, onSave }: FormularioNue
 
   // Calcular total visual
   const totalEstimado = items.reduce((acc, item) => acc + item.cantidad * item.precio_unitario, 0);
-
+  const [tipo, setTipo] = useState<TipoRegistro>("Orden");
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 overflow-hidden rounded-xl"> 
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
-      <div className="bg-gray-800 rounded-xl shadow-2xl overflow-y-auto max-h-[90vh]"> {/*"bg-gray-800 text-white w-full max-w-2xl rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"*/}
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+      <div className="bg-slate-900 rounded-3xl text-white max-w-4xl w-full border border-slate-700 shadow-2xl overflow-hidden flex flex-col md:flex-row">
+      {/*<div className="bg-gray-800 rounded-xl shadow-2xl overflow-y-auto max-h-[90vh]">*/} {/*"bg-gray-800 text-white w-full max-w-2xl rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"*/}
         
-        {/* Header */}
-        <div className="bg-gray-900 p-4 border-b border-gray-700 flex justify-between items-center">
-          <h2 className="text-xl font-bold text-green-400">Nuevo Pedido</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-white">✕</button>
-        </div>
+      
 
         {/*Columna 1*/}
-        <div className="lg:col-span-7 p-6 bg-gray-800 overflow-y-auto max-h-[80vh]">
+        <div className="p-8 flex-1 border-r border-slate-800">
          {/* Form Body - Scrollable */}
         <div className="lg:col-span-7 p-6 overflow-y-auto custom-scrollbar">
+          <header className="mb-6">
+            <h2 className="text-2xl font-black text-white uppercase tracking-tighter">Facturacion</h2>
+            <p className="text-slate-400 text-sm">Selecciona el tipo de facturación manual</p>
+          </header>
+
+          {/* SELECTOR DE TIPO */}
+          <div className="flex gap-2 p-1 bg-slate-950 rounded-2xl mb-8">
+            <button 
+              onClick={() => setTipo("Orden")}
+              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold transition-all ${tipo === "Orden" ? "bg-blue-600 text-white shadow-lg" : "text-slate-500 hover:text-slate-300"}`}
+            >
+              <ClipboardList size={18} /> Orden
+            </button>
+            <button 
+              onClick={() => setTipo("Contrato")}
+              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold transition-all ${tipo === "Contrato" ? "bg-blue-400 text-white shadow-lg" : "text-slate-500 hover:text-slate-300"}`}
+            >
+              <FileText size={18} /> Contrato
+            </button>
+          </div>
           <form id="form-pedido" onSubmit={handleSubmit} className="space-y-6">
             
             {/* Fila 1: Cliente y Fecha */}
@@ -240,24 +259,18 @@ export default function FormularioNuevoPedido({ onClose, onSave }: FormularioNue
                         value={item.precio_unitario}
                         onChange={(e) => handleChangeItem(index, "precio_unitario", Number(e.target.value))}
                       />
-                    </div>
-
-                    {/* Botón Eliminar */}
-                    {items.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveItem(index)}
-                        className="bg-red-900/50 hover:bg-red-600 text-red-200 hover:text-white px-2 py-1 rounded text-xs transition-colors h-[30px]"
-                        title="Quitar fila"
-                      >
-                        ✕
-                      </button>
-                    )}
+                    </div>     
                   </div>
                 ))}
               </div>
             </div>
-
+              {/* Botón Eliminar y generar */}
+              <div className="flex gap-3 pt-6">
+              <button type="button" onClick={onClose} className="flex-1 py-4 rounded-2xl bg-slate-800 hover:bg-slate-700 font-bold transition-colors">Cerrar</button>
+              <button type="submit" disabled={loading} className={`flex-[2] py-4 rounded-2xl font-black transition-all ${tipo === "Orden" ? "bg-blue-600 hover:bg-blue-500" : "bg-blue-400 hover:bg-blue-300"}`}>
+                {loading ? "PROCESANDO..." : `Generar ${tipo}`}
+              </button>
+            </div>
           </form>
         </div> 
         </div>
@@ -286,29 +299,8 @@ export default function FormularioNuevoPedido({ onClose, onSave }: FormularioNue
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="bg-gray-900 p-4 border-t border-gray-700 flex justify-between items-center">
-          <div className="flex ml-auto gap-3 ">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 rounded-lg text-gray-300 hover:bg-gray-800 transition-colors"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              form="form-pedido"
-              disabled={loading}
-              className={`px-6 py-2 rounded-lg font-bold text-white transition-all 
-                ${loading ? "bg-gray-600 cursor-wait" : "bg-green-600 hover:bg-green-500 shadow-lg shadow-green-900/20"}`}
-            >
-              {loading ? "Guardando..." : "Crear Pedido"}
-            </button>
-          </div>
-        </div>
-
       </div>
     </div>
-    </div>
+  
   );
 }

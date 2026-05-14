@@ -9,7 +9,7 @@ export default function ComedorPage() {
   const tieneMesas = mesas.length > 0;
 
   return (
-    <div className="p-8 bg-blue-900/70 min-h-screen text-slate-200 border rounded-xl">
+    <div className="p-8 bg-slate-900/70 min-h-screen text-slate-200 border rounded-xl">
       {/* HEADER ESTATICO */}
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
         <div className="flex items-center gap-4">

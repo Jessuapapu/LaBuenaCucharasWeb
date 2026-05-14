@@ -56,56 +56,61 @@ export default function ModalNuevoPlatillo({ onClose, onSave }: ModalNuevoPlatil
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        
-        if (!nombre.trim() || !categoria.trim()) {
-            alert("Por favor completa el nombre y selecciona una categoría.");
-            return;
+    e.preventDefault();
+    
+    if (!nombre.trim() || !categoria.trim() || !precio) {
+        alert("Por favor completa todos los campos obligatorios.");
+        return;
+    }
+
+    setLoading(true);
+
+    try {
+        // Crear el platillo
+        const platilloRes = await fetch("http://127.0.0.1:8001/platillos/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                nombre_platillo: nombre,
+                nombre_categoria: categoria,
+                precio: parseFloat(precio)
+            }),
+        });
+
+        if (!platilloRes.ok) {
+            const errorData = await platilloRes.json();
+            throw new Error(errorData.detail || "Error al crear el platillo.");
         }
+        
+        const platilloData = await platilloRes.json();
 
-        setLoading(true);
+        // Subir la imagen si existe
+        if (imageFile) {
+            const imageFormData = new FormData();
+            // lo que espera
+            imageFormData.append("file", imageFile); 
 
-        const payload = {
-            nombre_platillo: nombre,
-            nombre_categoria: categoria
-        };
-
-        const formData = new FormData();
-        formData.append("nombre_platillo", nombre);
-        formData.append("nombre_categoria", categoria);
-        formData.append("precio", precio);
-        if (imageFile) formData.append("imagen", imageFile);
-
-        try {
-            const response = await fetch("http://127.0.0.1:8001/platillos/", {
+            // Usamos el nombre que el usuario escribió (ya validado por el backend)
+            const imgRes = await fetch(`http://127.0.0.1:8001/imagenes/${encodeURIComponent(nombre)}`, {
                 method: "POST",
-                /*headers: {
-                    "Content-Type": "application/json",
-                },*/
-                body: formData, //para que lo detecte
+                body: imageFormData,
             });
 
-            if (!response.ok) {
-                throw new Error("Error al crear el platillo en el servidor.");
+            if (!imgRes.ok) {
+                alert("Platillo creado, pero la imagen no se pudo subir. Podrás editarla más tarde.");
             }
-
-            const data = await response.json();
-            
-            // CORRECCIÓN: Llamamos a onSave en lugar de reload() para que React actualice el estado
-            // Si prefieres recargar la página, puedes poner window.location.reload() aquí, 
-            // pero debes mantener la prop onSave en la interfaz o quitarla del padre.
-            // Lo ideal en React es esto:
-            onSave(data.nombre_platillo ? data : payload); 
-            
-            onClose();
-
-        } catch (error) {
-            console.error(error);
-            alert("Hubo un error al guardar el platillo.");
-        } finally {
-            setLoading(false); 
         }
-    };
+
+        onSave(platilloData); 
+        onClose();
+
+    } catch (error: any) {
+        console.error(error);
+        alert(error.message || "Hubo un error al procesar el registro.");
+    } finally {
+        setLoading(false); 
+    }
+};
 
     return (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 animate-in fade-in duration-300">
