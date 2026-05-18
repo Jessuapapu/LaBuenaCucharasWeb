@@ -40,7 +40,10 @@ export default function ModalEditarFactura({ factura, onClose, onSave }: ModalEd
       const response = await fetch(`http://127.0.0.1:8001/pedidos/facturas/${factura.id_pedido}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          estado_factura: payload.estado_factura,
+          monto_total: payload.monto_total
+        }),
       });
 
       if (!response.ok) throw new Error("Error al actualizar");

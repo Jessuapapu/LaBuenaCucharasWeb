@@ -29,19 +29,19 @@ export default function CalendarioPlatillo({ dataInicial }: CalendarioProps) {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [selectedMenu, setSelectedMenu] = useState<MenuDia | null>(null);
 
-    // 1. Sincronizar data de la API con el estado visual del calendario
+    //Sincronizar data de la API con el estado visual del calendario
     useEffect(() => {
         if (dataInicial && dataInicial.length > 0) {
             const mapeado = dataInicial.map(item => ({
-                id: item.id, // O el nombre que use tu API (id_menu, etc)
-                dia: item.Fecha, // Ajustar según el JSON de tu API
+                id: item.id, 
+                dia: item.Fecha,
                 nombre_platillo: item.NombrePlatillo
             }));
             setMenuSemanal(mapeado);
         }
     }, [dataInicial]);
 
-    // 2. Cargar catálogo de platillos para el selector rápido
+    //Cargar catálogo de platillos para el selector rápido
     useEffect(() => {
         fetch("http://127.0.0.1:8001/platillos/")
             .then(res => res.json())
@@ -49,11 +49,11 @@ export default function CalendarioPlatillo({ dataInicial }: CalendarioProps) {
             .catch(err => console.error("Error cargando platillos:", err));
     }, []);
 
-    // 3. Función para asignar rápido (puedes convertirla a POST si quieres que guarde al instante)
+    //Función para asignar rápido (puedes convertirla a POST si quieres que guarde al instante)
     const asignarPlatilloRapido = async (dia: string, nombrePlatillo: string) => {
         if (!nombrePlatillo) return;
         
-        // Payload para tu API
+        // Payload 
         const payload = { day: dia, nombre_platillo: nombrePlatillo };
 
         try {
@@ -122,7 +122,6 @@ export default function CalendarioPlatillo({ dataInicial }: CalendarioProps) {
                                         <button onClick={() => setSelectedMenu(m)} className="text-gray-400 hover:text-blue-400 p-0.5">
                                             <Edit2 size={14} />
                                         </button>
-                                        {/* Aquí podrías agregar una función de DELETE a tu API */}
                                     </div>
                                 </div>
                             ))}

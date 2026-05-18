@@ -2,7 +2,7 @@ import { useState } from "react";
 
 // 1. Actualizamos la interfaz para coincidir con la del padre
 interface Platillo {
-  id?: number | string; // Opcional, por si lo usas
+  id?: number | string; // Opcional
   nombre_platillo: string;
   nombre_categoria: string;
 }

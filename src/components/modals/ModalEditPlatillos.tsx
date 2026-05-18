@@ -50,38 +50,53 @@ export default function ModalEditPlatillo({ platillo, onClose, onSave }: ModalEd
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
+    e.preventDefault();
+    // Validación básica antes de enviar
+    if (!nombre.trim() || parseFloat(precio) <= 0) {
+        alert("Datos inválidos");
+        return;
+    }
+    setLoading(true);
 
-        const formData = new FormData();
-        formData.append("nombre_platillo", nombre);
-        formData.append("nombre_categoria", categoria);
-        formData.append("precio", precio);
-        
-        // Solo enviamos la imagen si el usuario seleccionó una nueva
-        if (imageFile) {
-            formData.append("imagen", imageFile);
+    const formData = new FormData();
+    // Enviamos los datos básicos
+    formData.append("nombre_platillo", nombre);
+    formData.append("nombre_categoria", categoria);
+    formData.append("precio", precio);
+    
+    // Solo enviamos el archivo si realmente hay uno nuevo seleccionado
+    if (imageFile) {
+        formData.append("file", imageFile); 
+    }
+
+    // Avisar si se eliminó la imagen actual y no se subió una nueva
+    if (!imagePreview && !imageFile && platillo.imagen_url) {
+        formData.append("eliminar_imagen", "true");
+    }
+
+    try {
+        // Usamos el ID original para que el backend sepa qué editar
+        // aunque el nombre haya cambiado.
+        const response = await fetch(`http://127.0.0.1:8001/platillos/${platillo.id_platillo}`, {
+            method: "PUT", 
+            body: formData,
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(errorText || "Error al actualizar");
         }
 
-        try {
-            // Asumimos que el endpoint usa el nombre o un ID para el PUT
-            const response = await fetch(`http://127.0.0.1:8001/platillos/${platillo.id_platillo || platillo.nombre_platillo}`, {
-                method: "PUT", 
-                body: formData,
-            });
-
-            if (!response.ok) throw new Error("Error al actualizar");
-
-            const data = await response.json();
-            onSave(data);
-            onClose();
-        } catch (error) {
-            console.error(error);
-            alert("Hubo un error al actualizar el platillo.");
-        } finally {
-            setLoading(false);
-        }
-    };
+        const data = await response.json();
+        onSave(data);
+        onClose();
+    } catch (error: any) {
+        console.error(error);
+        alert(`Error: ${error.message}`);
+    } finally {
+        setLoading(false);
+    }
+};
 
     return (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 animate-in fade-in duration-300">

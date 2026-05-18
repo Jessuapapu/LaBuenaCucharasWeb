@@ -13,13 +13,13 @@ export default function RegistrosPage() {
     //Ejecuta paralelamente
     Promise.all([
       fetch("http://127.0.0.1:8001/bodega/"),
-      fetch("http://127.0.0.1:8001/ingredientes"), 
+      fetch("http://127.0.0.1:8001/ingredientes"), //falta enrutamiento
       fetch("http://127.0.0.1:8001/insumos")
     ])
       .then(async ([resBodega, resIng, resPrio]) => {
-        const jsonBodega = await resBodega.json();
+        const jsonBodega = await resBodega.json(); //Cuanto entro y salio
         const jsonIng = await resIng.json();
-        const jsonPrio = await resPrio.json();
+        const jsonPrio = await resPrio.json(); //Prioridad de insumos
 
         setData(jsonBodega);
 
