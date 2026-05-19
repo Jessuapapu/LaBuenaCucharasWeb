@@ -47,11 +47,11 @@ const Calendario: React.FC<MenuProps>= ({Datos})=>{
         ...Array.from({ length: diasEnMes }, (_, i) => i + 1)
     ];
 
-    const obtenerPlatilloDia = (dia: number) => {
-        if (!dia) return null;
+    const obtenerPlatilloDia = (dia: number): Menu[] => {
+        if (!dia) return[];
         // Formateamos el día para que coincida con el formato YYYY-MM-DD de la API
         const fechaStr = `${Anio}-${String(meses + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
-        return Datos.find(item => item.Fecha === fechaStr);
+        return Datos.filter(item => item.Fecha === fechaStr);
     };
 
     const manejarClickDia = (dia: number) => {
@@ -86,13 +86,13 @@ const Calendario: React.FC<MenuProps>= ({Datos})=>{
             {/* Cuadrícula de días */}
             <div className="grid grid-cols-7 gap-2">
                 {celdas.map((dia, idx) => {
-                    const infoMenu = dia ? obtenerPlatilloDia(dia) : null;
+                    const infoMenu = dia ? obtenerPlatilloDia(dia) : [];
                     const esHoy = dia === diaHoy.getDate() && meses=== diaHoy.getMonth() && Anio=== diaHoy.getFullYear();
 
                     return (
                         <div 
                             key={idx}
-                            onClick={() => dia && !infoMenu && manejarClickDia(dia)} 
+                            onClick={(e) => {if (dia && e.target === e.currentTarget) manejarClickDia(dia)}} 
                             className={`min-h-[100px] rounded-xl border p-2 transition-all flex flex-col justify-between
                                 ${!dia ? 'bg-transparent border-transparent' : 'bg-gray-800/40 border-gray-800 hover:border-gray-600'}
                                 ${esHoy ? 'ring-2 ring-blue-500/50 border-blue-500/50' : ''}
@@ -104,35 +104,43 @@ const Calendario: React.FC<MenuProps>= ({Datos})=>{
                                         <span className={`text-sm font-medium ${esHoy ? 'text-blue-400' : 'text-gray-400'}`}>
                                             {dia}
                                         </span>
-                                        {!infoMenu && (
                                             <button 
-                                                onClick={() => setShowCreateModal(true)}
+                                                onClick={(e) =>{ e.stopPropagation(); manejarClickDia(dia)}}
                                                 className="opacity-0 group-hover:opacity-100 p-1 hover:bg-gray-700 rounded text-gray-500"
                                             >
                                                 <Plus size={12} />
                                             </button>
-                                        )}
                                     </div>
 
-                                    {infoMenu ? (
-                                        <div className="mt-1 bg-blue-600/20 border border-blue-500/30 p-2 rounded-lg relative group">
-                                            <p className="text-[10px] text-blue-200 font-semibold leading-tight line-clamp-2">
-                                                {infoMenu.NombrePlatillo}
-                                            </p>
-                                            <button 
-                                                onClick={() => setSelectedMenu(infoMenu)}
-                                                className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 bg-blue-600 p-1 rounded shadow-lg transition-opacity"
-                                            >
-                                                <Edit2 size={10} className="text-white" />
-                                            </button>
-                                        </div>
-                                    ) : (
-                                        dia && (
-                                            <div className="flex-1 flex items-center justify-center opacity-10">
+                                    <div className="flex-1 space-y-1 overflow-y-auto max-h-[80px] custom-scrollbar">
+                                            {infoMenu.length > 0 ?(
+                                                infoMenu.map((platillo) => (
+                                                <div 
+                                                    key={platillo.idplatillo} 
+                                                    className="bg-blue-600/20 border border-blue-500/30 p-1 px-2 rounded-md relative group/item flex items-center justify-between"
+                                                >
+                                                    <p className="text-[10px] text-blue-200 font-medium leading-tight truncate pr-4">
+                                                        {platillo.NombrePlatillo}
+                                                    </p>
+                                                    <button 
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setSelectedMenu(platillo);
+                                                        }}
+                                                        className="absolute right-1 opacity-0 group-hover/item:opacity-100 bg-blue-600 p-0.5 rounded shadow-lg transition-opacity"
+                                                    >
+                                                        <Edit2 size={8} className="text-white" />
+                                                    </button>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            /* Icono decorativo de cubiertos si está completamente vacío */
+                                            <div className="h-full flex items-center justify-center opacity-5 mt-2">
                                                 <Utensils size={16} className="text-white" />
                                             </div>
-                                        )
-                                    )}
+                                        )}   
+                                    </div>
+                                    
                                 </>
                             )}
                         </div>
@@ -141,7 +149,7 @@ const Calendario: React.FC<MenuProps>= ({Datos})=>{
             </div>
             {/* Modales */}
             {showCreateModal && (
-                <ModalNuevoMenu onClose={() => setShowCreateModal(false)} />
+                <ModalNuevoMenu fecha={fechaSeleccionada} onClose={() => setShowCreateModal(false)} />
             )}
 
             {selectedMenu && (

@@ -26,20 +26,24 @@ export default function RegistrosPage() {
         // --- NORMALIZACIÓN DE DATOS ---
         const alerts = [
           ...jsonIng.map((i: any) => ({
-            id: `ing-${i.id}`,
-            nombre: i.nombre_ingrediente,
+            id: `ing-${i.id || i.IdIngrediente}`,
+            nombre: i.nombre_ingrediente || i.NombreIngrediente,
             tipo: "Ingrediente",
-            actual: i.cantidad,
-            minimo: i.stock_minimo
+            actual: Number(i.cantidad || i.Cantidad || 0),
+            minimo: Number(i.stock_minimo || i.StockMinimo)
           })),
-          ...jsonPrio.map((p: any) => ({
-            id: `prio-${p.id}`,
+          ...jsonPrio.map((p: any) => {
+            const prioridadStr= String(p.Prioridad).toUpperCase();
+            return{
+              id: `ins-${p.id || p.IdInsumo}`,
             nombre: p.nombreinsumo,
-            tipo: "Prioridad",
-            // Convertimos el string "True"/"False" a booleano real
-            actual: String(p.prioridad).toLowerCase() === "true", 
+            tipo: `Insumo - Prioridad ${prioridadStr}`,
+            // Muestra la prioridad como alerta visual
+            actual: prioridadStr === "ALTA" ? 0 : prioridadStr === "MEDIA" ? 15 : 30, 
             minimo: 30 // Valor base para la gráfica
-          }))
+            }
+            
+          })
         ];
         
         setStockAlerts(alerts);

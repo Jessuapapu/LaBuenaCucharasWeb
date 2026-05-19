@@ -1,11 +1,15 @@
 import { useState } from "react";
-import { FileText, ClipboardList, User, DollarSign, Package } from "lucide-react";
+import { FileText, ClipboardList, DollarSign, Package } from "lucide-react";
 import { useFactura } from "../Hooks/hookFacturas";
 
 interface PedidosOrdenes{
   //id_pedidoOrden: number;
   id_Pedido: number;
   id_Orden: number;
+}
+interface ClienteOption {
+    nombre: string;
+    [key: string]: any; 
 }
 
 interface ModalNuevaFacturaProps {
@@ -19,6 +23,8 @@ type TipoRegistro = "Orden" | "Contrato";
 export default function ModalNuevaFactura({ onClose, onSave }: ModalNuevaFacturaProps) {
   const [tipo, setTipo] = useState<TipoRegistro>("Orden");
   const [idPedido, setIdPedido] = useState<number | "">("");
+  const [listaClientes, setListaClientes] = useState<ClienteOption[]>([]);
+  const [nombreCliente, setNombreCliente] = useState(""); 
 
   //Utilizando el hook
   const {
@@ -80,13 +86,27 @@ export default function ModalNuevaFactura({ onClose, onSave }: ModalNuevaFactura
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
-              <div className="col-span-2">
-                <label className="text-xs font-bold text-slate-500 uppercase ml-1">Nombre del Cliente</label>
-                <div className="relative">
-                  <User className="absolute left-3 top-3 text-slate-500" size={18} />
-                  <input type="text" className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-950 border border-slate-800 focus:border-blue-500 outline-none" value={facturaData.nombreCliente} onChange={e => setFacturaData(prev=>({...prev, nombreCliente:e.target.value}))} required placeholder="Ej: Juan Pérez" />
-                </div>
-              </div>
+              <div>
+                  <label className="block text-sm text-gray-300 mb-1">Cliente</label>
+                    <div className="relative">
+                      <select 
+                        className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white outline-none focus:border-blue-500 appearance-none cursor-pointer"
+                        value={nombreCliente} 
+                        onChange={(e) => setNombreCliente(e.target.value)} 
+                        required
+                      >
+                      <option value="">-- Seleccionar Cliente --</option>
+                        {listaClientes.map((c, i) => (
+                          <option key={i} value={c.nombre}>
+                            {c.nombre}
+                          </option>
+                            ))}
+                      </select>
+                            <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none text-gray-400">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"></path></svg>
+                            </div>
+                        </div>
+                    </div>
 
               <div>
                 <label className="text-xs font-bold text-slate-500 uppercase ml-1">ID {tipo}</label>

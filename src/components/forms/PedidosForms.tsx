@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FileText, ClipboardList } from "lucide-react";
+import { FileText, ClipboardList, Trash2 } from "lucide-react";
 
 // Interfaces para los datos que cargamos
 interface ClienteOption {
@@ -94,12 +94,11 @@ export default function FormularioNuevoPedido({ onClose, onSave }: FormularioNue
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!cliente || items.length === 0) {
-      alert("Debes seleccionar un cliente, mesa y al menos un platillo.");
+      alert("Debes seleccionar un cliente y al menos un platillo.");
       return;
     }
 
     setLoading(true);
-
 
     const payload = {
       nombre_cliente: cliente,
@@ -151,8 +150,8 @@ export default function FormularioNuevoPedido({ onClose, onSave }: FormularioNue
          {/* Form Body - Scrollable */}
         <div className="lg:col-span-7 p-6 overflow-y-auto custom-scrollbar">
           <header className="mb-6">
-            <h2 className="text-2xl font-black text-white uppercase tracking-tighter">Facturacion</h2>
-            <p className="text-slate-400 text-sm">Selecciona el tipo de facturación manual</p>
+            <h2 className="text-2xl font-black text-white uppercase tracking-tighter">Pedido</h2>
+            <p className="text-slate-400 text-sm">Selecciona el tipo de pedido manual</p>
           </header>
 
           {/* SELECTOR DE TIPO */}
@@ -259,7 +258,15 @@ export default function FormularioNuevoPedido({ onClose, onSave }: FormularioNue
                         value={item.precio_unitario}
                         onChange={(e) => handleChangeItem(index, "precio_unitario", Number(e.target.value))}
                       />
-                    </div>     
+                    </div>  
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveItem(index)}
+                      className="p-1.5 rounded bg-red-950/40 border border-red-800 text-red-400 hover:bg-red-900/60 transition-colors mb-[2px]"
+                      title="Eliminar platillo"
+                    >
+                      <Trash2 size={16} />
+                    </button>   
                   </div>
                 ))}
               </div>

@@ -132,7 +132,35 @@ export default function PedidosPage() {
                 </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            <div className="grid grid-cols-4 gap-4">
+                <KpiCard
+                    title="Ingresos Totales (Neto)" value={formatMoney(kpis.ingresos)} sub="Excluye anulados" color="emerald" borderColor="emerald" 
+                    icon={<DollarSign className="w-6 h-6" />} 
+                    onClick={() => handleFilterClick("")} 
+                    isActive={false}
+                 />
+                 <KpiCard 
+                        title="Pedidos Totales" value={kpis.totalPedidos} sub="Ver todos" color="blue" borderColor="blue"
+                        icon={<Package className="w-6 h-6" />}
+                        onClick={() => handleFilterClick("")} 
+                        isActive={activeFilter === ""}
+                    />
+                 <KpiCard 
+                    title="Pendientes" value={kpis.pendientes} sub="Filtrar" color="yellow" borderColor="yellow"
+                    icon={<Clock className="w-6 h-6" />}
+                    onClick={() => handleFilterClick("PENDIENTE")}
+                    isActive={activeFilter === "PENDIENTE"}
+                />
+                <KpiCard 
+                    title="Entregados" value={kpis.entregados} sub="Filtrar" color="purple" borderColor="purple"
+                    icon={<CheckCircle className="w-6 h-6" />}
+                    onClick={() => handleFilterClick("ENTREGADO")}
+                    isActive={activeFilter === "ENTREGADO"}
+                />
+                
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {filteredData.map((Pedido) =>(
                     <CardPedido Pedido={Pedido} 
                         onUpdate={(actualizado) => {
@@ -144,38 +172,6 @@ export default function PedidosPage() {
 
             {/* SECCIÓN DE RESUMEN */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                
-                {/* Columna Izquierda: Tarjetas de Métricas (CLICKABLES) */}
-                <div className="lg:col-span-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
-                    <KpiCard 
-                        title="Ingresos Totales (Neto)" value={formatMoney(kpis.ingresos)} sub="Excluye anulados" color="emerald" borderColor="emerald" 
-                        icon={<DollarSign className="w-6 h-6" />} 
-                        onClick={() => handleFilterClick("")} 
-                        isActive={false} 
-                    />
-                    
-                    <KpiCard 
-                        title="Pedidos Totales" value={kpis.totalPedidos} sub="Ver todos" color="blue" borderColor="blue"
-                        icon={<Package className="w-6 h-6" />}
-                        onClick={() => handleFilterClick("")} 
-                        isActive={activeFilter === ""}
-                    />
-                    
-                     <div className="grid grid-cols-2 gap-4">
-                        <KpiCard 
-                            title="Pendientes" value={kpis.pendientes} sub="Filtrar" color="yellow" borderColor="yellow"
-                            icon={<Clock className="w-6 h-6" />}
-                            onClick={() => handleFilterClick("PENDIENTE")}
-                            isActive={activeFilter === "PENDIENTE"}
-                        />
-                        <KpiCard 
-                            title="Entregados" value={kpis.entregados} sub="Filtrar" color="purple" borderColor="purple"
-                            icon={<CheckCircle className="w-6 h-6" />}
-                            onClick={() => handleFilterClick("ENTREGADO")}
-                            isActive={activeFilter === "ENTREGADO"}
-                        />
-                     </div>
-                </div>
 
                 {/* Gráfica */}
                 <div className="lg:col-span-2 bg-gray-900 border border-gray-800 rounded-2xl p-6 shadow-lg flex flex-col">
