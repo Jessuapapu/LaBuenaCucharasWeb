@@ -26,7 +26,7 @@ export default function ModalNuevoMenu({ onClose, fecha, Monto }: ModalNuevoMenu
     // Estado del formulario
     // Inicializamos la fecha con el día de hoy
     const [fechadia, setFecha] = useState( fecha || new Date().toISOString().split("T")[0]);
-    const [nombrePlatillo, setNombrePlatillo] = useState("");
+    //const [nombrePlatillo, setNombrePlatillo] = useState("");
     const [Precio, setprecio]= useState<number | string>(Monto !== undefined ? Monto: "") 
     const [items, setItems]= useState<DetalleItem[]>([
     { nombre_platillo: "", cantidad: 1, precio_unitario: 0 },

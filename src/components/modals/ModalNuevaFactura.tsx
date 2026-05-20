@@ -154,21 +154,28 @@ export default function ModalNuevaFactura({ onClose, onSave }: ModalNuevaFactura
           <div className="bg-white rounded-lg p-6 text-slate-900 shadow-xl relative overflow-hidden flex-1">
             <div className={`absolute top-0 left-0 w-full h-1 ${tipo === "Orden" ? "bg-blue-500" : "bg-blue-300"}`} />
             
-            <div className="text-[10px] font-bold text-slate-400 mb-4 italic">LA BUENA CUCHARA</div>
+            <div className="text-[10px] font-bold text-slate-400 mb-4 italic"> BUFFETE LA BUENA CUCHARA</div>
+            <div className="gap-2 mb-4">
+            <p className="text-[10px] mt-1 text-slate-400 italic">Dirección: De donde fue el Cine Blanco 2 ½ c. Oeste</p>
+            <p className="text-[10px] text-slate-400 italic">E-mail: BufetteLaBuenaCuchara@hotmail.com</p>
+            <p className="text-[10px] text-slate-400 italic">Cel.: 7799-1489</p>
+            <p className="text-[10px] text-slate-400 italic">RUC: 0012308820012M</p>
+            </div>
             
-            <div className="mb-4">
+            
+            <div className="grid grid-cols-2">
               <div className="text-[8px] text-slate-500 uppercase">Cliente</div>
-              <div className="text-sm font-black break-words">{facturaData.nombreCliente || "---"}</div>
+              <div className="text-[8px] font-black break-words">{facturaData.nombreCliente || "---"}</div>
             </div>
 
             <div className="grid grid-cols-2 gap-2 mb-4">
-              <div>
+              <div className="grid grid-cols-2">
                 <div className="text-[8px] text-slate-500 uppercase">Fecha</div>
-                <div className="text-[10px] font-bold">{facturaData.Fecha}</div>
+                <div className="text-[8px] font-bold">{facturaData.Fecha}</div>
               </div>
-              <div className="text-right">
+              <div className="text-right grid grid-cols-2">
                 <div className="text-[8px] text-slate-500 uppercase">ID {tipo}</div>
-                <div className="text-[10px] font-bold">#{idPedido || "000"}</div>
+                <div className="text-[8px] font-bold">#{idPedido || "000"}</div>
               </div>
             </div>
 

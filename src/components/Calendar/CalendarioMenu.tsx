@@ -93,7 +93,8 @@ const Calendario: React.FC<MenuProps>= ({Datos})=>{
                         <div 
                             key={idx}
                             onClick={(e) => {if (dia && e.target === e.currentTarget) manejarClickDia(dia)}} 
-                            className={`min-h-[100px] rounded-xl border p-2 transition-all flex flex-col justify-between
+                            //el group relative respone al hover, asi se edita o se anade
+                            className={`min-h-[100px] rounded-xl border p-2 transition-all flex flex-col justify-between group relative
                                 ${!dia ? 'bg-transparent border-transparent' : 'bg-gray-800/40 border-gray-800 hover:border-gray-600'}
                                 ${esHoy ? 'ring-2 ring-blue-500/50 border-blue-500/50' : ''}
                             `}
@@ -104,11 +105,12 @@ const Calendario: React.FC<MenuProps>= ({Datos})=>{
                                         <span className={`text-sm font-medium ${esHoy ? 'text-blue-400' : 'text-gray-400'}`}>
                                             {dia}
                                         </span>
+                                            {/*Para agregar*/}
                                             <button 
                                                 onClick={(e) =>{ e.stopPropagation(); manejarClickDia(dia)}}
                                                 className="opacity-0 group-hover:opacity-100 p-1 hover:bg-gray-700 rounded text-gray-500"
                                             >
-                                                <Plus size={12} />
+                                                <Plus size={16}/>
                                             </button>
                                     </div>
 
@@ -122,14 +124,15 @@ const Calendario: React.FC<MenuProps>= ({Datos})=>{
                                                     <p className="text-[10px] text-blue-200 font-medium leading-tight truncate pr-4">
                                                         {platillo.NombrePlatillo}
                                                     </p>
+                                                    {/*Boton editar antes de que se me olvide*/}
                                                     <button 
                                                         onClick={(e) => {
                                                             e.stopPropagation();
-                                                            setSelectedMenu(platillo);
+                                                            setSelectedMenu(platillo); //Manda el platillo
                                                         }}
                                                         className="absolute right-1 opacity-0 group-hover/item:opacity-100 bg-blue-600 p-0.5 rounded shadow-lg transition-opacity"
                                                     >
-                                                        <Edit2 size={8} className="text-white" />
+                                                        <Edit2 size={12} className="text-white" />
                                                     </button>
                                                 </div>
                                             ))
@@ -155,7 +158,7 @@ const Calendario: React.FC<MenuProps>= ({Datos})=>{
             {selectedMenu && (
                 <ModalEditarMenu 
                     menu={{
-                        id: selectedMenu.id,
+                        id: selectedMenu.id_platillo,
                         Fecha: selectedMenu.Fecha,
                         NombrePlatillo: selectedMenu.NombrePlatillo
                     }}
