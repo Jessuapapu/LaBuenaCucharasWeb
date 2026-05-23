@@ -7,6 +7,7 @@ interface PedidosOrdenes{
   id_Pedido: number;
   id_Orden: number;
   nombreCliente: string | "";
+  Fecha: number;
 }
 interface ClienteOption {
     nombre: string;
@@ -38,7 +39,6 @@ export default function ModalNuevaFactura({ Ordenes= [], onClose, onSave }: Moda
     guardarFactura
   } = useFactura(idPedido);
 
-  // 
 
   // Filtrado predictivo de clientes en tiempo real
   const clientesFiltrados = useMemo(() => {
@@ -61,12 +61,14 @@ export default function ModalNuevaFactura({ Ordenes= [], onClose, onSave }: Moda
 
   // Cálculo matemático del precio unitario de los platillos consumidos
   const precioUnitario = useMemo(() => {
-    const total = Number(facturaData.subTotal || 0);
-    const cantidad = Number(facturaData.Cantidad || 0);
+    const total = Number(facturaData?.subTotal || 0);
+    const cantidad = Number(facturaData?.Cantidad || 0);
     return cantidad > 0 ? total / cantidad : 0;
-  }, [facturaData.subTotal, facturaData.Cantidad]);
+  }, [facturaData?.subTotal, facturaData?.Cantidad]);
+  
   const handleSeleccioncliente = (nombre: string) => {
     setBusquedaCliente(nombre);
+    setclienteSeleccionado(nombre);
     setSugerenciaCliente(false);
     setIdPedido(""); //se reseta cuaalquier seleccion previa para que elija un pedido nuevo
     setFacturaData(prev=> ({...prev, nombreCliente: nombre}))
@@ -90,28 +92,27 @@ export default function ModalNuevaFactura({ Ordenes= [], onClose, onSave }: Moda
         <div className="p-6 md:p-8 flex-1 border-b md:border-b-0 md:border-r border-slate-800 flex flex-col justify-between">
           <div>
             <header className="mb-6">
-            <h2 className="text-2xl font-black text-white uppercase tracking-tighter">Facturacion</h2>
-            <p className="text-slate-400 text-sm">Selecciona el tipo de facturación manual</p>
-          </header>
+              <h2 className="text-2xl font-black text-white uppercase tracking-tighter">Facturación</h2>
+              <p className="text-slate-400 text-sm">Selecciona el tipo de facturación manual</p>
+            </header>
 
-          {/* Alerta de error si el hook no encuentra la orden*/}
-          {error && (
-            <div className="mb-4 p-3 bg-red-950/50 border border-red-800 text-red-400 text-xs rounded-xl text-center font-semibold">
-              {error}
-            </div>
-          )}
+            {error && (
+              <div className="mb-4 p-3 bg-red-950/50 border border-red-800 text-red-400 text-xs rounded-xl text-center font-semibold">
+                {error}
+              </div>
+            )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* BUSCADOR PREDICTIVO DE CLIENTES */}
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* BUSCADOR PREDICTIVO DE CLIENTES */}
               <div className="space-y-1 relative">
                 <label className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                  <User size={12} className="text-amber-500" /> Nombre del cliente
+                  <User size={12} className="text-blue-500" /> Nombre del cliente
                 </label>
                 <div className="relative">
                   <Search className="absolute left-3.5 top-3 text-slate-500" size={16} />
                   <input
                     type="text"
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-amber-500 outline-none text-sm transition-colors text-white"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-blue-500 outline-none text-sm transition-colors text-white"
                     placeholder="Escriba el nombre para buscar..."
                     value={BusquedaCliente}
                     onChange={(e) => {
@@ -143,7 +144,7 @@ export default function ModalNuevaFactura({ Ordenes= [], onClose, onSave }: Moda
 
               {/* RECUADRO DE PEDIDOS VIGENTES ENCONTRADOS */}
               {clienteSeleccionado && (
-                <div className="bg-slate-950/60 p-4 rounded-2xl border border-slate-800/80 animate-in slide-in-from-top-2 duration-200">
+                <div className="bg-slate-950/60 p-4 rounded-2xl border border-slate-800/80">
                   <span className="text-[11px] font-bold text-amber-400 uppercase tracking-wider block mb-2.5">
                     Pedidos pendientes de {clienteSeleccionado}
                   </span>
@@ -155,17 +156,38 @@ export default function ModalNuevaFactura({ Ordenes= [], onClose, onSave }: Moda
                           key={pedido.id_Pedido}
                           type="button"
                           onClick={() => setIdPedido(pedido.id_Pedido)}
-                          className={`p-3 rounded-xl border text-left transition-all flex flex-col justify-between h-16 ${
+                          className={`p-2.5 rounded-xl border text-left transition-all flex flex-col justify-between h-20 ${
                             idPedido === pedido.id_Pedido
                               ? "bg-amber-500/20 border-amber-500 text-amber-400 shadow"
                               : "bg-slate-900 border-slate-800 hover:border-slate-700 text-slate-300"
                           }`}
                         >
+                          {/* Línea Superior: ID y Check */}
                           <div className="flex justify-between items-center w-full">
-                            <span className="text-xs font-mono font-bold">Pedido: #{pedido.id_Pedido}</span>
-                            {idPedido === pedido.id_Pedido && <Check size={14} className="text-amber-400" />}
+                            <span className="text-xs font-mono font-bold text-slate-200">
+                              #{pedido.id_Pedido}
+                            </span>
+                            {idPedido === pedido.id_Pedido ? (
+                              <Check size={14} className="text-amber-400" />
+                            ) : (
+                              /* Un pequeño texto para diferenciar el tipo de servicio si lo tienes en tu objeto */
+                              <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-slate-950 font-bold text-slate-500">
+                                {pedido.id_Orden ? "Buffet" : "Contrato"}
+                              </span>
+                            )}
                           </div>
-                          <span className="text-[10px] text-slate-400 font-medium">Orden Ref: {pedido.id_Orden}</span>
+
+                          {/* Línea Inferior: La Fecha Dinámica */}
+                          <div className="flex flex-col mt-1">
+                            <span className="text-[10px] text-amber-500 font-mono font-semibold">
+                              📅 {pedido.Fecha || "22-05-2026"} 
+                            </span>
+                            {pedido.id_Orden && (
+                              <span className="text-[9px] text-slate-500 font-medium truncate">
+                                Ref. Orden: {pedido.id_Orden}
+                              </span>
+                            )}
+                          </div>
                         </button>
                       ))}
                     </div>
@@ -185,13 +207,13 @@ export default function ModalNuevaFactura({ Ordenes= [], onClose, onSave }: Moda
                 <input 
                   type="date" 
                   className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-amber-500 outline-none text-sm transition-colors text-slate-200 font-mono" 
-                  value={facturaData.Fecha || ""} 
+                  value={facturaData?.Fecha || ""} 
                   onChange={e => setFacturaData(prev => ({ ...prev, Fecha: e.target.value }))} 
                   required 
                 />
               </div>
-
             </form>
+          </div>
 
           {/* BOTONES DE FLUJO */}
           <div className="flex gap-3 pt-6 border-t border-slate-800/60 mt-4">
@@ -205,7 +227,7 @@ export default function ModalNuevaFactura({ Ordenes= [], onClose, onSave }: Moda
             <button 
               type="button"
               onClick={handleSubmit}
-              disabled={loading || isFetching || !idPedido} 
+              disabled={loading || isFetching || !idPedido || !BusquedaCliente.trim()} 
               className={`flex-[2] py-3 rounded-xl font-black text-sm text-slate-950 tracking-wide transition-all uppercase shadow-lg
                 ${loading || isFetching || !idPedido
                   ? "bg-slate-800 text-slate-500 cursor-not-allowed shadow-none" 
@@ -214,50 +236,47 @@ export default function ModalNuevaFactura({ Ordenes= [], onClose, onSave }: Moda
               {loading ? "PROCESANDO..." : "CONFIRMAR FACTURA"}
             </button>
           </div>
-          </div>
-          </div>
         </div>
-
 
         {/* LADO DERECHO: PREVIEW VISUAL */}
         <div className="bg-slate-950 p-8 w-full md:w-80 flex flex-col">
           <h3 className="text-xs font-black text-slate-600 uppercase tracking-widest mb-6 text-center">Vista Previa Factura</h3>
           
-          <div className="bg-white rounded-lg p-6 text-slate-900 shadow-xl relative overflow-hidden flex-1">
-            
-            <div className="text-[10px] font-bold text-slate-400 mb-4 italic"> BUFFETE LA BUENA CUCHARA</div>
-            <div className="gap-2 mb-4">
-            <p className="text-[10px] mt-1 text-slate-400 italic">Dirección: De donde fue el Cine Blanco 2 ½ c. Oeste</p>
-            <p className="text-[10px] text-slate-400 italic">E-mail: BufetteLaBuenaCuchara@hotmail.com</p>
-            <p className="text-[10px] text-slate-400 italic">Cel.: 7799-1489</p>
-            <p className="text-[10px] text-slate-400 italic">RUC: 0012308820012M</p>
-            </div>
-            
-            
-            {/* Info Sincronizada */}
+          <div className="bg-white rounded-lg p-6 text-slate-900 shadow-xl relative overflow-hidden flex-1 flex flex-col justify-between">
+            <div>
+              <div className="text-[10px] font-bold text-slate-400 mb-4 italic">BUFFET LA BUENA CUCHARA</div>
+              <div className="gap-2 mb-4">
+                <p className="text-[10px] mt-1 text-slate-400 italic">Dirección: De donde fue el Cine Blanco 2 ½ c. Oeste</p>
+                <p className="text-[10px] text-slate-400 italic">E-mail: BufetteLaBuenaCuchara@hotmail.com</p>
+                <p className="text-[10px] text-slate-400 italic">Cel.: 7799-1489</p>
+                <p className="text-[10px] text-slate-400 italic">RUC: 0012308820012M</p>
+              </div>
+              
+              {/* Info Sincronizada */}
               <div className="space-y-1.5 text-[9px] font-medium text-slate-700">
                 <div className="flex justify-between items-start">
                   <span className="text-slate-400 uppercase font-bold text-[7px]">Cliente:</span>
                   <span className="font-bold text-right text-slate-900 max-w-[120px] break-words">
-                    {facturaData.nombreCliente || "---"}
+                    {facturaData?.nombreCliente || "---"}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400 uppercase font-bold text-[7px]">Fecha:</span>
-                  <span className="font-mono text-slate-900">{facturaData.Fecha || "AAAA-MM-DD"}</span>
+                  <span className="font-mono text-slate-900">{facturaData?.Fecha || "AAAA-MM-DD"}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400 uppercase font-bold text-[7px]">Orden Ref:</span>
-                  <span className="font-bold text-slate-900">#{idPedido || "000"}</span>
+                  <span className="font-bold text-slate-900">{idPedido ? `#${idPedido}` : "000"}</span>
                 </div>
               </div>
+
               <div className="border-b border-dashed border-slate-200 my-3" />
 
-              {/* Detalle Unitario en Ticket */}
+              {/* Detalle Unitario en Ticket CORREGIDO: facturaData.Cantidad */}
               <div className="text-[9px] space-y-1 text-slate-600 bg-slate-50 p-2 rounded border border-slate-100">
                 <div className="flex justify-between">
                   <span>Cant. Platos:</span>
-                  <span className="font-bold text-slate-900">{facturaData.subTotal || 0} U</span>
+                  <span className="font-bold text-slate-900">{facturaData?.Cantidad || 0} U</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Precio/U:</span>
@@ -268,24 +287,27 @@ export default function ModalNuevaFactura({ Ordenes= [], onClose, onSave }: Moda
               <div className="border-b border-dashed border-slate-200 my-2" />
 
               {/* Bloque Total Neto Único */}
-              <div className="my-auto py-1.5 text-center">
+              <div className="py-1.5 text-center">
                 <div className="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Monto Total</div>
                 <div className="text-2xl font-black text-slate-950 tracking-tight">
-                  C$ {Number(facturaData.subTotal || 0).toFixed(2)}
+                  C$ {Number(facturaData?.subTotal || 0).toFixed(2)}
                 </div>
                 <div className="text-[7px] text-slate-400 uppercase font-bold mt-0.5">Moneda: Córdobas</div>
               </div>
+            </div>
 
-            <div className="mt-auto pt-4 flex justify-center">
-               <div className={`text-[10px] font-bold px-3 py-1 rounded-full "bg-green-100 text-green-700" : "bg-blue-100 text-blue-700"}`}>
-                 GENERADA
-               </div>
+            {/* CORREGIDO: Sintaxis limpia del badge */}
+            <div className="pt-4 flex justify-center">
+              <div className="text-[10px] font-bold px-3 py-1 rounded-full bg-green-100 text-green-700">
+                GENERADA
+              </div>
             </div>
           </div>
           
           <p className="text-[10px] text-slate-600 mt-6 text-center italic">
             Esta es una representación visual antes de guardar.
           </p>
+        </div>
         </div>
       </div>
   );

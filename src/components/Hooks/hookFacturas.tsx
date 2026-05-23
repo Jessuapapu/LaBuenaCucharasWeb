@@ -37,6 +37,7 @@ export interface Pedidos {
     Estado: "Pendiente" | "Entregado" | "Anulado";
     TipodePedidos: "Evento" | "Contrato" | "Buffet";
     MontoTotal: number;
+    Fecha: string;
     Detalles?: DetallesOrdenes[];
 }
 
@@ -123,6 +124,7 @@ export function useFactura(id: number | "", idFacturaEditar?: number | null) {
         }
         buscarDatosCliente();
     }, [id, idFacturaEditar])
+
 
     const seleccionarDocumentoAFacturar = useCallback((tipo: "Pedido" | "Contrato", id: number) => {
         if (tipo === "Pedido") {
