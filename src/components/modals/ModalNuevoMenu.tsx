@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { Trash2 } from "lucide-react";
 
-// Estructura del objeto Menu según tu JSON (se mantiene para tipado)
-
 
 // Estructura auxiliar para llenar el select de platillos
 interface PlatilloOption {
@@ -15,19 +13,24 @@ interface DetalleItem {
   precio_unitario: number;
 }
 
-interface ModalNuevoMenuProps {
-    Monto?: number;
-    fecha?: string;
-    onClose: () => void;
-    // Se elimina onSave ya que la recarga de página actualizará el componente padre
+interface MenuData {
+  IdMenu?: number;
+  Fecha: string;
+  detalle: DetalleItem[];
 }
 
-export default function ModalNuevoMenu({ onClose, fecha, Monto }: ModalNuevoMenuProps) {
+interface ModalNuevoMenuProps {
+    MenuData?: MenuData | null; //si existe, se edita
+    onSave: (data: MenuData)=> void;
+    onClose: () => void;
+}
+
+export default function ModalNuevoMenu({ MenuData, onClose, onSave }: ModalNuevoMenuProps) {
+    const isEditing= !!MenuData?.IdMenu;
     // Estado del formulario
     // Inicializamos la fecha con el día de hoy
-    const [fechadia, setFecha] = useState( fecha || new Date().toISOString().split("T")[0]);
-    //const [nombrePlatillo, setNombrePlatillo] = useState("");
-    const [Precio, setprecio]= useState<number | string>(Monto !== undefined ? Monto: "") 
+    const [fechadia, setFecha] = useState( new Date().toISOString().split("T")[0]);
+    //const [nombrePlatillo, setNombrePlatillo] = useState("") 
     const [items, setItems]= useState<DetalleItem[]>([
     { nombre_platillo: "", cantidad: 1, precio_unitario: 0 },
   ]);
@@ -46,6 +49,16 @@ export default function ModalNuevoMenu({ onClose, fecha, Monto }: ModalNuevoMenu
             .catch((err) => console.error("Error cargando platillos:", err));
     }, []);
 
+    //  Datos de edicion
+    useEffect(()=>{
+        if(MenuData){
+            setFecha(MenuData.Fecha);
+            if(MenuData.detalle?.length > 0){
+                setItems(MenuData.detalle)
+            }
+        }
+    }, [MenuData])
+
     const handleAddItem = () => {
     setItems([...items, { nombre_platillo: "", cantidad: 1, precio_unitario: 0 }]);
   };
@@ -59,10 +72,24 @@ export default function ModalNuevoMenu({ onClose, fecha, Monto }: ModalNuevoMenu
   };
 
   // Manejar el cambio de valores de una fila específica
-  const handleChangeItem = (index: number, field: keyof DetalleItem, value: string | number) => {
+  const handleChangeItem = <K extends keyof DetalleItem>(index: number, field: K, value: DetalleItem[K]) => {
     const newItems = [...items];
-    (newItems[index] as any)[field] = value;
+    newItems[index][field] = value;
     setItems(newItems);
+  };
+
+  const resetForm = () => {
+    setFecha(
+      new Date().toISOString().split("T")[0]
+    );
+
+    setItems([
+      {
+        nombre_platillo: "",
+        cantidad: 1,
+        precio_unitario: 0,
+      },
+    ]);
   };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -74,11 +101,10 @@ export default function ModalNuevoMenu({ onClose, fecha, Monto }: ModalNuevoMenu
 
         setLoading(true);
 
-        // Estructura JSON exacta requerida
+        // Estructura JSON
         const payload = {
-            day: fechadia,
-            nombre_platillo: items[0].nombre_platillo,
-            precioplatillo: Number(items[0].precio_unitario),
+            IdMennu: MenuData?.IdMenu,
+            Fecha: fechadia,
             detalle: items.map((item) => ({ 
         nombre_platillo: item.nombre_platillo,
         cantidad: Number(item.cantidad),
@@ -87,8 +113,13 @@ export default function ModalNuevoMenu({ onClose, fecha, Monto }: ModalNuevoMenu
         };
 
         try {
-            const response = await fetch("http://127.0.0.1:8001/menu/", {
-                method: "POST",
+            const url= isEditing
+            ? `http://127.0.0.1:8001/menu/${MenuData?.IdMenu}/`
+            : "http://127.0.0.1:8001/menu/";
+
+            const method = isEditing ? "PUT" : "POST";
+            const response = await fetch(url, {
+                method,
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload),
             });
@@ -97,10 +128,12 @@ export default function ModalNuevoMenu({ onClose, fecha, Monto }: ModalNuevoMenu
 
             // Esperamos la respuesta para confirmar el guardado
             await response.json(); 
-            
-            // --- RECARGAR LA PÁGINA PARA ACTUALIZAR LA TABLA ---
-            window.location.reload();
-
+            // refrescar desde el padre
+      if (onSave) {
+        onSave(payload);
+      }
+      resetForm();
+      onClose();
         } catch (error) {
             console.error(error);
             alert("Error al guardar. Verifica la conexión.");
@@ -128,7 +161,7 @@ export default function ModalNuevoMenu({ onClose, fecha, Monto }: ModalNuevoMenu
                         <input
                             type="date"
                             className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white focus:ring-2 focus:ring-blue-500 outline-none"
-                            value={fecha}
+                            value={fechadia}
                             onChange={(e) => setFecha(e.target.value)}
                             required
                         />
@@ -146,7 +179,7 @@ export default function ModalNuevoMenu({ onClose, fecha, Monto }: ModalNuevoMenu
                             </button>
                     </div>
 
-                    <div className="space-y-3 max-h-[40vh] overflow-y-auto bg-gray-950 p-3 rounded-lg border border-gray-800">
+            <div className="space-y-3 max-h-[40vh] overflow-y-auto bg-gray-950 p-3 rounded-lg border border-gray-800">
             {items.map((item, index) => (
               <div key={index} className="flex gap-2 items-end border-b border-gray-800 pb-3 last:border-0 last:pb-0">
                 
@@ -166,6 +199,29 @@ export default function ModalNuevoMenu({ onClose, fecha, Monto }: ModalNuevoMenu
                       </option>
                     ))}
                   </select>
+                </div>
+                {/* CANTIDAD */}
+
+                <div className="w-20">
+                  <label className="block text-xs text-gray-400 mb-1">
+                    Cantidad
+                  </label>
+
+                  <input
+                    type="number"
+                    min="1"
+                    className="w-full px-3 py-1.5 rounded bg-gray-800 border border-gray-600 text-white text-sm"
+                    value={item.cantidad}
+                    onChange={(e) =>
+                      handleChangeItem(
+                        index,
+                        "cantidad",
+                        Number(
+                          e.target.value
+                        )
+                      )
+                    }
+                  />
                 </div>
 
                 {/* Precio del Platillo */}

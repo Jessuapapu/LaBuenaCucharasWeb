@@ -1,19 +1,24 @@
 import React from "react";
 import { useState } from "react";
-import ModalEditarMenu from "../modals/ModalEditarMenu";
+//import ModalEditarMenu from "../modals/ModalEditarMenu";
 import ModalNuevoMenu from "../modals/ModalNuevoMenu";
 import { Utensils, Edit2, ChevronLeft, ChevronRight} from "lucide-react";
 
 
-interface Menu{
-    idplatillo: number;
-    NombrePlatillo: string;
-    color: string;
-    Fecha: string;
+interface DetalleItem {
+  nombre_platillo: string;
+  cantidad: number;
+  precio_unitario: number;
+}
+
+interface MenuData {
+  IdMenu?: number;
+  Fecha: string;
+  detalle: DetalleItem[];
 }
 
 interface MenuProps{
-    Datos: Menu[];
+    Datos: MenuData[];
 }
 
 const Plus = ({ size }: { size: number }) => (
@@ -24,15 +29,14 @@ const Calendario: React.FC<MenuProps>= ({Datos})=>{
     //para obtener el dia
     const diaHoy= new Date();
     const [fecha, setfecha] = useState(new Date())
-    const [showCreateModal, setShowCreateModal] = useState(false);
-    const [selectedMenu, setSelectedMenu] = useState<any | null>(null);
-    const [fechaSeleccionada, setFechaSeleccionada] = useState<string>("");
-
+    //const [showCreateModal, setShowCreateModal] = useState(false);
+    //const [selectedMenu, setSelectedMenu] = useState<any | null>(null);
+    //const [fechaSeleccionada, setFechaSeleccionada] = useState<string>("");
+    const [modalDta, setmodalDta]= useState<MenuData | null>(null) //para llevar mas facil los datos y mostrar el modal, en caso si es null esta cerrado, si tiene id se edita
+    
     const cambiarMes= (off: number) => {
         setfecha(new Date(Anio, meses + off, 1))
     }
-
-
     //conteo de semanas, years
     const diasSemanas= ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado']
     const Mes= fecha.toLocaleString('es-ES', {month: 'long', year: 'numeric'}) //Obtener el mes actual
@@ -47,7 +51,7 @@ const Calendario: React.FC<MenuProps>= ({Datos})=>{
         ...Array.from({ length: diasEnMes }, (_, i) => i + 1)
     ];
 
-    const obtenerPlatilloDia = (dia: number): Menu[] => {
+    const obtenerPlatilloDia = (dia: number): MenuData[] => {
         if (!dia) return[];
         // Formateamos el día para que coincida con el formato YYYY-MM-DD de la API
         const fechaStr = `${Anio}-${String(meses + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
@@ -57,9 +61,21 @@ const Calendario: React.FC<MenuProps>= ({Datos})=>{
     const manejarClickDia = (dia: number) => {
         if (!dia) return;
         const fechaStr = `${Anio}-${String(meses + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
-        setFechaSeleccionada(fechaStr);
-        setShowCreateModal(true);
+        setmodalDta({Fecha: fechaStr, detalle: [
+        {
+          nombre_platillo: "",
+          cantidad: 1,
+          precio_unitario: 0,
+        },
+      ],});
     };
+
+    const handleUpdate= (updated: MenuData) =>{
+        console.log(updated);
+
+    setmodalDta(null);
+
+    }
     
     return(
         <div className="bg-gray-900 rounded-xl border border-gray-800 p-2 shadow-2xl">
@@ -118,17 +134,17 @@ const Calendario: React.FC<MenuProps>= ({Datos})=>{
                                             {infoMenu.length > 0 ?(
                                                 infoMenu.map((platillo) => (
                                                 <div 
-                                                    key={platillo.idplatillo} 
+                                                    key={platillo.IdMenu} 
                                                     className="bg-blue-600/20 border border-blue-500/30 p-1 px-2 rounded-md relative group/item flex items-center justify-between"
                                                 >
                                                     <p className="text-[10px] text-blue-200 font-medium leading-tight truncate pr-4">
-                                                        {platillo.NombrePlatillo}
+                                                        {platillo.detalle?.[0]?.nombre_platillo}
                                                     </p>
                                                     {/*Boton editar antes de que se me olvide*/}
                                                     <button 
                                                         onClick={(e) => {
                                                             e.stopPropagation();
-                                                            setSelectedMenu(platillo); //Manda el platillo
+                                                            setmodalDta(platillo); //Manda el platillo
                                                         }}
                                                         className="absolute right-1 opacity-0 group-hover/item:opacity-100 bg-blue-600 p-0.5 rounded shadow-lg transition-opacity"
                                                     >
@@ -150,21 +166,11 @@ const Calendario: React.FC<MenuProps>= ({Datos})=>{
                     );
                 })}
             </div>
-            {/* Modales */}
-            {showCreateModal && (
-                <ModalNuevoMenu fecha={fechaSeleccionada} onClose={() => setShowCreateModal(false)} />
+            {/* Ahora solo tenesmos un unico modal*/}
+            {modalDta && (
+                <ModalNuevoMenu MenuData={modalDta} onClose={() => setmodalDta(null)} onSave={handleUpdate}/>
             )}
 
-            {selectedMenu && (
-                <ModalEditarMenu 
-                    menu={{
-                        id: selectedMenu.id_platillo,
-                        Fecha: selectedMenu.Fecha,
-                        NombrePlatillo: selectedMenu.NombrePlatillo
-                    }}
-                    onClose={() => setSelectedMenu(null)}
-                />
-            )}
         </div>
             
         )
