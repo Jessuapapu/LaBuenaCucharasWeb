@@ -1,37 +1,40 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { getContratosByCliente } from "../../services/contratos";
+import { getClienteById } from "../../services/clientes";
+import type { cliente } from "../../interfaces/Clientes";
+import type { Contrato } from "../../interfaces/Contratos";
 
-export interface cliente{
-      nombre: string;
-      correo: string;
-      telefono: number;
-      direccion: string; 
-}
+  //const API_URL = import.meta.env.VITE_API_URL;
 
-export interface Contrato{
-    nombre_cliente: string;
-    numero_contrato: number;
-    fechainicio: Date;
-    fechafin: Date;
-}
-
-export function useCliente(){
-    const [clientes, setclientes]= useState<cliente[]>([]);
-    const [loading, setloading]= useState(true);
+export function useCliente(id_cliente: number | null){
+    const [loading, setloading]= useState(false);
     const [error, setError]= useState<string | null>(null);
+    const [cliente, setCliente] = useState<cliente | null>(null);
+    const [contratos, setContratos] = useState<Contrato[]>([]);
 
-    const fetchCliente= useCallback(async() =>{
-        try{
-            const response= await fetch("http://127.0.0.1:8001/clientes/");
-      if (!response.ok) throw new Error("Error al conectar con el servidor");
-      
-      const data = await response.json();
-        
+    useEffect(() => {
 
-        setError(null);
-    } catch (err) {
-      setError("No se pudo cargar el comedor");
-    } finally {
-      setloading(false);
-    }
-    }, []);
+        if (!id_cliente) return;
+
+        const buscarCliente = async () => {
+            setloading(true);
+            try {
+                const [clienteData, contratosData] = await Promise.all([
+                    getClienteById(id_cliente),
+                    getContratosByCliente(id_cliente)
+                ]);
+                setCliente(clienteData);
+                setContratos(contratosData);
+                setError(null);
+            } catch (err) {
+                setError("No se pudo cargar el cliente");
+            } finally {
+                setloading(false);
+            }
+        };
+        buscarCliente();
+    }, [id_cliente]);
+    return { cliente, contratos, loading, error };
 }
+
+    

@@ -1,21 +1,15 @@
 import { useState, useMemo } from "react";
-import { Check, User, Search, Calendar, Hash } from "lucide-react";
+import { Check, User, Search, Calendar, Trash2} from "lucide-react";
 import { useFactura } from "../Hooks/hookFacturas";
 
-interface PedidosOrdenes{
-  //id_pedidoOrden: number;
-  id_Pedido: number;
-  id_Orden: number;
-  nombreCliente: string | "";
-  Fecha: number;
-}
 interface ClienteOption {
+    idCliente: number;
     nombre: string;
     [key: string]: any; 
 }
 
 interface ModalNuevaFacturaProps {
-  Ordenes?: PedidosOrdenes[];
+  Ordenes?: ClienteOption[];
   onClose: () => void;
   onSave: (nueva: any) => void;
 }
@@ -23,41 +17,51 @@ interface ModalNuevaFacturaProps {
 //type TipoRegistro = "Orden" | "Contrato";
 
 export default function ModalNuevaFactura({ Ordenes= [], onClose, onSave }: ModalNuevaFacturaProps) {
-  const [idPedido, setIdPedido] = useState<number | "">("");
-  const [listaClientes, setListaClientes] = useState<ClienteOption[]>([]);
+  //const [idPedido, setIdPedido] = useState<number | "">("");
+  //const [listaClientes, setListaClientes] = useState<ClienteOption[]>([]);
   const [BusquedaCliente, setBusquedaCliente] = useState(""); 
   const [SugerenciaCliente, setSugerenciaCliente]= useState(true);
-  const [clienteSeleccionado, setclienteSeleccionado]= useState<String | null>(null);
+  const [clienteSeleccionado, setclienteSeleccionado]= useState<number | "">("");
 
   //Utilizando el hook
   const {
     facturaData,
-    setFacturaData,
-    loading,
-    isFetching,
-    error,
-    guardarFactura
-  } = useFactura(idPedido);
+        setFacturaData,
+        seleccionarCliente,
+        pedidosPendientes,
+        setPedidosPendientes,
+        contratosActivos,
+        setContratosActivos,
+        alternarSeleccionPedido,
+        seleccionarContrato,
+        limpiarSeleccionDocumentos,
+        pedidosSeleccionados,
+        loading,
+        isFetching,
+        error,
+        guardarFactura
+  } = useFactura(clienteSeleccionado);
 
 
   // Filtrado predictivo de clientes en tiempo real
   const clientesFiltrados = useMemo(() => {
-    if (!BusquedaCliente.trim()) return listaClientes;
-    return listaClientes.filter(cliente =>
+    if (!BusquedaCliente.trim()) return Ordenes;
+    return Ordenes.filter(cliente =>
       cliente.nombre.toLowerCase().includes(BusquedaCliente.toLowerCase())
     );
-  }, [BusquedaCliente, listaClientes]);
+  }, [BusquedaCliente, Ordenes]);
 
-  // Filtrado automático de pedidos vigentes basados en el cliente seleccionado
-  const pedidosVigentesCliente = useMemo(() => {
-    if (!clienteSeleccionado) return [];
-    
-    // Filtramos los pedidos que coincidan con el cliente seleccionado
-    return Ordenes.filter(pedido => 
-      pedido.nombreCliente?.toLowerCase() === clienteSeleccionado.toLowerCase() ||
-      clienteSeleccionado === "Cliente General Comedor" // Si es venta general, se muestran todos los disponibles
-    );
-  }, [clienteSeleccionado, Ordenes]);
+  const totalPlatillos =
+      useMemo(() => {
+
+        return pedidosSeleccionados.reduce((acc, pedido) => {
+            const totalPedido = pedido.Detalles?.reduce((sum, detalle) =>sum + detalle.cantidad, 0) || 0;
+            return acc + totalPedido;
+          },
+          0
+        );
+      }, [pedidosSeleccionados]);
+
 
   // Cálculo matemático del precio unitario de los platillos consumidos
   const precioUnitario = useMemo(() => {
@@ -66,18 +70,18 @@ export default function ModalNuevaFactura({ Ordenes= [], onClose, onSave }: Moda
     return cantidad > 0 ? total / cantidad : 0;
   }, [facturaData?.subTotal, facturaData?.Cantidad]);
   
-  const handleSeleccioncliente = (nombre: string) => {
-    setBusquedaCliente(nombre);
-    setclienteSeleccionado(nombre);
+  const handleSeleccioncliente = (cliente: ClienteOption) => {
+    setBusquedaCliente(cliente.nombre);
+    setclienteSeleccionado(cliente.idCliente);
     setSugerenciaCliente(false);
-    setIdPedido(""); //se reseta cuaalquier seleccion previa para que elija un pedido nuevo
-    setFacturaData(prev=> ({...prev, nombreCliente: nombre}))
+    seleccionarCliente(cliente.idCliente,
+        cliente.nombre,
+        cliente.direccion || "")
   };
 
   // ejecuta el método del hook
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if(!idPedido) return;
     guardarFactura((data) => {
       onSave(data); // Notifica el éxito a la tabla principal
       onClose();    // Cierra el modal
@@ -85,7 +89,7 @@ export default function ModalNuevaFactura({ Ordenes= [], onClose, onSave }: Moda
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
       <div className="bg-slate-900 rounded-3xl text-white max-w-4xl w-full border border-slate-700 shadow-2xl overflow-hidden flex flex-col md:flex-row">
         
         {/* LADO IZQUIERDO: FORMULARIO */}
@@ -118,8 +122,6 @@ export default function ModalNuevaFactura({ Ordenes= [], onClose, onSave }: Moda
                     onChange={(e) => {
                       setBusquedaCliente(e.target.value);
                       setSugerenciaCliente(true);
-                      setclienteSeleccionado(null); // Resetea la confirmación hasta elegir del dropdown
-                      setFacturaData(prev => ({ ...prev, nombreCliente: e.target.value }));
                     }}
                     onFocus={() => setSugerenciaCliente(true)}
                     required
@@ -132,7 +134,7 @@ export default function ModalNuevaFactura({ Ordenes= [], onClose, onSave }: Moda
                     {clientesFiltrados.map((cliente, i) => (
                       <div
                         key={i}
-                        onClick={() => handleSeleccioncliente(cliente.nombre)}
+                        onClick={() => handleSeleccioncliente(cliente)}
                         className="px-4 py-2 text-sm text-slate-300 hover:bg-amber-500 hover:text-slate-950 cursor-pointer font-medium transition-colors"
                       >
                         {cliente.nombre}
@@ -144,59 +146,59 @@ export default function ModalNuevaFactura({ Ordenes= [], onClose, onSave }: Moda
 
               {/* RECUADRO DE PEDIDOS VIGENTES ENCONTRADOS */}
               {clienteSeleccionado && (
-                <div className="bg-slate-950/60 p-4 rounded-2xl border border-slate-800/80">
-                  <span className="text-[11px] font-bold text-amber-400 uppercase tracking-wider block mb-2.5">
-                    Pedidos pendientes de {clienteSeleccionado}
+                <div className="bg-slate-950 border border-slate-800 rounded-2xl p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs font-bold uppercase tracking-wider text-amber-400">Pedidos pendientes
                   </span>
-                  
-                  {pedidosVigentesCliente.length > 0 ? (
-                    <div className="grid grid-cols-2 gap-2 max-h-36 overflow-y-auto pr-1">
-                      {pedidosVigentesCliente.map((pedido) => (
-                        <button
-                          key={pedido.id_Pedido}
-                          type="button"
-                          onClick={() => setIdPedido(pedido.id_Pedido)}
-                          className={`p-2.5 rounded-xl border text-left transition-all flex flex-col justify-between h-20 ${
-                            idPedido === pedido.id_Pedido
-                              ? "bg-amber-500/20 border-amber-500 text-amber-400 shadow"
-                              : "bg-slate-900 border-slate-800 hover:border-slate-700 text-slate-300"
-                          }`}
-                        >
-                          {/* Línea Superior: ID y Check */}
-                          <div className="flex justify-between items-center w-full">
-                            <span className="text-xs font-mono font-bold text-slate-200">
-                              #{pedido.id_Pedido}
-                            </span>
-                            {idPedido === pedido.id_Pedido ? (
-                              <Check size={14} className="text-amber-400" />
-                            ) : (
-                              /* Un pequeño texto para diferenciar el tipo de servicio si lo tienes en tu objeto */
-                              <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-slate-950 font-bold text-slate-500">
-                                {pedido.id_Orden ? "Buffet" : "Contrato"}
-                              </span>
-                            )}
-                          </div>
-
-                          {/* Línea Inferior: La Fecha Dinámica */}
-                          <div className="flex flex-col mt-1">
-                            <span className="text-[10px] text-amber-500 font-mono font-semibold">
-                              📅 {pedido.Fecha || "22-05-2026"} 
-                            </span>
-                            {pedido.id_Orden && (
-                              <span className="text-[9px] text-slate-500 font-medium truncate">
-                                Ref. Orden: {pedido.id_Orden}
-                              </span>
-                            )}
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-xs text-slate-500 italic py-2">
-                      No hay pedidos de buffet pendientes de facturar para este cliente.
-                    </p>
+                  {facturaData.idOrdenes.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={limpiarSeleccionDocumentos}
+                      className="text-xs flex items-center gap-1 text-red-400 hover:text-red-300"
+                    >
+                      <Trash2 size={12} />
+                      Limpiar
+                    </button>
                   )}
                 </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  {pedidosPendientes.map(pedido => {
+                    const activo =facturaData.idOrdenes.includes(pedido.id_pedido);
+                    return (
+                      <button
+                        key={pedido.id_pedido}
+                        type="button"
+                        onClick={() =>
+                          alternarSeleccionPedido(pedido)}
+                        className={`p-3 rounded-xl border text-left transition-all ${
+                          activo
+                            ? "border-blue-500 bg-blue-500/10"
+                            : "border-slate-800 bg-slate-900 hover:border-slate-700"
+                        }`}
+                      >
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="font-mono text-sm font-bold">#
+                            {pedido.id_pedido}
+                          </span>
+                          {activo && (
+                            <Check
+                              size={14}
+                              className="text-amber-400"
+                            />
+                          )}
+                        </div>
+                        <div className="text-xs text-slate-400">
+                          📅 {pedido.fecha}
+                        </div>
+                        <div className="text-xs mt-1 text-amber-400 font-bold">C$
+                          {Number(pedido.monto_total).toFixed(2)}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
               )}
 
               {/* FILA DE PARÁMETROS: FECHA DE EMISIÓN */}
@@ -227,11 +229,11 @@ export default function ModalNuevaFactura({ Ordenes= [], onClose, onSave }: Moda
             <button 
               type="button"
               onClick={handleSubmit}
-              disabled={loading || isFetching || !idPedido || !BusquedaCliente.trim()} 
+              disabled={loading || isFetching  || !BusquedaCliente.trim()} 
               className={`flex-[2] py-3 rounded-xl font-black text-sm text-slate-950 tracking-wide transition-all uppercase shadow-lg
-                ${loading || isFetching || !idPedido
+                ${loading || isFetching
                   ? "bg-slate-800 text-slate-500 cursor-not-allowed shadow-none" 
-                  : "bg-amber-400 hover:bg-amber-300 shadow-amber-950/20 active:scale-[0.99]"}`}
+                  : "bg-blue-500 hover:bg-blue-300 shadow-blue-950/20 active:scale-[0.99]"}`}
             >
               {loading ? "PROCESANDO..." : "CONFIRMAR FACTURA"}
             </button>
@@ -266,13 +268,35 @@ export default function ModalNuevaFactura({ Ordenes= [], onClose, onSave }: Moda
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400 uppercase font-bold text-[7px]">Orden Ref:</span>
-                  <span className="font-bold text-slate-900">{idPedido ? `#${idPedido}` : "000"}</span>
+                  {pedidosSeleccionados.map(
+                    pedido => (
+                    <div className="flex justify-between text-sm mb-2" key={pedido.id_pedido}>
+                      <div>
+                        <div className="font-semibold">Pedido #
+                          {pedido.id_pedido}
+                        </div>
+                        <div className="text-xs text-slate-400">
+                          {pedido.fecha}
+                        </div>
+                      </div>
+                      <span className="font-bold">C${Number(pedido.monto_total).toFixed(2)}
+                      </span>
+                    </div>
+                  ))}
+                  {facturaData.idContrato && (
+                    <div className="flex justify-between text-sm">
+                      <span className="font-semibold">Contrato #
+                        {facturaData.idContrato}
+                      </span>
+                      <span className="font-bold">C${Number(facturaData.subTotal).toFixed(2)}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
-
+	
               <div className="border-b border-dashed border-slate-200 my-3" />
-
-              {/* Detalle Unitario en Ticket CORREGIDO: facturaData.Cantidad */}
+              {/* Detalle Unitario en Ticket*/}
               <div className="text-[9px] space-y-1 text-slate-600 bg-slate-50 p-2 rounded border border-slate-100">
                 <div className="flex justify-between">
                   <span>Cant. Platos:</span>

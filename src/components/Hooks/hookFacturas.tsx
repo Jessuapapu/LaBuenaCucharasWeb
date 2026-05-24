@@ -1,43 +1,35 @@
-import { useCallback, useState, useEffect } from "react";
 
-export interface Cliente {
-    idCliente: number;
-    nombrecliente: string;
-}
+import { useCallback, useState, useEffect, useMemo } from "react";
 
 export interface Contrato {
     idContrato: number;
     numeroContrato: number;
     idCliente: number;
     Estado: "Activo" | "Inactivo";
-    FechaInicio: Date;
-    FechaVencimiento: Date;
+    FechaInicio: string;
+    FechaVencimiento: string;
     Direccion: string;
+    Presupuesto: number
 }
 
-export interface Factura {
-    idFactura: number;
-    MontoTotal: number;
-    Fecha: Date;
-    CantidadTotal: number;
-    MetodoPago: string;
-}
-
+//A como lo espera el backend (ya llevo 5 veces cambiando por letras y por equivocacion)
 export interface DetallesOrdenes {
-    idOrdenes: number;
-    idPlatillo: number;
-    platillo: string;
-    Cantidad: number;
-    PrecioUnico: number;
-    Costototal: number;
+    id_orden: number;
+    nombre_platillo: string;
+    cantidad: number;
+    precio_unitario: number;
 }
 
 export interface Pedidos {
-    idPedido: number;
-    Estado: "Pendiente" | "Entregado" | "Anulado";
-    TipodePedidos: "Evento" | "Contrato" | "Buffet";
-    MontoTotal: number;
-    Fecha: string;
+    id_pedido: number;
+    estado_pedido: string; //el backend manda
+    TipodePedidos?: "Evento" | "Contrato" | "Buffet"; //por si acaso
+    monto_total: number;
+    fecha: string;
+    cliente: {
+        nombre_cliente: string;
+        direccion_cliente: string;
+    }
     Detalles?: DetallesOrdenes[];
 }
 
@@ -51,15 +43,13 @@ export interface FacturaForm {
     MetodoPago: "Efectivo" | "Transferencia" | "Tarjeta" | "Crédito";
     CondicionPago: "Contado" | "Crédito";
     tipoDocumentoOrigen: "Pedido" | "Contrato" | null;
-    idOrigen: number | null; //SE utilizara como idReferencia
     subTotal: number;
+    idOrdenes: number[];
+    idContrato?: number | null;
 }
-
-//type TipoRegistro = "Orden" | "Contrato";
-
-
+    const API_URL = import.meta.env.VITE_API_URL;
 // Agregamos 'idFacturaEditar' como parámetro opcional
-export function useFactura(id: number | "", idFacturaEditar?: number | null) {
+export function useFactura(idCliente: number | "") {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [isFetching, setIsFetching] = useState(false);
@@ -75,43 +65,81 @@ export function useFactura(id: number | "", idFacturaEditar?: number | null) {
         MetodoPago: "Efectivo",
         CondicionPago: "Contado",
         tipoDocumentoOrigen: null,
-        idOrigen: null,
         subTotal: 0,
+        idOrdenes: []
     });
 
-    // Buscar datos (Solo si estamos CREANDO, si estamos editando solo se cargan los datos de la factura existente)
+    // Buscar datos (Solo si estamos CREANDO
     useEffect(() => {
-        if (idFacturaEditar) return; // Si estamos editando, no disparamos la búsqueda de pedidos nuevos
-        
-        if (!id ) {
+        if (!idCliente) {
             setPedidosPendientes([]);
             setContratosActivos([]);
             return;
         }
 
+        const controller = new AbortController();
         const buscarDatosCliente = async () => {
             setIsFetching(true);
             setError(null);
             try{
                 const [resPedidos, resContratos]= await Promise.all([
-                    fetch(`http://127.0.0.1:8001/clientes/${id}`),
-                    fetch(`http://127.0.0.1:8001/clientes/contratos${id}`)
+                    fetch(`${API_URL}/clientes/${idCliente}`,
+                        {
+                            signal: controller.signal
+                        }
+                    ),
+                    fetch(`${API_URL}/clientes/contratos/${idCliente}`,
+                        {
+                            signal: controller.signal
+                        }
+                    )
                 ])
                 if (!resPedidos.ok || !resContratos.ok) throw new Error("Error en el servidor");
 
                 const jsonPedidos = await resPedidos.json();
                 const jsonContratos = await resContratos.json();
 
-                setPedidosPendientes(jsonPedidos.data || []);
-                setContratosActivos(jsonContratos.data || []);
+                const pedidos =
+                    jsonPedidos?.data || [];
 
-                if(jsonContratos.data?.length > 0 || jsonContratos.data.length > 0){
-                    const info= jsonPedidos.data[0] || jsonContratos.data[0];
-                    setFacturaData(prev=> ({
+                const contratos =
+                    jsonContratos?.data || [];
+
+                setPedidosPendientes(pedidos);
+                setContratosActivos(contratos);
+
+                const primerRegistro =
+                    pedidos?.[0] ||
+                    contratos?.[0];
+
+                if (primerRegistro) {
+
+                    setFacturaData(prev => ({
                         ...prev,
-                        idCliente: id,
-                        nombreCliente: info.nombrecliente || info.NombreCliente
-                    }))
+
+                        idCliente,
+
+                        nombreCliente:
+                            primerRegistro
+                                ?.cliente
+                                ?.nombre_cliente ||
+
+                            primerRegistro
+                                ?.NombreCliente ||
+
+                            prev.nombreCliente,
+
+                        direccion:
+                            primerRegistro
+                                ?.cliente
+                                ?.direccion_cliente ||
+
+                            primerRegistro
+                                ?.Direccion ||
+
+                            prev.Direccion
+                    }));
+
                 }
                 
             }catch(error){
@@ -123,50 +151,122 @@ export function useFactura(id: number | "", idFacturaEditar?: number | null) {
             
         }
         buscarDatosCliente();
-    }, [id, idFacturaEditar])
+        return () => controller.abort();
+    }, [idCliente])
 
+    const seleccionarCliente = useCallback((id: number, nombre: string, direccion: string) => {
+        setFacturaData(prev => ({
+            ...prev,
+            idCliente: id,
+            nombreCliente: nombre,
+            Direccion: direccion,
+            // Limpiamos selecciones anteriores si cambia de cliente
+            tipoDocumentoOrigen: null,
+            idOrdenes: [],
+            idContrato: null,
+            subTotal:  0
+        }));
+    }, []);
 
-    const seleccionarDocumentoAFacturar = useCallback((tipo: "Pedido" | "Contrato", id: number) => {
-        if (tipo === "Pedido") {
-            const pedido = pedidosPendientes.find(p => p.idPedido === id);
-            if (pedido) {
-                const esCorporativo = pedido.TipodePedidos === "Contrato" || pedido.TipodePedidos === "Evento";
+    const pedidosSeleccionados =useMemo(() => {
+            return pedidosPendientes.filter(pedido =>facturaData.idOrdenes.includes(pedido.id_pedido));
+        }, [
+            pedidosPendientes,
+            facturaData.idOrdenes
+        ]);
 
-                setFacturaData(prev => ({
-                    ...prev,
-                    tipoDocumentoOrigen: "Pedido",
-                    idOrigen: id,
-                    Direccion: "", // Reseteado/Oculto para pedidos Buffet comunes
-                    CondicionPago: esCorporativo ? "Crédito" : "Contado",
-                    AplicaRetencion: esCorporativo,
-                    MontoTotalFinal: pedido.MontoTotal,
-                }));
+    const alternarSeleccionPedido = useCallback((pedido: Pedidos
+    ) => {
+        setFacturaData(prev => {
+            // Si estaba usando contrato,
+            // limpiar selección previa
+            const cambiarModoPedido =prev.tipoDocumentoOrigen !== "Pedido";
+
+            const ordenesActuales =
+                cambiarModoPedido? []: prev.idOrdenes;
+
+            const yaExiste =
+                ordenesActuales.includes(pedido.id_pedido);
+
+            let nuevasOrdenes: number[] = [];
+
+            if (yaExiste) {
+                nuevasOrdenes =
+                    ordenesActuales.filter(id => id !== pedido.id_pedido);
+            } else {
+                nuevasOrdenes = [...ordenesActuales, pedido.id_pedido
+                ];
             }
-        } else {
-            const contrato = contratosActivos.find(c => c.idContrato === id);
-            if (contrato) {
+            // calcular subtotal dinámicamente
+            const pedidosSeleccionados =
+                pedidosPendientes.filter(p => nuevasOrdenes.includes(p.id_pedido));
 
-                setFacturaData(prev => ({
-                    ...prev,
-                    tipoDocumentoOrigen: "Contrato",
-                    idOrigen: id,
-                    Direccion: contrato.Direccion, // Condición: Aparece porque es contrato
-                    CondicionPago: "Crédito",
-                }));
-            }
-        }
-    }, [pedidosPendientes, contratosActivos]);
+            const subtotal =
+                pedidosSeleccionados.reduce((acc, pedido) =>acc + Number(pedido.monto_total || 0),0);
+            return {...prev, tipoDocumentoOrigen:nuevasOrdenes.length > 0? "Pedido": null,
+                idOrdenes: nuevasOrdenes,
+                idContrato: null,
+                subTotal: Number(subtotal.toFixed(2)),
+                condicionPago: "Contado"
+            };
+        });
+    }, [pedidosPendientes]);
+
+    const seleccionarContrato = useCallback((idContrato: number) => {
+        const contrato = contratosActivos.find(c => c.idContrato === idContrato);
+        if (!contrato) return;
+
+        setFacturaData(prev => ({
+            ...prev,
+            tipoDocumentoOrigen: "Contrato",
+            idContrato: idContrato,
+            idOrdenes: [], // Limpiamos los pedidos ya que cambió al flujo corporativo
+            Direccion: contrato.Direccion || prev.Direccion,
+            CondicionPago: "Crédito", // Los contratos típicamente se manejan a crédito empresarial
+            subTotal: Number(contrato.Presupuesto || 0) 
+        }));
+    }, [contratosActivos]);
+
+    // Función auxiliar por si el cajero quiere desmarcar todo de golpe
+    const limpiarSeleccionDocumentos = useCallback(() => {
+        setFacturaData(prev => ({
+            ...prev,
+            tipoDocumentoOrigen: null,
+            idOrdenes: [],
+            idContrato: null,
+            subTotal: 0
+        }));
+    }, []);
             
 
     // Guardar o Editar (Decide dinámicamente según le proceso)
     const guardarFactura = useCallback(async (onSuccess: (data: any) => void) => {
         setLoading(true);
         setError(null);
+        if (
+                !facturaData.idCliente
+            ) { setError("Debe seleccionar un cliente");
+                return;
+            }
+
+            if (facturaData.tipoDocumentoOrigen ==="Pedido" && facturaData.idOrdenes.length === 0
+            ) {
+                setError("Debe seleccionar al menos un pedido");
+                return;
+            }
+
+            if (facturaData.tipoDocumentoOrigen === "Contrato" && !facturaData.idContrato
+            ) {
+                setError("Debe seleccionar un contrato");
+                return;
+            }
+            setLoading(true);
+            setError(null);
 
         try {
-            const url= idFacturaEditar? `http://127.0.0.1:8001/factura/${idFacturaEditar}` : "http://127.0.0.1:8001/factura/";
-            const response = await fetch(url, {
-                method: idFacturaEditar ? "PUT": "POST",
+            const response = await fetch(`${API_URL}/factura/`,
+                {
+                method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(facturaData)
             });
@@ -180,14 +280,20 @@ export function useFactura(id: number | "", idFacturaEditar?: number | null) {
         } finally {
             setLoading(false);
         }
-    }, [facturaData, idFacturaEditar]);
+    }, [facturaData]);
 
     return {
         facturaData,
         setFacturaData,
+        seleccionarCliente,
         pedidosPendientes,
+        setPedidosPendientes,
         contratosActivos,
-        seleccionarDocumentoAFacturar,
+        setContratosActivos,
+        alternarSeleccionPedido,
+        seleccionarContrato,
+        limpiarSeleccionDocumentos,
+        pedidosSeleccionados,
         loading,
         isFetching,
         error,

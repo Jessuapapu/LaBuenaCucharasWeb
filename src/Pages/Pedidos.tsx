@@ -163,7 +163,7 @@ export default function PedidosPage() {
             <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {filteredData.map((Pedido) =>(
                     <CardPedido Pedido={Pedido} 
-                        onUpdate={(actualizado) => {
+                        Actualizar={(actualizado) => {
                             // Opcional: Actualizar la lista local si no quieres recargar
                             console.log("Pedido actualizado:", actualizado);
                         }}></CardPedido>

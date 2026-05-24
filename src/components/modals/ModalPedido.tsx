@@ -1,67 +1,24 @@
 //import { ChartNoAxesColumnIcon } from "lucide-react";
-import { useState, useEffect } from "react";
-
-interface Cliente {
-    nombre: string;
-    direccion: string;
-    correo: string;
-    telefono: string;
-}
-
-interface Detalle {
-    nombre_platillo: string;
-    cantidad: number;
-    precio_unitario: number;
-}
-
-interface PedidoEntrante {
-    id_pedido: number;
-    numero_pedido: number;
-    estado: string;
-    fecha: string;
-    cliente: {
-        nombre_cliente: string;
-        direccion_cliente: string;
-        correo?: string;
-        telefono?: string;
-    };
-    detalles: Detalle[];
-    factura?: { monto_total: number };
-}
+import { useState, useEffect, useMemo } from "react";
+import type { OrdenVisualizar, DetalleOrdenLista } from "../../interfaces/Ordenes";
+import type { cliente } from "../../interfaces/Clientes";
+import { useCliente } from "../Hooks/hookClientes";
+import { useOrdenes } from "../Hooks/hookOrdenes";
 
 interface ModalPedidoProps {
-    pedido: PedidoEntrante;
+    pedido: OrdenVisualizar;
     onClose: () => void;
     onSave: (updatedPedido: any) => void;
 }
 
-export default function ModalPedido({ pedido, onClose }: ModalPedidoProps) {
-    const [clientes, setClientes] = useState<Cliente[]>([]);
-    
-    // Inicialización de estados
-    const [cliente, setCliente] = useState<Cliente>({
-        nombre: pedido.cliente.nombre_cliente,
-        direccion: pedido.cliente.direccion_cliente,
-        correo: pedido.cliente.correo || "",
-        telefono: pedido.cliente.telefono || ""
-    });
-    
-    const [estado, setEstado] = useState(pedido.estado); 
-    const [fecha] = useState(pedido.fecha); 
-    const [detalles, setDetalles] = useState<Detalle[]>(pedido.detalles);
-    
+export default function ModalPedido({ pedido, onClose, onSave }: ModalPedidoProps) {
+    //const [clientes, setClientes] = useState<cliente[]>([]);
+    const {actualizarOrden, loading, error}= useOrdenes();
+    const [estado, setEstado] = useState(pedido.estado_pedido);
+
+    const [detalles, setDetalles] = useState<DetalleOrdenLista[]>(pedido.detalles || []);
     const [platillos, setPlatillos] = useState<string[]>([]);
-    const [loading, setLoading] = useState(false);
-
     const isAnulado = estado === "ANULADO";
-
-    // Fetch clientes
-    useEffect(() => {
-        fetch("http://127.0.0.1:8001/clientes/")
-            .then(res => res.json())
-            .then(json => setClientes(json))
-            .catch(console.error);
-    }, []);
 
     // Fetch platillos
     useEffect(() => {
@@ -71,19 +28,7 @@ export default function ModalPedido({ pedido, onClose }: ModalPedidoProps) {
             .catch(console.error);
     }, []);
 
-    // Actualizar cliente al abrir
-    useEffect(() => {
-        if (!clientes.length) return;
-        const encontrado = clientes.find(c => c.nombre === pedido.cliente.nombre_cliente);
-        if (encontrado) setCliente(encontrado);
-    }, [clientes, pedido]);
-
-    const handleClienteChange = (nombre: string) => {
-        const c = clientes.find(cl => cl.nombre === nombre);
-        if (c) setCliente(c);
-    };
-
-    const handleDetalleChange = (index: number, field: keyof Detalle, value: string | number) => {
+    const handleDetalleChange = (index: number, field: keyof DetalleOrdenLista, value: string | number) => {
         if (isAnulado) return; 
         const newDetalles = [...detalles];
         (newDetalles[index] as any)[field] = field === "cantidad" || field === "precio_unitario" ? Number(value) : value;
@@ -91,9 +36,22 @@ export default function ModalPedido({ pedido, onClose }: ModalPedidoProps) {
     };
 
     const handleAddDetalle = () => {
-        if (isAnulado) return;
-        setDetalles([...detalles, { nombre_platillo: "", cantidad: 1, precio_unitario: 0 }]);
-    };
+    if (isAnulado) return;
+    setDetalles([...detalles,
+      {
+        id_orden: pedido.id_pedido,
+        nombre_platillo: "",
+        cantidad: 1,
+        precio_unitario: 0,
+      },
+    ]);
+  };
+
+    const totalOrden = useMemo(() => {
+    return detalles.reduce((acc, item) => {
+      return acc + (item.cantidad * item.precio_unitario);
+    }, 0);
+  }, [detalles]);
 
     const handleRemoveDetalle = (index: number) => {
         if (isAnulado) return;
@@ -102,46 +60,26 @@ export default function ModalPedido({ pedido, onClose }: ModalPedidoProps) {
         setDetalles(newDetalles);
     };
 
-    // --- LÓGICA DE GUARDADO ACTUALIZADA ---
     const handleSave = async () => {
-        setLoading(true);
-
         const payload = {
-            nombre_cliente: cliente.nombre,
-            estado: estado,
-            detalles: detalles.map(d => ({
-                nombre_platillo: d.nombre_platillo,
-                cantidad: d.cantidad,
-                precio_unitario: d.precio_unitario
-            }))
-        };
-        console.log(payload)
-        try {
-            const response = await fetch(
-                `http://127.0.0.1:8001/pedidos/detalles/${pedido.id_pedido}`, 
-                {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(payload)
-                }
-            );
-
-            if (!response.ok) throw new Error("Error al actualizzzzzar el pedido");
-
-            // Esperamos a que termine de procesar la respuesta
-            await response.json(); 
-            
-            // --- AQUÍ RECARGAMOS LA PÁGINA ---
-            window.location.reload();
-            
-        } catch (error) {
-            console.error(error);
-            alert("Hubo un error al guardaaaaar los cambios.");
-            // Solo desactivamos el loading si falló. 
-            // Si tuvo éxito, dejamos el loading activo mientras la página se recarga.
-            setLoading(false); 
-        }
+      nombre_cliente: pedido.cliente.nombre_cliente,
+      estado,
+      detalles: detalles.map((det) => ({
+        nombre_platillo: det.nombre_platillo,
+        cantidad: det.cantidad,
+        precio_unitario: det.precio_unitario,
+      })),
     };
+        const resultado = await actualizarOrden(
+      pedido.id_pedido,
+      payload
+   );
+
+   if (resultado) {
+      onSave(resultado);
+      onClose();
+    };
+}
 
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 overflow-auto animate-in fade-in duration-300">
@@ -150,7 +88,7 @@ export default function ModalPedido({ pedido, onClose }: ModalPedidoProps) {
                 {/* CABECERA CON ID DE PEDIDO */}
                 <div className="flex justify-between items-center mb-4 border-b border-gray-600 pb-2">
                     <div>
-                        <h2 className="text-xl font-bold">Editar Pedido #{pedido.numero_pedido}</h2>
+                        <h2 className="text-xl font-bold">Editar Pedido #{pedido.id_pedido}</h2>
                         <span className="text-sm text-gray-400">ID Interno: {pedido.id_pedido}</span>
                     </div>
                     {isAnulado && (
@@ -164,15 +102,7 @@ export default function ModalPedido({ pedido, onClose }: ModalPedidoProps) {
                     {/* CLIENTE */}
                     <div>
                         <label className="block text-gray-200">Cliente:</label>
-                        <select
-                            className="w-full px-2 py-1 rounded bg-white text-black"
-                            value={cliente?.nombre || ""}
-                            onChange={e => handleClienteChange(e.target.value)}
-                        >
-                            {clientes.map((c, i) => (
-                                <option key={i} value={c.nombre}>{c.nombre}</option>
-                            ))}
-                        </select>
+                        <p>Cliente: {pedido.cliente.nombre_cliente}</p>
                     </div>
 
                     {/* DIRECCION (READ ONLY) */}
@@ -181,7 +111,7 @@ export default function ModalPedido({ pedido, onClose }: ModalPedidoProps) {
                         <input
                             type="text"
                             className="w-full px-2 py-1 rounded bg-gray-300 text-gray-800 cursor-not-allowed font-medium"
-                            value={cliente?.direccion || ""}
+                            value={pedido.cliente.direccion_cliente || ""}
                             readOnly 
                         />
                     </div>
@@ -208,7 +138,7 @@ export default function ModalPedido({ pedido, onClose }: ModalPedidoProps) {
                         <label className="block text-gray-200">Fecha:</label>
                         <input 
                             type="text" 
-                            value={fecha} 
+                            value={pedido.fecha} 
                             disabled 
                             className="w-full px-2 py-1 rounded bg-gray-600 text-white cursor-not-allowed"
                         />
@@ -257,6 +187,10 @@ export default function ModalPedido({ pedido, onClose }: ModalPedidoProps) {
                                 </div>
                                 {!isAnulado && (
                                     <div className="flex items-end">
+                                        <span className="text-sm text-slate-400">
+                                            Subtotal:{" "}
+                                            <strong className="text-white">C${" "}{(det.cantidad * det.precio_unitario).toFixed(2)}</strong>
+                                        </span>
                                         <button
                                             className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded h-8"
                                             onClick={() => handleRemoveDetalle(index)}

@@ -1,47 +1,36 @@
-import { Calendar, Clock, Settings2 } from "lucide-react";
+import { Calendar, Clock, Settings2, ChevronUp, ChevronDown } from "lucide-react";
 import ModalPedido from "../modals/ModalPedido";
 import { useState } from "react";
+import type { CrearOrden, CardPedidoProps, OrdenVisualizar } from "../../interfaces/Ordenes";
+import { useOrdenes } from "../Hooks/hookOrdenes";
 
-// 1. Usamos EXACTAMENTE la misma interfaz que definiste en tu Modal
-interface Detalle {
-    nombre_platillo: string;
-    cantidad: number;
-    precio_unitario: number;
+interface Props extends CardPedidoProps {
+  Pedido: OrdenVisualizar;
 }
-
-interface PedidoEntrante {
-    id_pedido: number;
-    numero_pedido: number; // Asegurado como number
-    estado: string;
-    fecha: string;
-    cliente: {
-        nombre_cliente: string;
-        direccion_cliente: string;
-        correo?: string;
-        telefono?: string;
-    };
-    detalles: Detalle[];
-    factura?: { monto_total: number };
-}
-
-interface CardPedidoProps {
-    onClick?: () => void;
-    onUpdate?: (updated: PedidoEntrante) => void;
-    Pedido: PedidoEntrante;
-}
-
-export default function CardPedido({ Pedido, onClick, onUpdate }: CardPedidoProps) {
+export default function CardPedido({Pedido, onClick, Actualizar}: Props) {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [mostrarDetalles, setmostarDetalles]= useState(false);
+    const { guardarOrden, loading, error, success } = useOrdenes();
 
-    const handleSave = (updated: any) => {
-        if (onUpdate) onUpdate(updated);
-        setIsEditModalOpen(false);
-    };
 
     const handleOpenModal = (e: React.MouseEvent) => {
         e.stopPropagation();
         setIsEditModalOpen(true);
     };
+
+    const handleToggleDetalles = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setmostarDetalles(prev => !prev);
+  };
+
+  const handleSave = async (nuevaOrden: CrearOrden) => {
+    const resultado =
+      await guardarOrden(nuevaOrden);
+    if (resultado) {
+      setIsEditModalOpen(false);
+    }
+  };
+
 
     // Mapeo de colores basado en tus estados del Modal (PENDIENTE, ENTREGADO, ANULADO)
     const statusConfig: Record<string, string> = {
@@ -50,8 +39,13 @@ export default function CardPedido({ Pedido, onClick, onUpdate }: CardPedidoProp
         ANULADO: "bg-red-500/10 text-red-400 border-red-500/20",
     };
 
-    // Color por defecto si no coincide
-    const currentStatusClass = statusConfig[Pedido.estado] || "bg-blue-500/10 text-blue-400 border-blue-500/20";
+    const currentStatusClass =
+    statusConfig[Pedido.estado_pedido] ??
+    "bg-slate-500/10 text-slate-400 border-slate-500/20";
+
+  const detallesAMostrar = mostrarDetalles
+    ? Pedido.detalles
+    : Pedido.detalles?.slice(0, 2);
 
     return (
         <div 
@@ -62,12 +56,12 @@ export default function CardPedido({ Pedido, onClick, onUpdate }: CardPedidoProp
             <div className="p-4 bg-slate-900 border-b border-slate-800 flex justify-between items-center">
                 <div className="bg-blue-600/20 border border-blue-500/30 px-2 py-1 rounded-md">
                     <span className="text-[10px] font-black text-blue-400 uppercase">
-                        #{Pedido.numero_pedido}
+                        #{Pedido.id_pedido}
                     </span>
                 </div>
                 <div className={`flex items-center gap-1 px-2 py-1 rounded-full border text-[9px] font-black uppercase tracking-tighter ${currentStatusClass}`}>
                     <Clock size={10} />
-                    {Pedido.estado}
+                    {Pedido.estado_pedido}
                 </div>
             </div>
 
@@ -84,25 +78,49 @@ export default function CardPedido({ Pedido, onClick, onUpdate }: CardPedidoProp
                     </div>
                 </div>
 
-                {/* Vista previa de productos */}
-                <div className="bg-black/30 rounded-xl p-3 border border-white/5 space-y-2">
-                    {Pedido.detalles?.slice(0, 2).map((item, idx) => (
-                        <div key={idx} className="flex justify-between text-[11px]">
-                            <span className="text-slate-400 truncate flex-1">
-                                {item.cantidad}x {item.nombre_platillo}
-                            </span>
-                            <span className="text-slate-500 font-mono">
-                                ${(item.precio_unitario * item.cantidad).toFixed(2)}
-                            </span>
-                        </div>
-                    ))}
-                    {Pedido.detalles?.length > 2 && (
-                        <p className="text-[9px] text-slate-600 italic text-center border-t border-white/5 pt-2">
-                            + {Pedido.detalles.length - 2} productos adicionales
-                        </p>
-                    )}
-                </div>
+                {/* DETALLES */}
+        <div className="
+          bg-black/30
+          rounded-xl
+          p-3
+          border border-white/5
+          space-y-2
+        ">
+          {detallesAMostrar?.map((item, idx) => (
+            <div key={idx}className="flex justify-between text-[11px]">
+              <span className="text-slate-400 truncate flex-1">
+                {item.cantidad}x{" "}
+                {item.nombre_platillo}
+              </span>
+              <span className="text-slate-500 font-mono">$
+                {(item.precio_unitario *item.cantidad).toFixed(2)}
+              </span>
             </div>
+          ))}
+
+          {/* BOTÓN EXPANDIR */}
+          {Pedido.detalles?.length > 2 && (
+            <button
+              type="button"
+              onClick={handleToggleDetalles}
+              className="w-full flex items-center justify-center gap-1 text-[10px] text-blue-400 hover:text-blue-300
+                border-t border-white/5 pt-2 transition-colorsfont-semibold">
+              {mostrarDetalles ? (
+                <>
+                  <ChevronUp size={12} />
+                  Mostrar menos
+                </>
+              ) : (
+                <>
+                  <ChevronDown size={12} />
+                  Más detalles
+                </>
+              )}
+
+            </button>
+          )}
+        </div>
+      </div>
 
             {/* FOOTER */}
             <div className="p-5 pt-0 mt-auto">
@@ -110,7 +128,7 @@ export default function CardPedido({ Pedido, onClick, onUpdate }: CardPedidoProp
                     <div>
                         <p className="text-[9px] text-slate-500 uppercase font-black tracking-widest">Monto Total</p>
                         <p className="text-2xl font-black text-white">
-                            ${Pedido.factura?.monto_total?.toFixed(2) || "0.00"}
+                            ${Number(Pedido.monto_total?? 0).toFixed(2) || "0.00"}
                         </p>
                     </div>
                     
