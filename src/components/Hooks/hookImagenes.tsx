@@ -8,6 +8,7 @@ export function useImagenesPlatillo(NombrePlatillo: string | null){
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if(!NombrePlatillo) return;
     const obtenerImagen = async () => {
       try {
        

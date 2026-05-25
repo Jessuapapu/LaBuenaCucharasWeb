@@ -40,6 +40,7 @@ export interface OrdenVisualizar {
     detalles: DetalleOrdenLista[];
     TipodePedidos?: "Evento" | "Contrato" | "Buffet"; 
 }
+
 export interface ActualizarOrden{
     id_pedido: number;
     estado_pedido: string;
@@ -61,4 +62,25 @@ export interface ApiResponseCrearOrden {
     success: boolean;
     message: string;
     id_orden_creada?: {idOrden: number};
+}
+
+export interface ModalNuevaFacturaProps {
+  Ordenes?: ClienteOrden[];
+  onClose: () => void;
+  onSave: (nueva: any) => void;
+}
+
+// Interfaz para el estado del formulario de facturación
+export interface FacturaForm {
+    idCliente: number | "";
+    Cantidad: number | "";
+    nombreCliente: string;
+    Fecha: string;
+    Direccion?: string;
+    MetodoPago: "Efectivo" | "Transferencia" | "Tarjeta" | "Crédito";
+    CondicionPago: "Contado" | "Crédito";
+    tipoDocumentoOrigen: "Pedido" | "Contrato" | null;
+    //subTotal: number;
+    idOrdenes: number[];
+    idContrato?: number | null;
 }

@@ -6,4 +6,5 @@ export interface Contrato {
   fechaVencimiento: string;
   presupuesto: number;
   estado: "Activo" | "Inactivo";
+  Direccion: string;
 }

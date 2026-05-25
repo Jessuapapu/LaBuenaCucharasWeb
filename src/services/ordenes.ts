@@ -1,5 +1,5 @@
 import { mapOrdenes } from "../map/ordenes";
-import type { CrearOrden, ActualizarOrden } from "../interfaces/Ordenes";
+import type { CrearOrden, ApiResponseCrearOrden } from "../interfaces/Ordenes";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -13,8 +13,7 @@ export async function getOrdenesByCliente(idCliente: number) {
   return mapOrdenes(data.data ?? data);
 }
 
-export async function crearOrden(nuevaOrden: CrearOrden) {
-
+export async function crearOrden(nuevaOrden: CrearOrden): Promise<ApiResponseCrearOrden> {
     const response = await fetch(`${API_URL}/ordenes/`, {
         method: "POST",
         headers: {
@@ -22,17 +21,14 @@ export async function crearOrden(nuevaOrden: CrearOrden) {
         },
         body: JSON.stringify(nuevaOrden),
     });
-
+    const data= await response.json();
     if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-            errorData.detail || "Error al registrar la orden"
-        );
+        throw new Error(data.detail || "Error al registrar la orden");
     }
-    return response.json();
+    return data;
 }
 
-export async function actualizarOrden(idOrden: number, payload: any) {
+export async function actualizarOrden(idOrden: number, payload: Partial<CrearOrden>) {
     const response =await fetch(`${API_URL}/ordenes/${idOrden}`,{
         method: "PUT",
             headers: {
@@ -40,12 +36,9 @@ export async function actualizarOrden(idOrden: number, payload: any) {
             },
             body: JSON.stringify(payload),
         });
-
         const data = await response.json();
-
         if (!response.ok) {
             throw new Error(data.detail || "Error al actualizar la orden");
         }
-
         return data;
 }

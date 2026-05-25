@@ -12,7 +12,7 @@ export async function getClientes() {
 
   return mapClientes(data);
 }
-
+//obtiene por id
 export async function getClienteById(id: number) {
 
     const response = await fetch(`${API_URL}/clientes/${id}`);

@@ -8,7 +8,8 @@ export function mapContrato(raw: any): Contrato {
     fechaInicio: raw.FechaInicio,
     fechaVencimiento: raw.FechaVencimiento,
     presupuesto: Number(raw.Presupuesto ?? 0),
-    estado: raw.Estado
+    estado: raw.Estado,
+    Direccion: raw.direccion || raw.dirreccion
   };
 }
 

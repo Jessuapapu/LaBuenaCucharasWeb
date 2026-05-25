@@ -1,59 +1,16 @@
 
 import { useCallback, useState, useEffect, useMemo } from "react";
+import type { FacturaForm, OrdenVisualizar, ClienteOrden } from "../../interfaces/Ordenes";
+import type { Contrato } from "../../interfaces/Contratos";
+import { getContratosByCliente } from "../../services/contratos";
 
-export interface Contrato {
-    idContrato: number;
-    numeroContrato: number;
-    idCliente: number;
-    Estado: "Activo" | "Inactivo";
-    FechaInicio: string;
-    FechaVencimiento: string;
-    Direccion: string;
-    Presupuesto: number
-}
-
-//A como lo espera el backend (ya llevo 5 veces cambiando por letras y por equivocacion)
-export interface DetallesOrdenes {
-    id_orden: number;
-    nombre_platillo: string;
-    cantidad: number;
-    precio_unitario: number;
-}
-
-export interface Pedidos {
-    id_pedido: number;
-    estado_pedido: string; //el backend manda
-    TipodePedidos?: "Evento" | "Contrato" | "Buffet"; //por si acaso
-    monto_total: number;
-    fecha: string;
-    cliente: {
-        nombre_cliente: string;
-        direccion_cliente: string;
-    }
-    Detalles?: DetallesOrdenes[];
-}
-
-// Interfaz para el estado del formulario de facturación
-export interface FacturaForm {
-    idCliente: number | "";
-    Cantidad: number | "";
-    nombreCliente: string;
-    Fecha: string;
-    Direccion?: string;
-    MetodoPago: "Efectivo" | "Transferencia" | "Tarjeta" | "Crédito";
-    CondicionPago: "Contado" | "Crédito";
-    tipoDocumentoOrigen: "Pedido" | "Contrato" | null;
-    subTotal: number;
-    idOrdenes: number[];
-    idContrato?: number | null;
-}
     const API_URL = import.meta.env.VITE_API_URL;
 // Agregamos 'idFacturaEditar' como parámetro opcional
 export function useFactura(idCliente: number | "") {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [isFetching, setIsFetching] = useState(false);
-    const [pedidosPendientes, setPedidosPendientes] = useState<Pedidos[]>([]);
+    const [pedidosPendientes, setPedidosPendientes] = useState<OrdenVisualizar[]>([]);
     const [contratosActivos, setContratosActivos] = useState<Contrato[]>([]);
     
     const [facturaData, setFacturaData] = useState<FacturaForm>({
@@ -65,15 +22,19 @@ export function useFactura(idCliente: number | "") {
         MetodoPago: "Efectivo",
         CondicionPago: "Contado",
         tipoDocumentoOrigen: null,
-        subTotal: 0,
-        idOrdenes: []
+        idOrdenes: [],
+        idContrato: null
     });
+
+     // Estado derivado para el Subtotal (calculado en tiempo real en el cliente)
+    const [subTotalVisual, setSubTotalVisual] = useState<number>(0);
 
     // Buscar datos (Solo si estamos CREANDO
     useEffect(() => {
         if (!idCliente) {
             setPedidosPendientes([]);
             setContratosActivos([]);
+            setSubTotalVisual(0);
             return;
         }
 
@@ -99,12 +60,8 @@ export function useFactura(idCliente: number | "") {
                 const jsonPedidos = await resPedidos.json();
                 const jsonContratos = await resContratos.json();
 
-                const pedidos =
-                    jsonPedidos?.data || [];
-
-                const contratos =
-                    jsonContratos?.data || [];
-
+                const pedidos: OrdenVisualizar[] = jsonPedidos?.data || [];
+                const contratos: Contrato[] = jsonContratos?.data || [];
                 setPedidosPendientes(pedidos);
                 setContratosActivos(contratos);
 
@@ -113,36 +70,12 @@ export function useFactura(idCliente: number | "") {
                     contratos?.[0];
 
                 if (primerRegistro) {
-
-                    setFacturaData(prev => ({
-                        ...prev,
-
-                        idCliente,
-
-                        nombreCliente:
-                            primerRegistro
-                                ?.cliente
-                                ?.nombre_cliente ||
-
-                            primerRegistro
-                                ?.NombreCliente ||
-
-                            prev.nombreCliente,
-
-                        direccion:
-                            primerRegistro
-                                ?.cliente
-                                ?.direccion_cliente ||
-
-                            primerRegistro
-                                ?.Direccion ||
-
-                            prev.Direccion
+                    setFacturaData(prev => ({...prev, idCliente,
+                        nombreCliente: primerRegistro?.cliente?.nombre_cliente || prev.nombreCliente,
+                        Direccion: primerRegistro?.cliente?.direccion_cliente|| prev.Direccion
                     }));
-
                 }
-                
-            }catch(error){
+                }catch(error){
                    setError("No se encontro"); 
                 }
                 finally{
@@ -154,18 +87,18 @@ export function useFactura(idCliente: number | "") {
         return () => controller.abort();
     }, [idCliente])
 
-    const seleccionarCliente = useCallback((id: number, nombre: string, direccion: string) => {
+    const seleccionarCliente = useCallback((cliente: ClienteOrden) => {
         setFacturaData(prev => ({
             ...prev,
-            idCliente: id,
-            nombreCliente: nombre,
-            Direccion: direccion,
+            idCliente: cliente.idCliente,
+            nombreCliente: cliente.nombre_cliente,
+            Direccion: cliente.direccion_cliente,
             // Limpiamos selecciones anteriores si cambia de cliente
             tipoDocumentoOrigen: null,
             idOrdenes: [],
             idContrato: null,
-            subTotal:  0
         }));
+        setSubTotalVisual(0);
     }, []);
 
     const pedidosSeleccionados =useMemo(() => {
@@ -175,38 +108,27 @@ export function useFactura(idCliente: number | "") {
             facturaData.idOrdenes
         ]);
 
-    const alternarSeleccionPedido = useCallback((pedido: Pedidos
+    const alternarSeleccionPedido = useCallback((pedido: OrdenVisualizar
     ) => {
         setFacturaData(prev => {
             // Si estaba usando contrato,
             // limpiar selección previa
             const cambiarModoPedido =prev.tipoDocumentoOrigen !== "Pedido";
+            const ordenesActuales = cambiarModoPedido? []: prev.idOrdenes;
+            const yaExiste = ordenesActuales.includes(pedido.id_pedido);
+            const nuevasOrdenes= yaExiste? ordenesActuales.filter(id => id !== pedido.id_pedido): [...ordenesActuales, pedido.id_pedido];
 
-            const ordenesActuales =
-                cambiarModoPedido? []: prev.idOrdenes;
+            // Calcular subtotal acumulado de los pedidos seleccionados
+            const calculoSubtotal = pedidosPendientes
+                .filter(p => nuevasOrdenes.includes(p.id_pedido))
+                .reduce((acc, p) => acc + Number(p.monto_total || 0), 0);
 
-            const yaExiste =
-                ordenesActuales.includes(pedido.id_pedido);
-
-            let nuevasOrdenes: number[] = [];
-
-            if (yaExiste) {
-                nuevasOrdenes =
-                    ordenesActuales.filter(id => id !== pedido.id_pedido);
-            } else {
-                nuevasOrdenes = [...ordenesActuales, pedido.id_pedido
-                ];
-            }
-            // calcular subtotal dinámicamente
-            const pedidosSeleccionados =
-                pedidosPendientes.filter(p => nuevasOrdenes.includes(p.id_pedido));
-
-            const subtotal =
-                pedidosSeleccionados.reduce((acc, pedido) =>acc + Number(pedido.monto_total || 0),0);
+            setSubTotalVisual(Number(calculoSubtotal.toFixed(2)));
+            
             return {...prev, tipoDocumentoOrigen:nuevasOrdenes.length > 0? "Pedido": null,
                 idOrdenes: nuevasOrdenes,
                 idContrato: null,
-                subTotal: Number(subtotal.toFixed(2)),
+                MetodoPago: prev.MetodoPago === "Crédito" ? "Efectivo" : prev.MetodoPago, // Resetea si estaba en crédito corporativo
                 condicionPago: "Contado"
             };
         });
@@ -222,9 +144,10 @@ export function useFactura(idCliente: number | "") {
             idContrato: idContrato,
             idOrdenes: [], // Limpiamos los pedidos ya que cambió al flujo corporativo
             Direccion: contrato.Direccion || prev.Direccion,
+            MetodoPago: "Crédito",
             CondicionPago: "Crédito", // Los contratos típicamente se manejan a crédito empresarial
-            subTotal: Number(contrato.Presupuesto || 0) 
         }));
+        setSubTotalVisual(Number(contrato.presupuesto || 0));
     }, [contratosActivos]);
 
     // Función auxiliar por si el cajero quiere desmarcar todo de golpe
@@ -234,58 +157,65 @@ export function useFactura(idCliente: number | "") {
             tipoDocumentoOrigen: null,
             idOrdenes: [],
             idContrato: null,
-            subTotal: 0
         }));
+        setSubTotalVisual(0);
     }, []);
             
 
     // Guardar o Editar (Decide dinámicamente según le proceso)
     const guardarFactura = useCallback(async (onSuccess: (data: any) => void) => {
-        setLoading(true);
+        //setLoading(true);
         setError(null);
-        if (
-                !facturaData.idCliente
-            ) { setError("Debe seleccionar un cliente");
+        if (!facturaData.idCliente) { setError("Debe seleccionar un cliente");
                 return;
             }
 
-            if (facturaData.tipoDocumentoOrigen ==="Pedido" && facturaData.idOrdenes.length === 0
-            ) {
+            if (facturaData.tipoDocumentoOrigen ==="Pedido" && facturaData.idOrdenes.length === 0) {
                 setError("Debe seleccionar al menos un pedido");
                 return;
             }
 
-            if (facturaData.tipoDocumentoOrigen === "Contrato" && !facturaData.idContrato
-            ) {
+            if (facturaData.tipoDocumentoOrigen === "Contrato" && !facturaData.idContrato) {
                 setError("Debe seleccionar un contrato");
                 return;
             }
             setLoading(true);
-            setError(null);
+            //setError(null);
 
         try {
+            const payloadEnvio = {
+            IdCliente: Number(facturaData.idCliente),
+            Cantidad: facturaData.Cantidad || 1,
+            Fecha: facturaData.Fecha,
+            MetodoPago: facturaData.MetodoPago,
+            CondicionPago: facturaData.CondicionPago,
+            tipoDocumentoOrigen: facturaData.tipoDocumentoOrigen,
+            MONTOTOTAL: subTotalVisual, // Tu backend procesa la suma total aquí
+            idOrdenes: facturaData.idOrdenes,
+            idContrato: facturaData.idContrato
+        };
             const response = await fetch(`${API_URL}/factura/`,
                 {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(facturaData)
+                body: JSON.stringify(payloadEnvio)
             });
-
-            if (!response.ok) throw new Error(`Errr al facturar`);
-            
             const data = await response.json();
+            if (!response.ok) throw new Error(`Errr al facturar`);
             onSuccess(data);
         } catch (err: any) {
             setError(err.message || "Error al procesar");
         } finally {
             setLoading(false);
         }
-    }, [facturaData]);
+    }, [facturaData, subTotalVisual]);
 
     return {
         facturaData,
         setFacturaData,
         seleccionarCliente,
+        setSubTotalVisual,
+        subTotalVisual,
         pedidosPendientes,
         setPedidosPendientes,
         contratosActivos,

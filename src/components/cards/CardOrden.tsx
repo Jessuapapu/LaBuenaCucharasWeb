@@ -79,48 +79,42 @@ export default function CardPedido({Pedido, onClick, Actualizar}: Props) {
                 </div>
 
                 {/* DETALLES */}
-        <div className="
-          bg-black/30
-          rounded-xl
-          p-3
-          border border-white/5
-          space-y-2
-        ">
-          {detallesAMostrar?.map((item, idx) => (
-            <div key={idx}className="flex justify-between text-[11px]">
-              <span className="text-slate-400 truncate flex-1">
-                {item.cantidad}x{" "}
-                {item.nombre_platillo}
-              </span>
-              <span className="text-slate-500 font-mono">$
-                {(item.precio_unitario *item.cantidad).toFixed(2)}
-              </span>
-            </div>
-          ))}
+                    <div className="bg-black/30 rounded-xl p-3 border border-white/5 space-y-2">
+                    {detallesAMostrar?.map((item, idx) => (
+                        <div key={idx}className="flex justify-between text-[11px]">
+                        <span className="text-slate-400 truncate flex-1">
+                            {item.cantidad}x{" "}
+                            {item.nombre_platillo}
+                        </span>
+                        <span className="text-slate-500 font-mono">$
+                            {(item.precio_unitario *item.cantidad).toFixed(2)}
+                        </span>
+                        </div>
+                    ))}
 
-          {/* BOTÓN EXPANDIR */}
-          {Pedido.detalles?.length > 2 && (
-            <button
-              type="button"
-              onClick={handleToggleDetalles}
-              className="w-full flex items-center justify-center gap-1 text-[10px] text-blue-400 hover:text-blue-300
-                border-t border-white/5 pt-2 transition-colorsfont-semibold">
-              {mostrarDetalles ? (
-                <>
-                  <ChevronUp size={12} />
-                  Mostrar menos
-                </>
-              ) : (
-                <>
-                  <ChevronDown size={12} />
-                  Más detalles
-                </>
-              )}
+                    {/* BOTÓN EXPANDIR */}
+                    {Pedido.detalles?.length > 2 && (
+                        <button
+                        type="button"
+                        onClick={handleToggleDetalles}
+                        className="w-full flex items-center justify-center gap-1 text-[10px] text-blue-400 hover:text-blue-300
+                            border-t border-white/5 pt-2 transition-colorsfont-semibold">
+                        {mostrarDetalles ? (
+                            <>
+                            <ChevronUp size={12} />
+                            Mostrar menos
+                            </>
+                        ) : (
+                            <>
+                            <ChevronDown size={12} />
+                            Más detalles
+                            </>
+                        )}
 
-            </button>
-          )}
-        </div>
-      </div>
+                        </button>
+                    )}
+                    </div>
+                </div>
 
             {/* FOOTER */}
             <div className="p-5 pt-0 mt-auto">
