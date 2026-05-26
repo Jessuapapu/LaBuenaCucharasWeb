@@ -9,7 +9,7 @@ export function mapContrato(raw: any): Contrato {
     fechaVencimiento: raw.FechaVencimiento,
     presupuesto: Number(raw.Presupuesto ?? 0),
     estado: raw.Estado,
-    Direccion: raw.direccion || raw.dirreccion
+    direccion_cliente: raw.direccion || raw.dirreccion
   };
 }
 

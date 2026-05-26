@@ -43,9 +43,9 @@ export default function CardPedido({Pedido, onClick, Actualizar}: Props) {
     statusConfig[Pedido.estado_pedido] ??
     "bg-slate-500/10 text-slate-400 border-slate-500/20";
 
-  const detallesAMostrar = mostrarDetalles
-    ? Pedido.detalles
-    : Pedido.detalles?.slice(0, 2);
+    const detallesAMostrar = mostrarDetalles
+        ? Pedido.detalles
+        : Pedido.detalles?.slice(0, 2);
 
     return (
         <div 

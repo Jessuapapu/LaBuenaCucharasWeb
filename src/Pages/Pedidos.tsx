@@ -1,9 +1,11 @@
 import TablaPedidos from "../components/table/TablePedidos";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import CardGraficoLinealSemanal from "../components/cards/CardsLineales/CardGrapLineal";
 import FormularioNuevoPedido from "../components/forms/PedidosForms";
 import { TrendingUp, Package, Clock, CheckCircle, DollarSign, Plus } from "lucide-react";
 import CardPedido from "../components/cards/CardOrden";
+import { pedidosMapper } from "../map/pedidos";
+import type { OrdenVisualizar } from "../interfaces/Ordenes";
 
 // Interfaces
 interface DatoGrafico {
@@ -52,6 +54,7 @@ export default function PedidosPage() {
     
     // Filtro activo para los KPIs
     const [activeFilter, setActiveFilter] = useState<string>("");
+    const API_URL = import.meta.env.VITE_API_URL;
     
     const filteredData = useMemo(() => {
         if (!activeFilter) return data;
@@ -59,29 +62,56 @@ export default function PedidosPage() {
     }, [data, activeFilter]);
 
     // Fetch de Pedidos
-    const fetchPedidos = () => {
-        fetch("http://127.0.0.1:8001/pedidos/?pagina=1&rows=10&todo=true")
-            .then((res) => res.json())
-            .then((json) => setData(json))
-            .catch((err) => console.error("Error cargando pedidos:", err));
-    };
+    const fetchPedidos = useCallback(async (signal?: AbortSignal) => {
+        try {
+            // Pasamos un parámetro dummy u omitimos si tu servicio general trae todos los pedidos
+            // Nota: Si modificaste getPedidosByCliente para recibir cliente, puedes adaptar un método general 
+            // en tu service o consumir la URL usando la misma lógica limpia estructurada:
+            const response = await fetch(`${API_URL}/pedidos/?pagina=1&rows=10&todo=true`, { signal });
+            if (!response.ok) throw new Error("Error cargando los pedidos");
+            
+            const json = await response.json();
+            const datosCrudos = json.data || [];
+            
+            // Reutilizamos el comportamiento del mapeador inyectado en tus utilidades
+            // Si tu pedidosService ya exporta un listador global, usa: await pedidosService.getAllPedidos()
+            setData(datosCrudos);
+            } catch (err) {
+            console.error("Error cargando pedidos en UI:", err);
+        }
+    }, [API_URL]);
 
     // Fetch de Gráfica
     useEffect(() => {
-        fetch("http://127.0.0.1:8001/pedidos/conteo/semanal")
-            .then((res) => res.json())
-            .then((data) => {
-                const formattedData = data.map((d: any) => ({
-                    x: d.dia.charAt(0).toUpperCase() + d.dia.slice(1),
-                    y: d.conteo
-                }));
-                setDatosVentas(formattedData);
-            })
-            .catch((err) => console.error("Error:", err))
-            .finally(() => setLoading(false));
-    }, []);
+        const controller = new AbortController();
+        
+        const cargarDatosPantalla = async () => {
+            setLoading(true);
+            try {
+                // Ejecutamos la carga del listado y la gráfica en paralelo
+                const resGrafica = await fetch(`${API_URL}/ordenes/conteo/semanal`, { signal: controller.signal });
+                if (resGrafica.ok) {
+                    const dataGrafica = await resGrafica.json();
+                    const formattedData = dataGrafica.map((d: any) => ({
+                        x: d.dia.charAt(0).toUpperCase() + d.dia.slice(1),
+                        y: d.conteo
+                    }));
+                    setDatosVentas(formattedData);
+                }
+                
+                await fetchPedidos(controller.signal);
+            } catch (err) {
+                console.error("Error sincronizando dashboard:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    useEffect(() => { fetchPedidos(); }, []);
+        cargarDatosPantalla();
+        return () => controller.abort();
+    }, [fetchPedidos, API_URL]);
+
+    //useEffect(() => { fetchPedidos(); }, []);
 
     // Calcular KPIs
     const kpis = useMemo(() => {

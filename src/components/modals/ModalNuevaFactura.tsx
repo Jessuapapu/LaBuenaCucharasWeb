@@ -20,7 +20,6 @@ export default function ModalNuevaFactura({ Ordenes= [], onClose, onSave }: Moda
         seleccionarCliente,
         pedidosPendientes,
         alternarSeleccionPedido,
-        seleccionarContrato,
         limpiarSeleccionDocumentos,
         pedidosSeleccionados,
         loading,
@@ -37,7 +36,6 @@ export default function ModalNuevaFactura({ Ordenes= [], onClose, onSave }: Moda
       cliente.nombre_cliente.toLowerCase().includes(BusquedaCliente.toLowerCase())
     );
   }, [BusquedaCliente, Ordenes]);
-
 
   // Cálculo matemático del precio unitario de los platillos consumidos
   const precioUnitario = useMemo(() => {
@@ -170,20 +168,6 @@ export default function ModalNuevaFactura({ Ordenes= [], onClose, onSave }: Moda
                   </div>
                 </div>
               )}
-
-              {/* INPUT DE CANTIDAD (Para el cálculo de precio unitario) */}
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Cantidad de Platos a Facturar</label>
-                <input
-                  type="number"
-                  min="1"
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-blue-500 outline-none text-sm text-white"
-                  placeholder="Ej: 5"
-                  value={facturaData.Cantidad}
-                  onChange={(e) => setFacturaData(prev => ({ ...prev, Cantidad: e.target.value === "" ? "" : Number(e.target.value) }))}
-                  required
-                />
-              </div>
 
               {/* FILA DE PARÁMETROS: FECHA DE EMISIÓN CON ICONO VISIBLE */}
               <div className="space-y-1">

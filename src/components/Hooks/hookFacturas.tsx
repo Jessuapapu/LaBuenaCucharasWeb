@@ -3,9 +3,12 @@ import { useCallback, useState, useEffect, useMemo } from "react";
 import type { FacturaForm, OrdenVisualizar, ClienteOrden } from "../../interfaces/Ordenes";
 import type { Contrato } from "../../interfaces/Contratos";
 import { getContratosByCliente } from "../../services/contratos";
+import { getClienteById } from "../../services/clientes";
+import { getOrdenesByCliente } from "../../services/ordenes";
+import { pedidosService } from "../../services/pedidos";
 
     const API_URL = import.meta.env.VITE_API_URL;
-// Agregamos 'idFacturaEditar' como parámetro opcional
+
 export function useFactura(idCliente: number | "") {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -43,45 +46,40 @@ export function useFactura(idCliente: number | "") {
             setIsFetching(true);
             setError(null);
             try{
-                const [resPedidos, resContratos]= await Promise.all([
-                    fetch(`${API_URL}/clientes/${idCliente}`,
-                        {
-                            signal: controller.signal
-                        }
-                    ),
-                    fetch(`${API_URL}/clientes/contratos/${idCliente}`,
-                        {
-                            signal: controller.signal
-                        }
-                    )
+                const [infoCliente, pedidosValidados, dataContratos]= await Promise.all([
+                    getClienteById(Number(idCliente)),
+                    pedidosService.getPedidosByCliente(Number(idCliente), controller.signal),
+                    getContratosByCliente(Number(idCliente))
                 ])
-                if (!resPedidos.ok || !resContratos.ok) throw new Error("Error en el servidor");
+                //if (!resPedidos.ok || !resContratos.ok) throw new Error("Error en el servidor");
 
-                const jsonPedidos = await resPedidos.json();
-                const jsonContratos = await resContratos.json();
+                //const jsonPedidos = await resPedidos.json();
+                //const Contratos= await getContratosByCliente(Number(idCliente))
+                //const Clientes= resCliente;
 
-                const pedidos: OrdenVisualizar[] = jsonPedidos?.data || [];
-                const contratos: Contrato[] = jsonContratos?.data || [];
-                setPedidosPendientes(pedidos);
-                setContratosActivos(contratos);
+                //const pedidos: OrdenVisualizar[] = jsonPedidos?.data || [];
+                //const contratos: Contrato[] = resContratos?.data || [];
+                setPedidosPendientes(pedidosValidados || []);
+                setContratosActivos(dataContratos || []);
 
-                const primerRegistro =
-                    pedidos?.[0] ||
-                    contratos?.[0];
+                //const primerRegistro = resPedidos?.[0] ||contratos?.[0];
 
-                if (primerRegistro) {
-                    setFacturaData(prev => ({...prev, idCliente,
-                        nombreCliente: primerRegistro?.cliente?.nombre_cliente || prev.nombreCliente,
-                        Direccion: primerRegistro?.cliente?.direccion_cliente|| prev.Direccion
+                if (infoCliente) {
+                  setFacturaData(prev => ({...prev, idCliente,
+                        nombreCliente: infoCliente?.nombre_cliente || prev.nombreCliente,
+                        Direccion: infoCliente?.direccion_cliente|| prev.Direccion
                     }));
                 }
-                }catch(error){
-                   setError("No se encontro"); 
+                }catch(error: any){
+                   // Evitamos pisar el estado si la petición simplemente fue cancelada por el controlador
+                if (error.name !== "AbortError") {
+                    console.error("Error al recuperar los registros del cliente:", error);
+                    setError("No se encontraron registros pendientes para este cliente"); 
+                } 
                 }
                 finally{
                     setIsFetching(false);
-                }
-            
+                } 
         }
         buscarDatosCliente();
         return () => controller.abort();
@@ -103,13 +101,9 @@ export function useFactura(idCliente: number | "") {
 
     const pedidosSeleccionados =useMemo(() => {
             return pedidosPendientes.filter(pedido =>facturaData.idOrdenes.includes(pedido.id_pedido));
-        }, [
-            pedidosPendientes,
-            facturaData.idOrdenes
-        ]);
+        }, [pedidosPendientes, facturaData.idOrdenes]);
 
-    const alternarSeleccionPedido = useCallback((pedido: OrdenVisualizar
-    ) => {
+    const alternarSeleccionPedido = useCallback((pedido: OrdenVisualizar) => {
         setFacturaData(prev => {
             // Si estaba usando contrato,
             // limpiar selección previa
@@ -129,7 +123,7 @@ export function useFactura(idCliente: number | "") {
                 idOrdenes: nuevasOrdenes,
                 idContrato: null,
                 MetodoPago: prev.MetodoPago === "Crédito" ? "Efectivo" : prev.MetodoPago, // Resetea si estaba en crédito corporativo
-                condicionPago: "Contado"
+                CondicionPago: "Contado"
             };
         });
     }, [pedidosPendientes]);
@@ -143,7 +137,7 @@ export function useFactura(idCliente: number | "") {
             tipoDocumentoOrigen: "Contrato",
             idContrato: idContrato,
             idOrdenes: [], // Limpiamos los pedidos ya que cambió al flujo corporativo
-            Direccion: contrato.Direccion || prev.Direccion,
+            Direccion: contrato.direccion_cliente || prev.Direccion,
             MetodoPago: "Crédito",
             CondicionPago: "Crédito", // Los contratos típicamente se manejan a crédito empresarial
         }));

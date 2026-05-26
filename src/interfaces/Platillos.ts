@@ -6,6 +6,19 @@ export interface Platillo {
   //imagen_url?: string;
 }
 
+export interface Menu_dario{
+    IdMenu?: number;
+    idPlatillo?: number;
+    Fecha: string;
+    Monto?: number;
+    detalle: DetalleMenu[];
+}
+interface DetalleMenu {
+    nombre_platillo: string;
+    cantidad: number;
+    precio_unitario: number;
+}
+
 export interface Imagenes{
     IdImagen: number;
     IdPlatillo: number;
@@ -28,6 +41,13 @@ export interface Ingredientes{
     IdIngredeintes: number;
     stock_ingredientes: number;
     nombreIngrediente: string;
+}
+
+export interface DetalleIngredientes{
+    IdRegistroAbastecimiento: number;
+    IdIngredientes: number;
+    TotalIngresado: number;
+    costoIndividual: number;
 }
 
 export interface categoriaPlatillo{

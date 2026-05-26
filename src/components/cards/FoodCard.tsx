@@ -19,12 +19,12 @@ export const FoodCard = ({ platillo, onUpdate, ventas }: FoodCardProps) => {
   return (
     <div className="
       flex flex-col
-      w-[300px] 
-      h-[400px] 
+      w-full 
+      h-full 
       overflow-hidden 
       rounded-2xl 
       border border-[var(--border)] 
-      bg-[var(--bg)] 
+      bg-white 
       transition-all duration-300 ease-in-out 
       hover:-translate-y-2 
       hover:shadow-[var(--shadow)]
@@ -62,19 +62,20 @@ export const FoodCard = ({ platillo, onUpdate, ventas }: FoodCardProps) => {
           </h3>
           <p className="text-slate-500 text-xs leading-relaxed line-clamp-2">
           Categoría: {platillo.nombre_categoria || 'General'} <br />
+          
           Platillo listo para servicio en comedor.
         </p>
+        <div className="flex-1 gap-2">
+          <span className="text-[9px] uppercase text-slate-400 font-bold tracking-wider">Precio</span>
+            <span className="text-slate-900 font-black text-xl font-mono">
+              C$ {Number(precio).toFixed(2)}
+            </span></div>
+          
         </div>
       </div>
 
       {/* Footer de la Card */}
         <div className="pt-4 border-t border-slate-400 flex items-center justify-center gap-4">
-          <div className="flex flex-col">
-            <span className="text-[9px] uppercase text-slate-400 font-bold tracking-wider">Precio</span>
-            <span className="text-slate-900 font-black text-xl font-mono">
-              C$ {Number(precio).toFixed(2)}
-            </span>
-          </div>
           <button 
             onClick={() => setIsEditModalOpen(true)}
             className="flex-1 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold py-2.5 rounded-xl transition-colors shadow-md shadow-blue-900/20"
