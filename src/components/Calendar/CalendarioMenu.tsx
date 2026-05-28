@@ -1,5 +1,5 @@
-import React, { useMemo } from "react";
-import { useState } from "react";
+import React from "react";
+import { useState, useMemo } from "react";
 //import ModalEditarMenu from "../modals/ModalEditarMenu";
 import ModalNuevoMenu from "../modals/ModalNuevoMenu";
 import { Utensils, Edit2, ChevronLeft, ChevronRight} from "lucide-react";
@@ -35,35 +35,32 @@ const Calendario: React.FC<MenuProps>= ({Datos})=>{
     const primerDia = new Date(Anio, meses, 1).getDay();
     const diasEnMes = new Date( Anio, meses + 1, 0).getDate();
         //Espacios
-    const celdas = useMemo(()=>{
+    const celdas = useMemo(()=> {
        return [
         ...Array(primerDia).fill(null),
         ...Array.from({ length: diasEnMes }, (_, i) => i + 1)
-    ];
+    ]; 
     }, [primerDia, diasEnMes]) 
 
     const obtenerPlatilloDia = (dia: number): Menu_dario[] => {
         if (!dia) return[];
         // Formateamos el día para que coincida con el formato YYYY-MM-DD de la API
         const fechaStr = `${Anio}-${String(meses + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
-        return Datos.filter(item => item.Fecha === fechaStr);
+        return Datos.filter(item => item.day === fechaStr);
     };
 
     const manejarClickDia = (dia: number) => {
         if (!dia) return;
         const fechaStr = `${Anio}-${String(meses + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
         setmodalDta({
-            Fecha: fechaStr,
-            detalle: [{
+            day: fechaStr,
             nombre_platillo: "",
-            cantidad: 1,
             precio_unitario: 0,
-        },
-      ],});
+    });
     }
 
     const handleUpdate= (updated: Menu_dario) =>{
-        console.log("Menu actualizado exitosamente",updated);
+        console.log(updated);
         setmodalDta(null);
 
     }
@@ -88,11 +85,11 @@ const Calendario: React.FC<MenuProps>= ({Datos})=>{
             {/*Dias de semana*/}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-4 mb-2 text-sm">
                 {diasSemanas.map(d=> (<div key={d} className="text-center text-gray-500 text-xs font-bold uppercase tracking-wider py-2">
-                    {d.substring(0,3)}</div> ))}
+                    {d}</div> ))}
             </div>
             {/* Cuadrícula de días */}
             <div className="grid grid-cols-7 gap-2">
-                {celdas.map((dia: number | null, idx: number) => {
+                {celdas.map((dia, idx) => {
                     const infoMenu = dia ? obtenerPlatilloDia(dia) : [];
                     const esHoy = dia === diaHoy.getDate() && meses=== diaHoy.getMonth() && Anio=== diaHoy.getFullYear();
 
@@ -123,10 +120,9 @@ const Calendario: React.FC<MenuProps>= ({Datos})=>{
 
                                     <div className="flex-1 space-y-1 overflow-y-auto max-h-[80px] custom-scrollbar">
                                             {infoMenu.length > 0 ?(
-                                                infoMenu.map((menu) => (
-                                                    menu.detalle?.map((platillo, pIdx)=>(
-                                                      <div 
-                                                    key={`${menu.IdMenu}-${pIdx}`} 
+                                                infoMenu.map((platillo) => (
+                                                <div 
+                                                    key={platillo.id_menu ?? `${platillo.day}-${idx}`} 
                                                     className="bg-blue-600/20 border border-blue-500/30 p-1 px-2 rounded-md relative group/item flex items-center justify-between"
                                                 >
                                                     <p className="text-[10px] text-blue-200 font-medium leading-tight truncate pr-4">
@@ -136,14 +132,13 @@ const Calendario: React.FC<MenuProps>= ({Datos})=>{
                                                     <button 
                                                         onClick={(e) => {
                                                             e.stopPropagation();
-                                                            setmodalDta(menu); //Manda el platillo
+                                                            setmodalDta(platillo); //Manda el platillo
                                                         }}
                                                         className="absolute right-1 opacity-0 group-hover/item:opacity-100 bg-blue-600 p-0.5 rounded shadow-lg transition-opacity"
                                                     >
                                                         <Edit2 size={12} className="text-white" />
                                                     </button>
-                                                </div>  
-                                                    )) 
+                                                </div>
                                             ))
                                         ) : (
                                             /* Icono decorativo de cubiertos si está completamente vacío */

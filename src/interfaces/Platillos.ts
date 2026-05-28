@@ -7,16 +7,12 @@ export interface Platillo {
 }
 
 export interface Menu_dario{
-    IdMenu?: number;
-    idPlatillo?: number;
-    Fecha: string;
-    Monto?: number;
-    detalle: DetalleMenu[];
-}
-interface DetalleMenu {
+    id_menu?: number;
+    //idPlatillo?: number;
     nombre_platillo: string;
-    cantidad: number;
+    day: string;
     precio_unitario: number;
+    //detalle: DetalleMenu[];
 }
 
 export interface Imagenes{

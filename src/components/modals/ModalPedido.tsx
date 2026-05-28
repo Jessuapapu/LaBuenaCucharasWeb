@@ -1,8 +1,8 @@
 //import { ChartNoAxesColumnIcon } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import type { OrdenVisualizar, DetalleOrdenLista } from "../../interfaces/Ordenes";
-import type { cliente } from "../../interfaces/Clientes";
-import { useCliente } from "../Hooks/hookClientes";
+//import type { cliente } from "../../interfaces/Clientes";
+//import { useCliente } from "../Hooks/hookClientes";
 import { useOrdenes } from "../Hooks/hookOrdenes";
 
 interface ModalPedidoProps {
@@ -20,13 +20,6 @@ export default function ModalPedido({ pedido, onClose, onSave }: ModalPedidoProp
     const [platillos, setPlatillos] = useState<string[]>([]);
     const isAnulado = estado === "ANULADO";
 
-    // Fetch platillos
-    useEffect(() => {
-        fetch("http://127.0.0.1:8001/platillos/")
-            .then(res => res.json())
-            .then(json => setPlatillos(json.map((p: any) => p.nombre_platillo)))
-            .catch(console.error);
-    }, []);
 
     const handleDetalleChange = (index: number, field: keyof DetalleOrdenLista, value: string | number) => {
         if (isAnulado) return; 

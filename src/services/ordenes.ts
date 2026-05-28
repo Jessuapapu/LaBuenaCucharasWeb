@@ -4,7 +4,7 @@ import type { CrearOrden, ApiResponseCrearOrden } from "../interfaces/Ordenes";
 const API_URL = import.meta.env.VITE_API_URL;
 
 export async function getOrdenesByCliente(idCliente: number) {
-  const res = await fetch(`${API_URL}/clientes/${idCliente}`);
+  const res = await fetch(`${API_URL}/clientes/detalles/${idCliente}`);
 
   if (!res.ok) throw new Error("Error al obtener ordenes");
 
@@ -29,7 +29,7 @@ export async function crearOrden(nuevaOrden: CrearOrden): Promise<ApiResponseCre
 }
 
 export async function actualizarOrden(idOrden: number, payload: Partial<CrearOrden>) {
-    const response =await fetch(`${API_URL}/ordenes/${idOrden}`,{
+    const response =await fetch(`${API_URL}/ordenes/detalles/${idOrden}`,{
         method: "PUT",
             headers: {
             "Content-Type": "application/json",

@@ -1,15 +1,10 @@
 import { useState, useEffect, useRef } from "react";
+import { ActualizarPlatillo } from "../../services/platillos";
+import type { Platillo } from "../../interfaces/Platillos";
+import { useImagenesPlatillo } from "../Hooks/hookImagenes";
 
 interface CategoriaOption {
     nombre_categoria: string;
-}
-
-interface Platillo {
-    id_platillo?: number; // Necesario para identificar qué editar
-    nombre_platillo: string;
-    nombre_categoria: string;
-    precio: number;
-    imagen_url?: string; // Para mostrar la imagen actual del servidor
 }
 
 interface ModalEditPlatilloProps {
@@ -21,12 +16,15 @@ interface ModalEditPlatilloProps {
 export default function ModalEditPlatillo({ platillo, onClose, onSave }: ModalEditPlatilloProps) {
     const [nombre, setNombre] = useState(platillo.nombre_platillo);
     const [categoria, setCategoria] = useState(platillo.nombre_categoria);
-    const [precio, setPrecio] = useState<string>(platillo.precio.toString());
+    const [precio, setPrecio] = useState<number>(platillo.precio);
 
     // Estados para la imagen
     const [imageFile, setImageFile] = useState<File | null>(null);
-    const [imagePreview, setImagePreview] = useState<string | null>(platillo.imagen_url || null);
+    //const { nombre_platillo, precio, nombre_categoria, id_platillo } = platillo;
+    const { Urlimagen}=useImagenesPlatillo(platillo.nombre_platillo);
+    const [imagePreview, setImagePreview] = useState<string | null>( Urlimagen||null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [fueEliminada, setFueEliminada] = useState(false); // Flag para avisar si se borró la imagen original
 
     const [listaCategorias, setListaCategorias] = useState<CategoriaOption[]>([]);
     const [loading, setLoading] = useState(false);
@@ -43,16 +41,25 @@ export default function ModalEditPlatillo({ platillo, onClose, onSave }: ModalEd
         const file = e.target.files?.[0];
         if (file) {
             setImageFile(file);
+            setFueEliminada(false)
             const reader = new FileReader();
             reader.onloadend = () => setImagePreview(reader.result as string);
             reader.readAsDataURL(file);
         }
     };
 
+    // Al presionar la 'X' de la foto
+    const handleEliminarFoto = () => {
+        setImagePreview(null);
+        setImageFile(null);
+        if (Urlimagen) {
+            setFueEliminada(true); // Marcamos que el usuario eliminó una foto existente de la BD
+        }
+    };
     const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // Validación básica antes de enviar
-    if (!nombre.trim() || parseFloat(precio) <= 0) {
+    if (!nombre.trim() ) {
         alert("Datos inválidos");
         return;
     }
@@ -60,9 +67,9 @@ export default function ModalEditPlatillo({ platillo, onClose, onSave }: ModalEd
 
     const formData = new FormData();
     // Enviamos los datos básicos
-    formData.append("nombre_platillo", nombre);
+    formData.append("nombre_platillo", nombre.trim());
     formData.append("nombre_categoria", categoria);
-    formData.append("precio", precio);
+    formData.append("precio", precio.toString());
     
     // Solo enviamos el archivo si realmente hay uno nuevo seleccionado
     if (imageFile) {
@@ -70,7 +77,7 @@ export default function ModalEditPlatillo({ platillo, onClose, onSave }: ModalEd
     }
 
     // Avisar si se eliminó la imagen actual y no se subió una nueva
-    if (!imagePreview && !imageFile && platillo.imagen_url) {
+    if (!fueEliminada) {
         formData.append("eliminar_imagen", "true");
     }
 
@@ -120,7 +127,7 @@ export default function ModalEditPlatillo({ platillo, onClose, onSave }: ModalEd
                                 <img src={imagePreview} alt="Preview" className="w-full h-full object-cover rounded-lg" />
                                 <button 
                                     type="button"
-                                    onClick={() => {setImageFile(null); setImagePreview(null);}}
+                                    onClick={handleEliminarFoto}
                                     className="absolute -top-2 -right-2 bg-red-500 rounded-full p-1 shadow-lg hover:bg-red-400"
                                 >
                                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="white">
@@ -151,7 +158,7 @@ export default function ModalEditPlatillo({ platillo, onClose, onSave }: ModalEd
                             type="text"
                             className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white focus:ring-2 focus:ring-orange-500 outline-none transition-all"
                             value={nombre}
-                            onChange={(e) => setNombre(e.target.value)}
+                            onChange={(e) => (e.target.value)}
                         />
                     </div>
 
@@ -161,7 +168,7 @@ export default function ModalEditPlatillo({ platillo, onClose, onSave }: ModalEd
                         <select
                             className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white focus:ring-2 focus:ring-orange-500 outline-none appearance-none cursor-pointer"
                             value={categoria}
-                            onChange={(e) => setCategoria(e.target.value)}
+                            
                             required
                         >
                             {listaCategorias.map((cat, index) => (
@@ -180,9 +187,11 @@ export default function ModalEditPlatillo({ platillo, onClose, onSave }: ModalEd
                             <input
                                 type="number"
                                 step="0.01"
+                                min=""
                                 className="w-full pl-7 pr-4 py-2.5 rounded-lg bg-gray-800 border border-gray-700 text-white focus:ring-2 focus:ring-orange-500 outline-none"
                                 value={precio}
-                                onChange={(e) => setPrecio(e.target.value)}
+                                onChange={(e) => setPrecio(Number(e.target.value))}
+                                required
                             />
                         </div>
                     </div>
