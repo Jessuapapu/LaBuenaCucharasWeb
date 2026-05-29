@@ -1,5 +1,5 @@
 const API_URL = import.meta.env.VITE_API_URL;
-import type { Proveedor, NuevoProveedor, PayloadRegistro } from "../interfaces/proveedor";
+import type { Proveedor, NuevoProveedor, PayloadRegistro } from "../interfaces/Proveedor";
 
 export const proveedoresServiceEditar = {
     actualizarProveedor: async (id: number, datos: Proveedor): Promise<void> => {

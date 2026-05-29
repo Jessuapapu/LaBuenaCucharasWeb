@@ -7,7 +7,7 @@ export const pedidosService = {
   //Obtiene los pedidos activos de un cliente específico pasados por Query Params
   async getPedidosByCliente(idCliente: number, signal?: AbortSignal): Promise<OrdenVisualizar[]> {
     try {
-      const response = await fetch(`${API_URL}/pedidos/?id_cliente=${idCliente}`, { signal });
+      const response = await fetch(`${API_URL}/ordenes/?id_cliente=${idCliente}`, { signal });
       
       if (!response.ok) {
         throw new Error(`Error en el servidor de pedidos: ${response.status}`);

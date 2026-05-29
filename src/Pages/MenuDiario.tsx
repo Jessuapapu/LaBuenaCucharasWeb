@@ -37,7 +37,7 @@ export default function MenusPage() {
       </div>
 
       <div>
-        <Calendario Datos={data}></Calendario>
+        <Calendario></Calendario>
       </div>
 
       {loading ? (

@@ -23,6 +23,13 @@ export default function CalendarioPlatillo({ dataInicial }: CalendarioProps) {
         AsignarPlatilloRapido     // Función del selector rápido conectada al hook
     } = useMenu_diario(dataInicial); // Le puedes pasar la dataInicial si tu hook la procesa al arrancar
 
+    const handleGuardarModal = async (data: any): Promise<void> => {
+        try {
+            await guardarOEditarMenu(data);
+        } catch (error) {
+            console.error("Error al procesar el guardado desde el calendario semanal:", error);
+        }
+    };
     
 
     return (
@@ -40,9 +47,11 @@ export default function CalendarioPlatillo({ dataInicial }: CalendarioProps) {
                 </div>
                 <div className="flex gap-2">
                     <button 
-                        onClick={() => setmodalDta({day: new Date().toISOString().split("T")[0],
-                            nombre_platillo: "",
-                            precio_unitario: 0})} 
+                        onClick={() => setmodalDta({
+                            Fecha: new Date().toISOString().split("T")[0],
+                            NombrePlatillo: "",
+                            Monto: 0
+                        })} 
                         className="bg-blue-600 text-white px-4 py-2.5 rounded-xl font-bold hover:bg-blue-500 transition-all flex items-center gap-2"
                     >
                         <Plus size={18}/> Nuevo
@@ -52,56 +61,73 @@ export default function CalendarioPlatillo({ dataInicial }: CalendarioProps) {
 
             {/* Grid de Días */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-4">
-                {dias.map((dia, index) => (
-                    <div key={dia} className="bg-gray-900 rounded-2xl border border-gray-800 flex flex-col min-h-[400px] overflow-hidden">
-                        <div className="py-2 text-center font-bold text-black uppercase text-[11px] tracking-widest" style={{ backgroundColor: colores[index] }}>
-                            {dia}
-                        </div>
+                {dias.map((dia, index) => {
+                    // Filtrar los platos correspondientes para este día de la semana.
+                    // Si tu hook convierte la "Fecha" a texto del día o maneja la lógica de días, 
+                    // mapeamos comparando con la propiedad correcta de la base de datos (m.Fecha o m.Dia)
+                    const platosDelDia = menuSemanal.filter(m => m.Fecha === dia || (m as any).day === dia);
 
-                        {/* Selector Rápido */}
-                        <div className="p-3">
-                            <select 
-                                className="w-full bg-gray-800 border border-gray-700 text-white text-xs rounded-lg p-2.5 outline-none focus:border-blue-500"
-                                onChange={(e) => AsignarPlatilloRapido(dia, e.target.value)}
-                                value=""
-                            >
-                                <option value="" disabled>+ Rápido</option>
-                                {listaPlatillos.map((p) => (
-                                    <option key={p.nombre_platillo} value={p.nombre_platillo}>{p.nombre_platillo}</option>
-                                ))}
-                            </select>
-                        </div>
+                    return (
+                        <div key={dia} className="bg-gray-900 rounded-2xl border border-gray-800 flex flex-col min-h-[400px] overflow-hidden">
+                            <div className="py-2 text-center font-bold text-black uppercase text-[11px] tracking-widest" style={{ backgroundColor: colores[index] }}>
+                                {dia}
+                            </div>
 
-                        {/* Lista de platos en el día */}
-                        <div className="px-3 pb-3 space-y-2 flex-1">
-                            {menuSemanal.filter(m => m.day === dia).map((m, idx) => (
-                                <div key={idx} className="group bg-gray-800/50 border border-gray-700 p-3 rounded-xl flex justify-between items-start hover:bg-gray-800 transition-colors">
-                                    <span className="text-xs text-gray-200 font-medium leading-tight">{m.nombre_platillo}</span>
-                                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button onClick={() => setmodalDta(m)} //pasa los datos que ya existen para editar
-                                        className="text-gray-400 hover:text-blue-400 p-0.5">
-                                            <Edit2 size={14} />
-                                        </button>
+                            {/* Selector Rápido */}
+                            <div className="p-3">
+                                <select 
+                                    className="w-full bg-gray-800 border border-gray-700 text-white text-xs rounded-lg p-2.5 outline-none focus:border-blue-500"
+                                    onChange={(e) => AsignarPlatilloRapido(dia, e.target.value)}
+                                    value=""
+                                >
+                                    <option value="" disabled>+ Rápido</option>
+                                    {listaPlatillos.map((p, idx) => (
+                                        <option key={idx} value={p.NombrePlatillo}>
+                                            {p.NombrePlatillo}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {/* Lista de platos en el día */}
+                            <div className="px-3 pb-3 space-y-2 flex-1">
+                                {platosDelDia.map((m, idx) => (
+                                    <div key={idx} className="group bg-gray-800/50 border border-gray-700 p-3 rounded-xl flex justify-between items-start hover:bg-gray-800 transition-colors">
+                                        <span className="text-xs text-gray-200 font-medium leading-tight">
+                                            {m.NombrePlatillo}
+                                        </span>
+                                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button 
+                                                onClick={() => setmodalDta(m)} 
+                                                className="text-gray-400 hover:text-blue-400 p-0.5"
+                                            >
+                                                <Edit2 size={14} />
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
-                            
-                            {/* Empty State por día */}
-                            {menuSemanal.filter(m => m.day === dia).length === 0 && (
-                                <div className="flex flex-col items-center justify-center h-32 opacity-10">
-                                    <UtensilsCrossed size={32} className="text-white" />
-                                </div>
-                            )}
+                                ))}
+                                
+                                {/* Empty State por día */}
+                                {platosDelDia.length === 0 && (
+                                    <div className="flex flex-col items-center justify-center h-32 opacity-10">
+                                        <UtensilsCrossed size={32} className="text-white" />
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
 
-            {/* Ahora solo se utiliza un modal en el que si es null */}
+            {/* Modal Único Configurado con Casting manual para evitar bloqueos de tipos */}
             {modalDta !== null && (
-                <ModalNuevoMenu MenuData={modalDta} onClose={() => setmodalDta(null)} onSave={() => {guardarOEditarMenu}} />
+                <ModalNuevoMenu 
+                    MenuData={modalDta as Menu_dario} 
+                    listaPlatillos={listaPlatillos as any}
+                    onClose={() => setmodalDta(null)} 
+                    onSave={handleGuardarModal} 
+                />
             )}
-
         </div>
     );
 }
