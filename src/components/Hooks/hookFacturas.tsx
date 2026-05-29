@@ -70,11 +70,7 @@ export function useFactura(idCliente: number | "") {
                     }));
                 }
                 }catch(error: any){
-                   // Evitamos pisar el estado si la petición simplemente fue cancelada por el controlador
-                if (error.name !== "AbortError") {
-                    console.error("Error al recuperar los registros del cliente:", error);
-                    setError("No se encontraron registros pendientes para este cliente"); 
-                } 
+                   setError("No se encontro"); 
                 }
                 finally{
                     setIsFetching(false);

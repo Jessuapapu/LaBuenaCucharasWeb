@@ -1,6 +1,7 @@
 import type { Proveedor, NuevoProveedor, PayloadRegistro } from "../interfaces/Proveedor";
 
 const API_URL = import.meta.env.VITE_API_URL;
+import type { Proveedor, NuevoProveedor, PayloadRegistro } from "../interfaces/Proveedor";
 const token = localStorage.getItem("access_token");
 
 export const proveedoresServiceEditar = {

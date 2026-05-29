@@ -7,11 +7,11 @@ export interface Platillo {
 }
 
 export interface Menu_dario{
-    id_menu?: number;
+    id?: number;
     //idPlatillo?: number;
-    nombre_platillo: string;
-    day: string;
-    precio_unitario: number;
+    NombrePlatillo: string;
+    Fecha: string;
+    Monto: number;
     //detalle: DetalleMenu[];
 }
 

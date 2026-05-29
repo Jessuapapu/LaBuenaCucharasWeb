@@ -1,12 +1,31 @@
+import { useEffect } from "react";
 import { useComedor } from "../components/Hooks/hookComedor";
 import MesaOrden from "../components/Filtro/Mesaorden";
 import { Plus, RefreshCw, AlertCircle, LayoutDashboard } from "lucide-react";
+import { socket } from "../services/websocket";
 
 export default function ComedorPage() {
   const { mesas, loading, error, refresh, agregarMesa } = useComedor();
 
   // Determinamos si tenemos datos para mostrar, independientemente del estado de carga o error
   const tieneMesas = mesas.length > 0;
+
+  //conexion websocket
+  useEffect(() => {
+    // Si la base de datos cambia o un mesero actualiza una orden, Python avisa aquí
+    const handleMesaActualizada = (data: { IdMesa: number; Estado?: string }) => {
+      console.log(`Mesa modificada en tiempo real: ${data.IdMesa}. Refrescando monitor...`);
+      refresh(); // Recarga los datos de tu API HTTP de forma silenciosa
+    };
+
+    socket.on("orden_actualizada", handleMesaActualizada);
+    socket.on("mesa_actualizada", handleMesaActualizada); // Por si manejas un evento directo para el estado físico
+
+    return () => {
+      socket.off("orden_actualizada", handleMesaActualizada);
+      socket.off("mesa_actualizada", handleMesaActualizada);
+    };
+  }, [refresh]);
 
   return (
     <div className="p-8 bg-slate-900 min-h-screen text-slate-200 border rounded-xl">
@@ -19,7 +38,7 @@ export default function ComedorPage() {
           <div>
             <h1 className="text-4xl font-black text-white tracking-tighter">MONITOR COMEDOR</h1>
             <div className="flex items-center gap-2">
-              <p className="text-white-500 font-medium">La Buena Cuchara</p>
+              <p className="text-slate-400 font-medium">La Buena Cuchara</p>
               {error && (
                 <span className="flex items-center gap-1 text-xs text-red-500 bg-red-800/10 px-2 py-0.5 rounded-full">
                   <AlertCircle size={12} /> Error de conexión
@@ -55,8 +74,9 @@ export default function ComedorPage() {
             {mesas.map((mesa) => (
               <MesaOrden 
                 key={mesa.id}
-                numero_mesa={mesa.id.toString()}
-                estado={mesa.estado}
+                numero_mesa={`Mesa ${mesa.id}`}
+                capacidad={mesa.capacidad || 4} // Pasa la capacidad real de tu BD
+                estado={mesa.estado} // 'disponible' | 'ocupada' | 'cuenta_pedida' | 'limpieza'
                 idOrden={mesa.ordenActiva?.IdOrden || 0}
                 HoraEntrada={
                   mesa.ordenActiva 
@@ -67,22 +87,22 @@ export default function ComedorPage() {
             ))}
           </div>
         ) : !loading ? (
-          /* CASO: COMEDOR VACÍO (SIN MESAS CONFIGURADAS) */
+          /* CASO: COMEDOR VACÍO */
           <div className="flex flex-col items-center justify-center py-24 border-2 border-dashed border-slate-800 rounded-3xl">
             <div className="bg-slate-900 p-6 rounded-full mb-4">
               <Plus size={40} className="text-slate-600" />
             </div>
             <h2 className="text-xl font-bold text-white">No hay mesas configuradas</h2>
-            <p className="text-white-500 mb-6">El comedor está vacío para hoy.</p>
+            <p className="text-slate-400 mb-6">El comedor está vacío para hoy.</p>
             <button 
               onClick={agregarMesa}
-              className="bg-blue-300/66 text-black px-8 py-3 rounded-xl font-bold hover:bg-slate-200 transition-colors"
+              className="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-blue-500 transition-colors"
             >
               Comenzar a añadir mesas
             </button>
           </div>
         ) : (
-          /* LOADING INICIAL */
+          /* LOADING INICIAL (SKELETONS) */
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[...Array(5)].map((_, i) => (
               <div key={i} className="h-44 bg-slate-900/50 rounded-2xl animate-pulse border border-slate-800" />
@@ -92,19 +112,23 @@ export default function ComedorPage() {
       </main>
       
       {/* FOOTER INFORMATIVO */}
-      <footer className="mt-12 flex justify-between items-center border-t border-slate-900 pt-6">
+      <footer className="mt-12 flex justify-between items-center border-t border-slate-800 pt-6">
         <div className="flex gap-6">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-green-500 rounded-full shadow-[0_0_10px_rgba(34,197,94,0.4)]" />
+            <div className="w-3 h-3 bg-[#6167db] rounded-full shadow-[0_0_10px_rgba(97,103,219,0.4)]" />
             <span className="text-xs text-slate-400 uppercase font-bold tracking-widest">Disponibles</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-red-500 rounded-full shadow-[0_0_10px_rgba(239,44,44,0.4)]" />
-            <span className="text-xs text-slate-400 uppercase font-bold tracking-widest">Ocupadas</span>
+            <div className="w-3 h-3 bg-[#b93e9f] rounded-full shadow-[0_0_10px_rgba(185,62,159,0.4)]" />
+            <span className="text-xs text-slate-400 uppercase font-bold tracking-widest">En Servicio</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-[#20b37e] rounded-full shadow-[0_0_10px_rgba(32,179,126,0.4)]" />
+            <span className="text-xs text-slate-400 uppercase font-bold tracking-widest">Por Pagar</span>
           </div>
         </div>
         <p className="text-slate-500 text-sm font-medium">
-          Sistema Monitor <span className="text-white ml-2 px-2 py-1 bg-slate-900 rounded">{mesas.length} Mesas Totales</span>
+          Sistema Monitor <span className="text-white ml-2 px-2 py-1 bg-slate-800 rounded">{mesas.length} Mesas Totales</span>
         </p>
       </footer>
     </div>

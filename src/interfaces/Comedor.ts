@@ -16,4 +16,5 @@ export interface Mesa {
   id: number;
   estado: 'disponible' | 'ocupada';
   ordenActiva?: Orden;
+  capacidad?: number;
 }

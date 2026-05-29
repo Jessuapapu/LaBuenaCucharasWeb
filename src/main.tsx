@@ -15,6 +15,7 @@ import RegistrosPage from "./Pages/RegistroInsumos";
 import FacturasPage from "./Pages/Facturas";
 import InformesPage from "./Pages/infome";
 import MeasasPage from "./Pages/Mesas";
+import LoginPage from "./Pages/Login";
 
 
 const router = createBrowserRouter([

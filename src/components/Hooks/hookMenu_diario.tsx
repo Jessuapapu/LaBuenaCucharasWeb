@@ -3,10 +3,10 @@ import type { Menu_dario } from "../../interfaces/Platillos";
 
 const API_URL = import.meta.env.VITE_API_URL;
 interface PlatilloOption {
-    nombre_platillo: string;
+    NombrePlatillo: string;
 }
-export function useMenu_diario(dataInicial: any[]){
-    const diaHoy = new Date();
+export function useMenu_diario(dataInicial: any[]=[]){
+    const diaHoy =  useMemo(()=> new Date(),[]) ;
     const [fecha, setfecha] = useState(new Date());
     const [datos, setDatos] = useState<Menu_dario[]>([]);
     const [cargando, setCargando] = useState(false);
@@ -21,17 +21,33 @@ export function useMenu_diario(dataInicial: any[]){
             if (!response.ok) throw new Error("Error en la petición");
             
             const data = await response.json();
-            setDatos(data);
+            setDatos(Array.isArray(data) ? data: []);
         } catch (error) {
             console.error("Error al cargar menús:", error);
+            if(dataInicial) setDatos(dataInicial);
         } finally {
             setCargando(false);
+        }
+    };
+
+    const cargarPlatillosBase = async () => {
+        try {
+            const response = await fetch(`${API_URL}/platillos/`);
+            if (!response.ok) throw new Error("Error al obtener platillos base");
+            const data = await response.json();
+            setListaPlatillos(Array.isArray(data) ? data : []);
+        } catch (error) {
+            console.error("Error cargando platillos base:", error);
         }
     };
 
     useEffect(() => {
         cargarMenus();
     }, [fecha]);
+
+    useEffect(()=>{
+        cargarPlatillosBase();
+    }, [])
 
     // meses y years del calendario
     const meses = fecha.getMonth();
@@ -51,50 +67,64 @@ export function useMenu_diario(dataInicial: any[]){
         ];
     }, [Anio, meses]);
 
-    const obtenerPlatilloDia = (dia: number): Menu_dario[] => {
+    const obtenerPlatilloDia = (dia: number): any[] => {
         if (!dia) return [];
         const fechaStr = `${Anio}-${String(meses + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
-        return datos.filter(item => item.day === fechaStr);
+        return datos.filter(item => {
+        if (!item.Fecha) return false;
+        
+        // Si el string de la API viene como "2026-05-09T00:00:00.000Z", 
+        // split('T')[0] se queda únicamente con "2026-05-09"
+        const fechaApiStr = item.Fecha.includes('T') ? item.Fecha.split('T')[0] : item.Fecha.substring(0, 10);
+        return fechaApiStr === fechaStr;
+    });
     };
 
     const manejarClickDia = (dia: number) => {
         const fechaStr = `${Anio}-${String(meses + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
         setmodalDta({
-            day: fechaStr,
-            nombre_platillo: "",
-            precio_unitario: 0
-        });
+            id: undefined,         // Clave primaria del GET
+        Fecha: fechaStr,       // Fecha del GET
+        NombrePlatillo: "",    // Nombre del GET
+        Monto: 0
+        } as any); //Para que no este como loco buscando
     };
 
     // Guardar o editar
-    const guardarOEditarMenu = async (menu: Menu_dario) => {
+    const guardarOEditarMenu = async (platilloData: any) => {
         try {
-            if (menu.id_menu) {
-                // Modo Edición (Esquema MenuUpdate)
-                const response = await fetch(`${API_URL}/menu/${menu.id_menu}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nombre_platillo: menu.nombre_platillo })
-                });
-                if (!response.ok) throw new Error("Error al editar");
-            } else {
-                // Modo Creación (Esquema MenuIn)
-                const response = await fetch(`${API_URL}/menu/`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        day: menu.day,
-                        nombre_platillo: menu.nombre_platillo,
-                        monto: menu.precio_unitario
-                    })
-                });
-                if (!response.ok) throw new Error("Error al crear");
-            }
+            const isEditing = !!modalDta?.id;
 
-            await cargarMenus(); // Recarga los datos del calendario desde FastAPI
-            setmodalDta(null);  // Cierra el modal
+            if (isEditing) {
+                // Modo Edición: PUT a /menu/{id}
+                const url = `${API_URL}/menu/${modalDta.id}`;
+                const response = await fetch(url, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ nombre_platillo: platilloData.NombrePlatillo })
+                });
+                if (!response.ok) throw new Error("Error al actualizar");
+            } else {
+                // Pide un MenuIn (day, nombre_platillo, monto), esto es de creacion
+                const url = `${API_URL}/menu/`;
+            const response = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    day: platilloData.Fecha,                  // Traduce 'Fecha' a 'day'
+                    nombre_platillo: platilloData.NombrePlatillo, // Traduce 'NombrePlatillo' a 'nombre_platillo'
+                    monto: Number(platilloData.Monto)             // Traduce 'Monto' a 'monto'
+                })
+            });
+            if (!response.ok) throw new Error("Error al crear lote");
+            }
+            //Porque se tiene que mapear PORQUE Typescript se vuelve loco buscando nombres cruzados como day y luego fecha, etc
+            // Refrescamos la interfaz y cerramos el modal limpiando estados
+            await cargarMenus();
+            setmodalDta(null);
         } catch (error) {
-            console.error("Error al procesar el menú:", error);
+            console.error("Error en guardado (Hook):", error);
+            throw error; // Lo lanzamos para que el modal sepa que hubo un fallo
         }
     };
 
