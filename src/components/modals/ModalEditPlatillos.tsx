@@ -21,7 +21,7 @@ export default function ModalEditPlatillo({ platillo, onClose, onSave }: ModalEd
     // Estados para la imagen
     const [imageFile, setImageFile] = useState<File | null>(null);
     //const { nombre_platillo, precio, nombre_categoria, id_platillo } = platillo;
-    const { Urlimagen}=useImagenesPlatillo(platillo.nombre_platillo);
+    const { Urlimagen } = useImagenesPlatillo(platillo.nombre_platillo);
     const [imagePreview, setImagePreview] = useState<string | null>( Urlimagen||null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [fueEliminada, setFueEliminada] = useState(false); // Flag para avisar si se borró la imagen original

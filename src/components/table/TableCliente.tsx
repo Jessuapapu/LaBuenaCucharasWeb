@@ -1,17 +1,11 @@
 import { useState, useEffect, useMemo } from "react";
 import ModalNuevoCliente from "../modals/ModalNuevoCliente";
 import ModalEditarCliente from "../modals/ModalEditarCliente";
+import type { cliente } from "../../interfaces/Clientes";
 
-interface Cliente {
-  id_cliente?: number;
-  nombre: string;
-  direccion: string;
-  correo: string;
-  telefono: string;
-}
 
 interface TablaClientesProps {
-  data: Cliente[];
+  data: cliente[];
 }
 
 type SortKey = "nombre" | "correo" | "direccion" | "";
@@ -23,12 +17,12 @@ const IconSortDown = () => (<svg className="w-4 h-4 text-blue-400" fill="none" s
 const IconEdit = () => (<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>);
 
 export default function TablaClientes({ data }: TablaClientesProps) {
-  const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [clientes, setClientes] = useState<cliente[]>([]);
   const [search, setSearch] = useState("");
   
   // Modales
   const [showCreate, setShowCreate] = useState(false);
-  const [selectedCliente, setSelectedCliente] = useState<Cliente | null>(null);
+  const [selectedCliente, setSelectedCliente] = useState<cliente | null>(null);
 
   // Orden y Paginación
   const [sortKey, setSortKey] = useState<SortKey>("nombre");
@@ -80,10 +74,10 @@ export default function TablaClientes({ data }: TablaClientesProps) {
   };
 
 
-  const handleUpdate = (updated: Cliente) => {
+  const handleUpdate = (updated: cliente) => {
     setClientes(prev => prev.map(c => 
         // Compara por ID si existe, sino por nombre (fallback)
-        (c.id_cliente && c.id_cliente === updated.id_cliente) || c.nombre === updated.nombre ? updated : c
+        (c.idCliente && c.idCliente === updated.idCliente) || c.nombre === updated.nombre ? updated : c
     ));
     setSelectedCliente(null);
   };
@@ -113,7 +107,7 @@ export default function TablaClientes({ data }: TablaClientesProps) {
           onClick={() => setShowCreate(true)}
           className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg shadow-green-900/20 flex items-center gap-2"
         >
-          <span>👤+</span> Nuevo Cliente
+          <span>👤+</span> Nuevo cliente
         </button>
       </div>
 

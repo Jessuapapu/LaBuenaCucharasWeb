@@ -1,64 +1,33 @@
-import { useState, useEffect } from "react";
-
-// Estructura para el Select de Proveedores
-interface ProveedorOption {
-    IdProveedor: number;
-    NombreProveedor: string;
-}
+import { useState } from "react";
+import { useNuevoRegistroBodega } from "../Hooks/hookProveedor";
 
 interface ModalNuevoRegistroProps {
     onClose: () => void;
-    // Se elimina onSave ya que el padre solo necesita saber que la página se recargará
 }
 
 export default function ModalNuevoRegistro({ onClose }: ModalNuevoRegistroProps) {
-    // Estado del formulario
-    // [Se elimina la dependencia de 'fecha']
     const [idProveedor, setIdProveedor] = useState<number | "">("");
     const [totalIngresado, setTotalIngresado] = useState<number | "">("");
     const [costoTotal, setCostoTotal] = useState<number | "">("");
 
-    // Datos auxiliares
-    const [listaProveedores, setListaProveedores] = useState<ProveedorOption[]>([]);
-    const [loading, setLoading] = useState(false);
-
-    // Cargar proveedores para el select
-    useEffect(() => {
-        fetch("http://127.0.0.1:8001/proveedores/")
-            .then((res) => res.json())
-            .then((data) => setListaProveedores(data))
-            .catch((err) => console.error("Error cargando proveedores:", err));
-    }, []);
+    // Consumimos el hook que ya nos trae la lista y la función de guardar
+    const { proveedores, registrar, loading, error } = useNuevoRegistroBodega();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        
         if (!idProveedor || totalIngresado === "" || costoTotal === "") {
             alert("Por favor completa todos los campos.");
             return;
         }
 
-        setLoading(true);
+        const exito = await registrar(Number(costoTotal), Number(idProveedor), Number(totalIngresado));
 
-        // ---------------------------------------------------
-
-        try {
-            const response = await fetch(`http://127.0.0.1:8001/bodega/?costo_total=${costoTotal}&id_proveedor=${idProveedor}&total_ingresado=${totalIngresado}`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-            });
-
-            if (!response.ok) throw new Error("Error al crear el registro. Estado: " + response.status);
-
-            await response.json(); 
-            
-            // Recargar la página para actualizar la tabla.
+        if (exito) {
             window.location.reload();
-
-        } catch (error) {
-            console.error(error);
+        } else {
             alert("Error al guardar. Revisa la consola para más detalles.");
-            setLoading(false); 
-        } 
+        }
     };
 
     return (
@@ -68,6 +37,8 @@ export default function ModalNuevoRegistro({ onClose }: ModalNuevoRegistroProps)
                 
                 <h2 className="text-2xl font-bold mb-1 text-blue-400">Nuevo Registro de Bodega</h2>
                 <p className="text-gray-400 text-sm mb-6">Ingresa los detalles de la compra o abastecimiento.</p>
+
+                {error && <div className="mb-4 text-red-400 text-sm">{error}</div>}
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     
@@ -82,8 +53,8 @@ export default function ModalNuevoRegistro({ onClose }: ModalNuevoRegistroProps)
                                 required
                             >
                                 <option value="">-- Seleccionar Proveedor --</option>
-                                {listaProveedores.map((p, i) => (
-                                    <option key={i} value={p.IdProveedor}>
+                                {proveedores.map((p) => (
+                                    <option key={p.IdProveedor} value={p.IdProveedor}>
                                         {p.NombreProveedor}
                                     </option>
                                 ))}
@@ -124,8 +95,14 @@ export default function ModalNuevoRegistro({ onClose }: ModalNuevoRegistroProps)
                     </div>
 
                     <div className="flex gap-3 pt-4 mt-2 border-t border-gray-700">
-                        <button type="button" onClick={onClose} className="flex-1 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 text-white font-medium">Cancelar</button>
-                        <button type="submit" disabled={loading} className={`flex-1 py-2 rounded-lg font-bold text-white shadow-lg ${loading ? "bg-gray-600" : "bg-blue-600 hover:bg-blue-500 shadow-blue-900/20"}`}>
+                        <button type="button" onClick={onClose} className="flex-1 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 text-white font-medium transition-colors">
+                            Cancelar
+                        </button>
+                        <button 
+                            type="submit" 
+                            disabled={loading} 
+                            className={`flex-1 py-2 rounded-lg font-bold text-white shadow-lg transition-all ${loading ? "bg-gray-600 cursor-wait" : "bg-blue-600 hover:bg-blue-500 shadow-blue-900/20"}`}
+                        >
                             {loading ? "Guardando..." : "Registrar Entrada"}
                         </button>
                     </div>

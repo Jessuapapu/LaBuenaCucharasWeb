@@ -1,25 +1,15 @@
 import { useState, useEffect, useMemo } from "react";
 import ModalNuevoContrato from "../modals/ModalNuevoContrato";
 import ModalEditarContrato from "../modals/ModalEditarContrato";
-
+import type { Contrato } from "../../interfaces/Contratos";
 // Interfaces
-interface Contrato {
-  NumeroContrato: number;
-  IdContrato?: number;
-  FechaInicio: string;
-  Estado: string;
-  IdCliente: number;
-  Presupuesto: number;
-  FechaVencimiento: string;
-}
 
 interface TablaContratosProps {
   data: Contrato[];
 }
 
-type SortKey = "NumeroContrato" | "Estado" | "Presupuesto" | "FechaVencimiento" | "";
+type SortKey = "numeroContrato" | "estado" | "presupuesto" | "fechaVencimiento" | "";
 
-// Iconos
 
 const IconEdit = () => (<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>);
 
@@ -30,7 +20,7 @@ export default function TablaContratos({ data }: TablaContratosProps) {
   const [showCreate, setShowCreate] = useState(false);
   const [selectedContrato, setSelectedContrato] = useState<Contrato | null>(null);
 
-  const [sortKey, setSortKey] = useState<SortKey>("NumeroContrato");
+  const [sortKey, setSortKey] = useState<SortKey>("numeroContrato");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [currentPage, setCurrentPage] = useState(1);
   // @ts-ignore
@@ -58,10 +48,10 @@ export default function TablaContratos({ data }: TablaContratosProps) {
       
       // --- CÓDIGO DEFENSIVO (SOLUCIÓN DEL ERROR) ---
       // Usamos el operador de coalescencia nula (??) para asegurar que si el valor no existe, usemos ""
-      const numContrato = (c.NumeroContrato ?? "").toString();
-      const estado = (c.Estado ?? "").toLowerCase();
-      const presupuesto = (c.Presupuesto ?? "").toString();
-      const idCliente = (c.IdCliente ?? "").toString();
+      const numContrato = (c.numeroContrato ?? "").toString();
+      const estado = (c.estado ?? "").toLowerCase();
+      const presupuesto = (c.presupuesto ?? "").toString();
+      const idCliente = (c.idCliente ?? "").toString();
 
       return (
         numContrato.includes(term) ||
@@ -127,12 +117,12 @@ export default function TablaContratos({ data }: TablaContratosProps) {
         <table className="w-full text-sm text-left text-gray-400">
           <thead className="bg-gray-900 border-b border-gray-800">
             <tr>
-              <HeaderCell label="Nº" sKey="NumeroContrato" />
+              <HeaderCell label="Nº" sKey="numeroContrato" />
               <HeaderCell label="ID Cliente" sKey="" />
-              <HeaderCell label="Presupuesto" sKey="Presupuesto" />
+              <HeaderCell label="presupuesto" sKey="presupuesto" />
               <HeaderCell label="Inicio" sKey="" />
-              <HeaderCell label="Vencimiento" sKey="FechaVencimiento" />
-              <HeaderCell label="Estado" sKey="Estado" />
+              <HeaderCell label="Vencimiento" sKey="fechaVencimiento" />
+              <HeaderCell label="estado" sKey="estado" />
               <th className="px-6 py-4 text-center text-gray-300">Acciones</th>
             </tr>
           </thead>
@@ -140,12 +130,12 @@ export default function TablaContratos({ data }: TablaContratosProps) {
             {paginatedRows.length > 0 ? (
               paginatedRows.map((c, i) => (
                 <tr key={i} className="bg-gray-900 border-b border-gray-800 hover:bg-gray-800/60 transition-colors">
-                  <td className="px-6 py-4 font-bold text-white">#{c.NumeroContrato}</td>
-                  <td className="px-6 py-4 font-mono text-blue-300">{c.IdCliente}</td>
-                  <td className="px-6 py-4 font-medium text-white">{formatMoney(c.Presupuesto)}</td>
-                  <td className="px-6 py-4">{formatDate(c.FechaInicio)}</td>
-                  <td className="px-6 py-4">{formatDate(c.FechaVencimiento)}</td>
-                  <td className="px-6 py-4"><span className={`px-2 py-1 rounded text-xs font-bold border ${getStatusColor(c.Estado)}`}>{c.Estado}</span></td>
+                  <td className="px-6 py-4 font-bold text-white">#{c.numeroContrato}</td>
+                  <td className="px-6 py-4 font-mono text-blue-300">{c.idCliente}</td>
+                  <td className="px-6 py-4 font-medium text-white">{formatMoney(c.presupuesto)}</td>
+                  <td className="px-6 py-4">{formatDate(c.fechaInicio)}</td>
+                  <td className="px-6 py-4">{formatDate(c.fechaVencimiento)}</td>
+                  <td className="px-6 py-4"><span className={`px-2 py-1 rounded text-xs font-bold border ${getStatusColor(c.estado)}`}>{c.estado}</span></td>
                   <td className="px-6 py-4 text-center">
                     <button 
                         onClick={() => setSelectedContrato(c)} 
@@ -167,7 +157,7 @@ export default function TablaContratos({ data }: TablaContratosProps) {
       {showCreate && <ModalNuevoContrato onClose={() => setShowCreate(false)}  />}
       
       {/* Aseguramos que solo renderizamos el modal si IdContrato existe */}
-      {selectedContrato && selectedContrato.IdContrato && (
+      {selectedContrato && selectedContrato.idContrato && (
         <ModalEditarContrato 
             contrato={selectedContrato as Contrato & { IdContrato: number }} 
             onClose={() => setSelectedContrato(null)} 

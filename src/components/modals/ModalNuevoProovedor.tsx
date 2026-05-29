@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import { useCrearProveedor } from "../Hooks/hookProveedor"; // Ajusta la ruta
 
 interface ModalNuevoProveedorProps {
     onClose: () => void;
@@ -10,7 +10,9 @@ export default function ModalNuevoProveedor({ onClose }: ModalNuevoProveedorProp
     const [nombre, setNombre] = useState("");
     const [direccion, setDireccion] = useState("");
     const [tipo, setTipo] = useState("FIJO"); // Valor por defecto
-    const [loading, setLoading] = useState(false);
+    
+    // Consumimos el hook
+    const { crear, loading, error } = useCrearProveedor();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -20,49 +22,35 @@ export default function ModalNuevoProveedor({ onClose }: ModalNuevoProveedorProp
             return;
         }
 
-        setLoading(true);
+        const payload = { nombre, direccion, tipo };
 
-        // Payload con la estructura exacta del JSON
-        const payload = {
-            nombre: nombre,
-            direccion: direccion,
-            tipo: tipo
-        };
+        // El hook se encarga del try/catch y del loading
+        const exito = await crear(payload);
 
-        try {
-            const response = await fetch("http://127.0.0.1:8001/proveedores/", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
-            });
-
-            if (!response.ok) throw new Error("Error al crear el proveedor. Estado: " + response.status);
-
-            // Esperar el JSON para confirmar la finalización de la API
-            await response.json(); 
-            
+        if (exito) {
             // --- RECARGAR LA PÁGINA PARA ACTUALIZAR LA TABLA ---
             window.location.reload();
-            
-        } catch (error) {
-            console.error(error);
+        } else {
             alert("Hubo un error al guardar el proveedor. Revisa la consola.");
-            setLoading(false); // Solo desactivar loading si falló
-        } 
+        }
     };
 
     return (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 animate-in fade-in duration-300">
             <div className="bg-gray-900 p-6 rounded-xl text-white max-w-md w-full shadow-2xl border border-gray-700 relative">
                 <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-white">
-                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
                 </button>
 
                 <h2 className="text-2xl font-bold mb-1 text-blue-400">Nuevo Proveedor</h2>
                 <p className="text-gray-400 text-sm mb-6">Registra un nuevo socio comercial.</p>
 
+                {/* Mostrar error si la API falla */}
+                {error && <div className="mb-4 text-red-400 text-sm">{error}</div>}
+
                 <form onSubmit={handleSubmit} className="space-y-5">
-                    
                     {/* Nombre */}
                     <div>
                         <label className="block text-sm font-medium text-gray-300 mb-1">Nombre Proveedor</label>

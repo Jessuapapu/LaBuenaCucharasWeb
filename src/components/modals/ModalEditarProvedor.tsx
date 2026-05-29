@@ -1,11 +1,6 @@
 import { useState } from "react";
-
-interface Proveedor {
-  IdProveedor: number;
-  NombreProveedor: string;
-  Direccion: string;
-  Tipo: string;
-}
+import type { Proveedor } from "../../interfaces/proveedor";
+import { useEditarProveedor } from "../Hooks/hookProveedor"; 
 
 interface ModalEditarProveedorProps {
   proveedor: Proveedor;
@@ -14,8 +9,10 @@ interface ModalEditarProveedorProps {
 }
 
 export default function ModalEditarProveedor({ proveedor, onClose, onSave }: ModalEditarProveedorProps) {
-  const [formData, setFormData] = useState({ ...proveedor });
-  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState<Proveedor>({ ...proveedor });
+  
+  // Consumimos nuestro custom hook
+  const { actualizar, loading, error } = useEditarProveedor();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -23,24 +20,16 @@ export default function ModalEditarProveedor({ proveedor, onClose, onSave }: Mod
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
 
-    try {
-      const response = await fetch(`http://127.0.0.1:8001/proveedores/${proveedor.IdProveedor}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+    // El hook se encarga del try/catch y de actualizar el estado 'loading'
+    const exito = await actualizar(formData);
 
-      if (!response.ok) throw new Error("Error al actualizar el proveedor");
-
+    if (exito) {
       onSave(formData);
       onClose();
-    } catch (error) {
-      console.error(error);
-      alert("Error al actualizar.");
-    } finally {
-      setLoading(false);
+    } else {
+      // Si falla, mostramos una alerta básica (puedes cambiarlo a un toast o mensaje en UI)
+      alert("Error al actualizar el proveedor. Revisa la consola.");
     }
   };
 
@@ -52,8 +41,10 @@ export default function ModalEditarProveedor({ proveedor, onClose, onSave }: Mod
         <h2 className="text-2xl font-bold mb-1 text-blue-400">Editar Proveedor</h2>
         <p className="text-gray-400 text-sm mb-6">Actualiza los datos de {proveedor.NombreProveedor}.</p>
 
+        {/* Muestra un mensaje de error renderizado si algo falla desde el backend */}
+        {error && <div className="mb-4 text-red-400 text-sm">{error}</div>}
+
         <form onSubmit={handleSubmit} className="space-y-5">
-          
           <div>
             <label className="block text-sm text-gray-300 mb-1">Nombre</label>
             <input name="NombreProveedor" value={formData.NombreProveedor} onChange={handleChange} className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white focus:ring-2 focus:ring-blue-500 outline-none" required />
@@ -78,8 +69,10 @@ export default function ModalEditarProveedor({ proveedor, onClose, onSave }: Mod
           </div>
 
           <div className="flex gap-3 pt-4 border-t border-gray-700 mt-2">
-            <button type="button" onClick={onClose} className="flex-1 py-2 rounded bg-gray-700 text-white">Cancelar</button>
-            <button type="submit" disabled={loading} className="flex-1 py-2 rounded bg-blue-600 text-white font-bold hover:bg-blue-500 shadow-lg shadow-blue-900/20">{loading ? "Guardando..." : "Guardar Cambios"}</button>
+            <button type="button" onClick={onClose} className="flex-1 py-2 rounded bg-gray-700 text-white hover:bg-gray-600">Cancelar</button>
+            <button type="submit" disabled={loading} className="flex-1 py-2 rounded bg-blue-600 text-white font-bold hover:bg-blue-500 shadow-lg shadow-blue-900/20 disabled:bg-gray-600">
+              {loading ? "Guardando..." : "Guardar Cambios"}
+            </button>
           </div>
         </form>
       </div>

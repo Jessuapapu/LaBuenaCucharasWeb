@@ -1,14 +1,8 @@
-import { useState, useEffect } from "react";
-
-// Interfaz flexible para los clientes
-interface ClienteOption {
-    nombre: string;
-    [key: string]: any; 
-}
+import { useState } from "react";
+import { useNuevoContrato } from "../Hooks/hookContratos"; // Ajusta la ruta
 
 interface ModalNuevoContratoProps {
     onClose: () => void;
-    // Se elimina onSave ya que la recarga de página actualizará el componente padre
 }
 
 export default function ModalNuevoContrato({ onClose }: ModalNuevoContratoProps) {
@@ -18,19 +12,8 @@ export default function ModalNuevoContrato({ onClose }: ModalNuevoContratoProps)
     const [presupuesto, setPresupuesto] = useState<number | "">("");
     const [numeroContrato, setNumeroContrato] = useState<number | "">("");
 
-    const [listaClientes, setListaClientes] = useState<ClienteOption[]>([]);
-    const [loading, setLoading] = useState(false);
-
-    // 1. Cargar Clientes
-    useEffect(() => {
-        fetch("http://127.0.0.1:8001/clientes/")
-            .then(res => res.json())
-            .then(data => {
-                console.log("Clientes cargados:", data);
-                setListaClientes(data);
-            })
-            .catch(err => console.error("Error cargando clientes:", err));
-    }, []);
+    // Consumimos el custom hook
+    const { listaClientes, crear, loading, error } = useNuevoContrato();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -40,8 +23,6 @@ export default function ModalNuevoContrato({ onClose }: ModalNuevoContratoProps)
             return;
         }
 
-        setLoading(true);
-
         const payload = {
             numero_contrato: Number(numeroContrato),
             fecha_inicio: new Date(fechaInicio).toISOString(),
@@ -50,25 +31,13 @@ export default function ModalNuevoContrato({ onClose }: ModalNuevoContratoProps)
             fecha_fin: new Date(fechaVencimiento).toISOString()
         };
 
-        try {
-            const response = await fetch("http://127.0.0.1:8001/clientes/contratos", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
-            });
+        // Delegamos al hook
+        const exito = await crear(payload);
 
-            if (!response.ok) throw new Error("Error al crear el contrato. Estado: " + response.status);
-
-            // Esperamos la respuesta para confirmar el guardado
-            await response.json();
-            
-            // --- RECARGAR LA PÁGINA PARA ACTUALIZAR LA TABLA ---
+        if (exito) {
             window.location.reload();
-            
-        } catch (error) {
-            console.error(error);
+        } else {
             alert("Error al guardar. Verifica la conexión y los datos.");
-            setLoading(false); // Solo desactivar loading si falló
         }
     };
 
@@ -80,16 +49,16 @@ export default function ModalNuevoContrato({ onClose }: ModalNuevoContratoProps)
                 <h2 className="text-2xl font-bold mb-1 text-blue-400">Nuevo Contrato</h2>
                 <p className="text-gray-400 text-sm mb-6">Registra un nuevo acuerdo comercial.</p>
 
+                {error && <div className="mb-4 text-red-400 text-sm">{error}</div>}
+
                 <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     
-                    {/* Numero Contrato */}
                     <div>
                         <label className="block text-sm text-gray-300 mb-1">Nº Contrato</label>
                         <input type="number" className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white outline-none focus:border-blue-500" 
                             value={numeroContrato} onChange={e => setNumeroContrato(Number(e.target.value))} required placeholder="Ej: 1001" />
                     </div>
 
-                    {/* Selector de Cliente */}
                     <div>
                         <label className="block text-sm text-gray-300 mb-1">Cliente</label>
                         <div className="relative">
@@ -112,7 +81,6 @@ export default function ModalNuevoContrato({ onClose }: ModalNuevoContratoProps)
                         </div>
                     </div>
 
-                    {/* Fechas */}
                     <div>
                         <label className="block text-sm text-gray-300 mb-1">Fecha Inicio</label>
                         <input type="date" className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white outline-none focus:border-blue-500"
@@ -124,7 +92,6 @@ export default function ModalNuevoContrato({ onClose }: ModalNuevoContratoProps)
                             value={fechaVencimiento} onChange={e => setFechaVencimiento(e.target.value)} required />
                     </div>
 
-                    {/* Presupuesto */}
                     <div className="md:col-span-2">
                         <label className="block text-sm text-gray-300 mb-1">Presupuesto ($)</label>
                         <input type="number" step="0.01" className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white outline-none focus:border-blue-500"
@@ -133,7 +100,7 @@ export default function ModalNuevoContrato({ onClose }: ModalNuevoContratoProps)
 
                     <div className="md:col-span-2 flex gap-3 pt-4 mt-2 border-t border-gray-700">
                         <button type="button" onClick={onClose} className="flex-1 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 text-white font-medium">Cancelar</button>
-                        <button type="submit" disabled={loading} className={`flex-1 py-2 rounded-lg font-bold text-white shadow-lg ${loading ? "bg-gray-600" : "bg-green-600 hover:bg-green-500 shadow-green-900/20"}`}>
+                        <button type="submit" disabled={loading} className={`flex-1 py-2 rounded-lg font-bold text-white shadow-lg ${loading ? "bg-gray-600 cursor-wait" : "bg-green-600 hover:bg-green-500 shadow-green-900/20"}`}>
                             {loading ? "Guardando..." : "Crear Contrato"}
                         </button>
                     </div>

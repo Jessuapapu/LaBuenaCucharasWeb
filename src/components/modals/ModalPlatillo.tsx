@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 // 1. Actualizamos la interfaz para coincidir con la del padre
+// TODO: OCUPAR LA MISMA INTERFAAZ AJKAJSKAJS
 interface Platillo {
   id?: number | string; // Opcional
   nombre_platillo: string;

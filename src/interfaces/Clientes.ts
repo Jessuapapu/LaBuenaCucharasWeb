@@ -6,3 +6,12 @@ export interface cliente{
         direccion: string; 
 }
 
+export interface NuevoCliente {
+  nombre: string;
+  direccion: string;
+  correo: string;
+  telefono: string;
+}
+
+
+
