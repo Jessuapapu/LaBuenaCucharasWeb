@@ -20,7 +20,7 @@ export default function ComidasPage() {
         //setDataPlatillos(jsonPlatillos);
 
         // 2. Cargar Estadísticas de Ventas (Para la gráfica)
-        const resVentas = await fetch("http://127.0.0.1:8001/pedidos/platillos/conteo");
+        const resVentas = await fetch("http://127.0.0.1:8001/ordenes/platillos/conteo");
         const jsonVentas = await resVentas.json();
         //setDataVentas(jsonVentas);
         setDataVentas(Array.isArray(jsonVentas) ? jsonVentas: []);

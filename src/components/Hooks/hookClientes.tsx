@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getContratosByCliente } from "../../services/contratos";
 import { getClienteById } from "../../services/clientes";
 import type { cliente } from "../../interfaces/Clientes";

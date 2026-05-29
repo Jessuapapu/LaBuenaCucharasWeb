@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { CrearOrden} from "../../interfaces/Ordenes";
-import { actualizarOrden, crearOrden, getOrdenesByCliente } from "../../services/ordenes";
+import { actualizarOrden, crearOrden} from "../../services/ordenes";
 
 //const API_URL = import.meta.env.VITE_API_URL;
 

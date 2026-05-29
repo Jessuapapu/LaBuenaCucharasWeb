@@ -7,7 +7,7 @@ export default function FacturasPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8001/pedidos/facturas")
+    fetch("http://127.0.0.1:8001/facturas")
       .then((res) => res.json())
       .then((json) => setData(json))
       .catch((err) => console.error("Error cargando facturas:", err))

@@ -4,10 +4,9 @@ import type { FacturaForm, OrdenVisualizar, ClienteOrden } from "../../interface
 import type { Contrato } from "../../interfaces/Contratos";
 import { getContratosByCliente } from "../../services/contratos";
 import { getClienteById } from "../../services/clientes";
-import { getOrdenesByCliente } from "../../services/ordenes";
 import { pedidosService } from "../../services/pedidos";
 
-    const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL;
 
 export function useFactura(idCliente: number | "") {
     const [loading, setLoading] = useState(false);

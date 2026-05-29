@@ -4,8 +4,7 @@ import CardGraficoLinealSemanal from "../components/cards/CardsLineales/CardGrap
 import FormularioNuevoPedido from "../components/forms/PedidosForms";
 import { TrendingUp, Package, Clock, CheckCircle, DollarSign, Plus } from "lucide-react";
 import CardPedido from "../components/cards/CardOrden";
-import { pedidosMapper } from "../map/pedidos";
-import type { OrdenVisualizar } from "../interfaces/Ordenes";
+
 
 // Interfaces
 interface DatoGrafico {
