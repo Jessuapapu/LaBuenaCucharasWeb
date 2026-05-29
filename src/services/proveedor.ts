@@ -1,11 +1,16 @@
+import type { Proveedor, NuevoProveedor, PayloadRegistro } from "../interfaces/Proveedor";
+
 const API_URL = import.meta.env.VITE_API_URL;
-import type { Proveedor, NuevoProveedor, PayloadRegistro } from "../interfaces/proveedor";
+const token = localStorage.getItem("access_token");
 
 export const proveedoresServiceEditar = {
     actualizarProveedor: async (id: number, datos: Proveedor): Promise<void> => {
         const response = await fetch(`${API_URL}/proveedores/${id}`, {
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                ...(token ? { "Authorization": `Bearer ${token}` } : {})
+            },
             body: JSON.stringify(datos),
         });
 
@@ -20,7 +25,10 @@ export const proveedoresServiceNuevo = {
     crearProveedor: async (datos: NuevoProveedor): Promise<void> => {
         const response = await fetch(`${API_URL}/proveedores/`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                ...(token ? { "Authorization": `Bearer ${token}` } : {})
+            },
             body: JSON.stringify(datos),
         });
 
@@ -43,7 +51,10 @@ export const bodegaService = {
 
         const response = await fetch(url, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                ...(token ? { "Authorization": `Bearer ${token}` } : {})
+            },
         });
 
         if (!response.ok) {
@@ -56,7 +67,14 @@ export const bodegaService = {
 
 export const obtenerProveedoresServices = {
     obtenerProveedores: async (): Promise<Proveedor[]> => {
-        const response = await fetch(`${API_URL}/proveedores/`);
+        const response = await fetch(`${API_URL}/proveedores/`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                // Inyección de seguridad
+                ...(token ? { "Authorization": `Bearer ${token}` } : {})
+            }
+        });
         if (!response.ok) {
             throw new Error("Error al obtener la lista de proveedores");
         }
@@ -66,23 +84,34 @@ export const obtenerProveedoresServices = {
 
 
 export async function actualizarRegistro(id: number, payload: PayloadRegistro): Promise<void> {
-  const response = await fetch(`${API_URL}/registros/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
+    const response = await fetch(`${API_URL}/registros/${id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            // Inyección de seguridad
+            ...(token ? { "Authorization": `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify(payload),
+    });
 
-  if (!response.ok) {
-    throw new Error("Error al actualizar el registro");
-  }
+    if (!response.ok) {
+        throw new Error("Error al actualizar el registro");
+    }
 }
 
 export async function getProveedores(): Promise<Proveedor[]> {
-  const response = await fetch(`${API_URL}/proveedores/`);
-  
-  if (!response.ok) {
-    throw new Error(`Error al obtener proveedores. Estado: ${response.status}`);
-  }
-  
-  return response.json();
+    const response = await fetch(`${API_URL}/proveedores/`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            // Inyección de seguridad
+            ...(token ? { "Authorization": `Bearer ${token}` } : {})
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error(`Error al obtener proveedores. Estado: ${response.status}`);
+    }
+
+    return response.json();
 }

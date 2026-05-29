@@ -7,6 +7,7 @@ interface Menu {
     id: number; // <--- IMPORTANTE: Necesario para el PUT
     Fecha: string;
     NombrePlatillo: string;
+    monto: number;
 }
 
 interface TablaMenusProps {
@@ -167,7 +168,7 @@ export default function TablaMenus({ data }: TablaMenusProps) {
             {showCreateModal && (
                 <ModalNuevoMenu
                     onClose={() => setShowCreateModal(false)}
-
+                    onSave={() => setShowCreateModal(false)}
                 />
             )}
 

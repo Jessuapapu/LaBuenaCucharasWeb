@@ -1,10 +1,19 @@
 import { mapContratos } from "../map/contratos";
 import type { NuevoContrato } from "../interfaces/Contratos";
+
 const API_URL = import.meta.env.VITE_API_URL;
+const token = localStorage.getItem("access_token");
 
 //obtiene los contratos
 export async function getContratosByCliente(idCliente: number) {
-  const res = await fetch(`${API_URL}/clientes/contratos/${idCliente}`);
+  const res = await fetch(`${API_URL}/clientes/contratos/${idCliente}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      // Inyección de seguridad
+      ...(token ? { "Authorization": `Bearer ${token}` } : {})
+    }
+  });
 
   if (!res.ok) throw new Error("Error al obtener contratos");
 
@@ -17,7 +26,11 @@ export async function getContratosByCliente(idCliente: number) {
 export async function crearContrato(datos: NuevoContrato): Promise<void> {
   const response = await fetch(`${API_URL}/clientes/contratos`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      // Inyección de seguridad
+      ...(token ? { "Authorization": `Bearer ${token}` } : {})
+    },
     body: JSON.stringify(datos),
   });
 

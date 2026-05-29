@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { proveedoresServiceEditar, proveedoresServiceNuevo, bodegaService, obtenerProveedoresServices, actualizarRegistro, getProveedores} from "../../services/proveedor"; // Ajusta la ruta
-import type { Proveedor, NuevoProveedor, PayloadRegistro } from "../../interfaces/proveedor";
+import type { Proveedor, NuevoProveedor, PayloadRegistro } from "../../interfaces/Proveedor";
 
 interface ProveedorOption {
   IdProveedor: number;

@@ -2,15 +2,23 @@ import { mapOrdenes } from "../map/ordenes";
 import type { CrearOrden, ApiResponseCrearOrden } from "../interfaces/Ordenes";
 
 const API_URL = import.meta.env.VITE_API_URL;
+    const token = localStorage.getItem("access_token");
 
 export async function getOrdenesByCliente(idCliente: number) {
-  const res = await fetch(`${API_URL}/clientes/detalles/${idCliente}`);
+    const res = await fetch(`${API_URL}/clientes/detalles/${idCliente}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            // Inyección de seguridad
+            ...(token ? { "Authorization": `Bearer ${token}` } : {})
+        }
+    });
 
-  if (!res.ok) throw new Error("Error al obtener ordenes");
+    if (!res.ok) throw new Error("Error al obtener ordenes");
 
-  const data = await res.json();
+    const data = await res.json();
 
-  return mapOrdenes(data.data ?? data);
+    return mapOrdenes(data.data ?? data);
 }
 
 export async function crearOrden(nuevaOrden: CrearOrden): Promise<ApiResponseCrearOrden> {
@@ -18,10 +26,11 @@ export async function crearOrden(nuevaOrden: CrearOrden): Promise<ApiResponseCre
         method: "POST",
         headers: {
             "Content-Type": "application/json",
+            ...(token ? { "Authorization": `Bearer ${token}` } : {})
         },
         body: JSON.stringify(nuevaOrden),
     });
-    const data= await response.json();
+    const data = await response.json();
     if (!response.ok) {
         throw new Error(data.detail || "Error al registrar la orden");
     }
@@ -29,16 +38,17 @@ export async function crearOrden(nuevaOrden: CrearOrden): Promise<ApiResponseCre
 }
 
 export async function actualizarOrden(idOrden: number, payload: Partial<CrearOrden>) {
-    const response =await fetch(`${API_URL}/ordenes/detalles/${idOrden}`,{
+    const response = await fetch(`${API_URL}/ordenes/detalles/${idOrden}`, {
         method: "PUT",
-            headers: {
+        headers: {
             "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload),
-        });
-        const data = await response.json();
-        if (!response.ok) {
-            throw new Error(data.detail || "Error al actualizar la orden");
-        }
-        return data;
+            ...(token ? { "Authorization": `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify(payload),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+        throw new Error(data.detail || "Error al actualizar la orden");
+    }
+    return data;
 }
