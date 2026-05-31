@@ -1,3 +1,5 @@
+import type { cliente } from "./Clientes";
+
 export interface Orden {
   idOrden: number;
   estado: string;
@@ -32,13 +34,24 @@ export interface DetalleOrdenLista {
 }
 
 export interface OrdenVisualizar {
-    id_pedido: number;
+    idOrden: number;
     estado_pedido: string;
     monto_total: number;
     fecha: string;
     cliente: ClienteOrden;
     detalles: DetalleOrdenLista[];
     TipodePedidos?: "Evento" | "Contrato" | "Buffet"; 
+}
+export interface Pedido{
+    idPedido: number;
+    idOrden: number;
+    TipodePedidos?: "Evento" | "Contrato" | "Buffet"; 
+}
+export interface PedidoDetalle{
+    idPedido: number;
+    idOrden: number;
+    Estado?: "PENDIENTE"| "ANULADO"| "ENTREGADO";
+    Fecha: string;
 }
 
 export interface ActualizarOrden{
@@ -62,6 +75,21 @@ export interface ApiResponseCrearOrden {
     success: boolean;
     message: string;
     id_orden_creada?: {idOrden: number};
+
+    id_pedido: number; // Tu backend mapea IdOrdenes a id_pedido en el diccionario
+  monto_total: number;
+  fecha: string;
+  estado_pedido: string;
+  cliente: {
+    nombre_cliente: string;
+    direccion_cliente: string;
+  };
+  detalles: Array<{
+    id_orden: number;
+    nombre_platillo: string;
+    cantidad: number;
+    precio_unitario: number;
+  }>;
 }
 
 export interface ModalNuevaFacturaProps {

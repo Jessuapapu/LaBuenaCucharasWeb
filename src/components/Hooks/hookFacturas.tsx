@@ -96,7 +96,7 @@ export function useFactura(idCliente: number | "") {
     }, []);
 
     const pedidosSeleccionados =useMemo(() => {
-            return pedidosPendientes.filter(pedido =>facturaData.idOrdenes.includes(pedido.id_pedido));
+            return pedidosPendientes.filter(pedido =>facturaData.idOrdenes.includes(pedido.idOrden));
         }, [pedidosPendientes, facturaData.idOrdenes]);
 
     const alternarSeleccionPedido = useCallback((pedido: OrdenVisualizar) => {
@@ -105,12 +105,12 @@ export function useFactura(idCliente: number | "") {
             // limpiar selección previa
             const cambiarModoPedido =prev.tipoDocumentoOrigen !== "Pedido";
             const ordenesActuales = cambiarModoPedido? []: prev.idOrdenes;
-            const yaExiste = ordenesActuales.includes(pedido.id_pedido);
-            const nuevasOrdenes= yaExiste? ordenesActuales.filter(id => id !== pedido.id_pedido): [...ordenesActuales, pedido.id_pedido];
+            const yaExiste = ordenesActuales.includes(pedido.idOrden);
+            const nuevasOrdenes= yaExiste? ordenesActuales.filter(id => id !== pedido.idOrden): [...ordenesActuales, pedido.idOrden];
 
             // Calcular subtotal acumulado de los pedidos seleccionados
             const calculoSubtotal = pedidosPendientes
-                .filter(p => nuevasOrdenes.includes(p.id_pedido))
+                .filter(p => nuevasOrdenes.includes(p.idOrden))
                 .reduce((acc, p) => acc + Number(p.monto_total || 0), 0);
 
             setSubTotalVisual(Number(calculoSubtotal.toFixed(2)));

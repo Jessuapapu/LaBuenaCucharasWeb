@@ -8,7 +8,7 @@ export const pedidosService = {
   //Obtiene los pedidos activos de un cliente específico pasados por Query Params
   async getPedidosByCliente(idCliente: number, signal?: AbortSignal): Promise<OrdenVisualizar[]> {
     try {
-      const response = await fetch(`${API_URL}/ordenes/?id_cliente=${idCliente}`, {
+      const response = await fetch(`${API_URL}/pedidos/?id_cliente=${idCliente}`, {
         signal,
         method: "GET",
         headers: {
@@ -23,10 +23,10 @@ export const pedidosService = {
       }
 
       const json = await response.json();
-      const nose = json.data || [];
+      const rawPedidos = Array.isArray(json)? json: (json.data || []);
 
       // Pasamos los datos crudos por el mapper antes de entregarlos al Hook
-      return pedidosMapper.fromJsonList(nose);
+      return pedidosMapper.fromJsonList(rawPedidos);
     } catch (error) {
       console.error("Error en pedidosService.getPedidosByCliente:", error);
       throw error;

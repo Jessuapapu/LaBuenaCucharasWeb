@@ -4,6 +4,7 @@ import type { Menu_dario } from "../../interfaces/Platillos";
 const API_URL = import.meta.env.VITE_API_URL;
 interface PlatilloOption {
     NombrePlatillo: string;
+    Monto: number;// es el precio pero en el backend es monro (evitamos nombres mezclados y que typesciprt no coloapse)
 }
 export function useMenu_diario(dataInicial: any[]=[]){
     const diaHoy =  useMemo(()=> new Date(),[]) ;

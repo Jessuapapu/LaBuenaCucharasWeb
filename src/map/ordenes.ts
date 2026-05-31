@@ -24,7 +24,7 @@ function mapDetalleOrden(rawDet: any): DetalleOrdenLista {
 
 export function mapOrdenVisualizar(raw: any): OrdenVisualizar {
   return {
-    id_pedido: raw.id_pedido ?? raw.IdOrdenes ?? 0,
+    idOrden: raw.id_pedido ?? raw.IdOrdenes ?? 0,
     estado_pedido: raw.estado_pedido ?? raw.Estado ?? "Pendiente",
     monto_total: Number(raw.monto_total ?? raw.MONTOTOTAL ?? raw.CostoTotal ?? 0),
     fecha: raw.fecha ?? raw.Fecha ?? raw.FechaPedido ?? "",

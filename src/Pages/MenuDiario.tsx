@@ -1,29 +1,20 @@
-import { useEffect, useState } from "react";
+//import { useEffect, useState } from "react";
 import TablaMenus from "../components/table/TableMenu";
-import CalendarioPlatillo from "../components/Calendar/Calendarioplatillo";
+//import CalendarioPlatillo from "../components/Calendar/Calendarioplatillo";
 import Calendario from "../components/Calendar/CalendarioMenu";
+import { useMenu_diario } from "../components/Hooks/hookMenu_diario";
 
 export default function MenusPage() {
-  const [data, setData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const fetchMenus = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch("http://127.0.0.1:8001/menu/");
-      if (!response.ok) throw new Error("Error cargando menús");
-      const json = await response.json();
-      setData(json);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchMenus();
-  }, []);
+  const {
+    datos,
+    cargando,
+    modalDta,
+    setmodalDta,
+    guardarOEditarMenu,
+    listaPlatillos
+  } = useMenu_diario();
+  //const [data, setData] = useState<any[]>([]);
+  //const [loading, setLoading] = useState(true);
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
@@ -33,19 +24,19 @@ export default function MenusPage() {
       </div>
 
       <div>
-        <CalendarioPlatillo dataInicial={data}/> 
-      </div>
-
-      <div>
         <Calendario></Calendario>
       </div>
 
-      {loading ? (
+      {cargando ? (
         <div className="h-64 bg-gray-900 rounded-xl border border-gray-800 flex items-center justify-center text-blue-400">
             Cargando calendario...
         </div>
       ) : (
-        <TablaMenus data={data} />
+        <TablaMenus data={datos}
+          modalDta={modalDta}
+          setmodalDta={setmodalDta}
+          guardarOEditarMenu={guardarOEditarMenu}
+          listaPlatillos={listaPlatillos}/>
       )}
 
       

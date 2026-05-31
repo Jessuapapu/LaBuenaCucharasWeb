@@ -7,7 +7,6 @@ interface PlatilloOption {
     NombrePlatillo: string;
 }
 
-
 interface ModalNuevoMenuProps {
     MenuData?: Menu_dario | null; //si existe, se edita
     listaPlatillos: PlatilloOption[];
