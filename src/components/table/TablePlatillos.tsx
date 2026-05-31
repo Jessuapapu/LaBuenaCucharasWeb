@@ -2,21 +2,31 @@ import { useState, useEffect, useMemo } from "react";
 //import ModalPlatillo from "../modals/ModalPlatillo";
 import ModalNuevoPlatillo from "../modals/ModalAgregarPlatillos"
 import ModalEditPlatillo from "../modals/ModalEditPlatillos";
-
-// --- Interfaces y Tipos ---
-interface Platillo {
-  id?: number;
-  nombre_platillo: string;
-  nombre_categoria: string;
-  // Eliminado: estado
-  precio: number; // Opcional para filtros avanzados
-  imagenurl?: string;
-}
+import type { Platillo } from "../../interfaces/Platillos";
+import { useImagenesPlatillo } from "../Hooks/hookImagenes";
+import { useMenu_diario } from "../Hooks/hookMenu_diario";
 
 interface TablaComidasProps {
   data: Platillo[];
+  //listaPlatillos: any[]; 
 }
 
+// Subcomponente para renderizar la imagen asíncronamente desde el hook
+function CeldaImagenPlatillo({ nombre }: { nombre: string }) {
+    const { Urlimagen, cargando } = useImagenesPlatillo(nombre);
+
+    if (cargando) {
+        return <div className="w-9 h-9 rounded-xl bg-gray-800 animate-pulse border border-gray-700" />;
+    }
+
+    return (
+        <img
+            src={Urlimagen || "https://placehold.co/100x100/1f2937/ffffff?text=🍽️"}
+            alt={nombre}
+            className="w-9 h-9 rounded-xl object-cover border border-gray-700 bg-gray-800 shadow-md transition-transform group-hover:scale-105"
+        />
+    );
+}
 // Eliminado "estado" de las claves de ordenamiento
 type SortKey = "nombre_platillo" | "nombre_categoria" | "precio" | "";
 
@@ -103,23 +113,11 @@ export default function TablaComidas({ data }: TablaComidasProps) {
     }
   };
 
-  const handleUpdateList = (updatedList: Platillo[]) => {
-    // Actualización optimista o recarga completa
-    if(updatedList.length > 1) {
-        setPlatillos(updatedList);
-    } else if (updatedList.length === 1) {
-        const updatedItem = updatedList[0];
-        setPlatillos(prev => prev.map(p => 
-            p.nombre_platillo === selectedPlatillos![0].nombre_platillo ? updatedItem : p
-        ));
-    }
-    setSelectedPlatillos(null);
-  };
 
   const handleSaveEdit = (editado: Platillo) => {
     setPlatillos(prev => prev.map(p => 
       // Comparamos por ID si existe, o por nombre como fallback
-      (p.id === editado.id || p.nombre_platillo === editingPlatillo?.nombre_platillo) 
+      (p.id_platillo === editado.id_platillo || p.nombre_platillo === editingPlatillo?.nombre_platillo) 
       ? editado 
       : p
     ));
@@ -142,172 +140,167 @@ export default function TablaComidas({ data }: TablaComidasProps) {
 
   return (
     <div className="w-full space-y-4 animate-in fade-in duration-500">
-      
-      {/* --- BARRA DE HERRAMIENTAS --- */}
-      <div className="bg-gray-900 p-4 rounded-xl shadow-lg border border-gray-800">
-        
-        {/* Fila Superior */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="flex items-center gap-3 w-full md:w-auto flex-1">
-                <input
-                    type="text"
-                    placeholder="🔍 Buscar platillo..."
-                    className="w-full md:w-64 bg-gray-800 border border-gray-700 text-white text-sm rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                />
-            </div>
-
-            <div className="flex gap-2 w-full md:w-auto justify-end">
-                <button
-                    onClick={() => setShowAdvanced(!showAdvanced)}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium border flex items-center gap-2 transition-colors ${showAdvanced ? "bg-blue-900/30 border-blue-500 text-blue-400" : "bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700"}`}
-                >
-                    <IconFilter /> Filtros
-                </button>
-                <button
-                    onClick={() => setShowNewModal(true)}
-                    className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg flex items-center gap-2 transition-transform hover:scale-105"
-                >
-                    <span>+</span> Nuevo
-                </button>
-            </div>
-        </div>
-
-        {/* --- PANEL DE FILTROS AVANZADOS --- */}
-        {showAdvanced && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pt-4 border-t border-gray-800 animate-in slide-in-from-top-2">
-                <div>
-                    <label className="block text-xs text-gray-400 mb-1 font-bold">Categoría</label>
-                    <input
-                        type="text"
-                        placeholder="Ej: Bebidas, Postres"
-                        className="w-full bg-gray-800 border border-gray-700 text-white text-sm rounded-lg px-3 py-2 outline-none focus:border-blue-500"
-                        value={categoriaFilter}
-                        onChange={(e) => setCategoriaFilter(e.target.value)}
-                    />
-                </div>
-                
-                {/* Botón Limpiar */}
-                <div className="flex items-end justify-end">
-                    <button 
-                        onClick={() => {
-                            setSearch("");
-                            setCategoriaFilter("");
-                        }}
-                        className="text-sm text-blue-400 hover:text-blue-300 underline px-2 mb-2"
-                    >
-                        Limpiar filtros
-                    </button>
-                </div>
-            </div>
-        )}
-      </div>
-
-      {/* --- TABLA --- */}
-      <div className="relative overflow-x-auto shadow-xl rounded-xl border border-gray-800 bg-gray-900">
-        <table className="w-full text-sm text-left text-gray-400">
-          <thead className="bg-gray-900 border-b border-gray-800">
-            <tr>
-              <HeaderCell label="Platillo" sKey="nombre_platillo" />
-              <HeaderCell label="Categoría" sKey="nombre_categoria" />
-              <th className="px-6 py-4 text-center text-gray-300">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {paginatedRows.length > 0 ? (
-              paginatedRows.map((p, i) => (
-                <tr key={p.id || i} className="bg-gray-900 border-b border-gray-800 hover:bg-gray-800/40 transition-colors group">
-                  <td className="px-6 py-4 font-medium text-white text-base">
-                    <div className="flex items-center gap-3">
-                        {p.imagenurl && (
-                            <img src={p.imagenurl} alt="" className="w-8 h-8 rounded-full object-cover border border-gray-700" />
-                        )}
-                        {p.nombre_platillo}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="text-blue-300 bg-blue-900/20 px-2 py-1 rounded text-xs border border-blue-800/50">
-                      {p.nombre_categoria}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-center">
-                    <button
-                      onClick={() => setEditingPlatillo(p)}
-                      className="text-gray-400 hover:text-white bg-gray-800 hover:bg-blue-600 p-2 rounded-lg transition-colors"
-                      title="Editar"
-                    >
-                      <IconEdit />
-                    </button>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={3} className="text-center py-10 text-gray-500 text-lg">
-                  No se encontraron platillos. 🥗
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-
-        {/* --- PAGINACIÓN --- */}
-        <div className="flex flex-col md:flex-row justify-between items-center p-4 border-t border-gray-800 bg-gray-900 gap-4 text-sm text-gray-400">
-            <div className="flex items-center gap-2">
-                <span>Mostrar</span>
-                <select 
-                    className="bg-gray-800 border border-gray-700 text-white rounded px-2 py-1 outline-none cursor-pointer"
-                    value={itemsPerPage}
-                    onChange={(e) => setItemsPerPage(Number(e.target.value))}
-                >
-                    <option value={5}>5</option>
-                    <option value={10}>10</option>
-                    <option value={20}>20</option>
-                    <option value={-1}>Todos</option>
-                </select>
-            </div>
             
-            <span>Mostrando {paginatedRows.length} de {processedData.length} resultados</span>
+            {/* --- BARRA DE HERRAMIENTAS --- */}
+            <div className="bg-gray-900 p-4 rounded-xl shadow-lg border border-gray-800">
+                <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div className="flex items-center gap-3 w-full md:w-auto flex-1">
+                        <input
+                            type="text"
+                            placeholder="🔍 Buscar platillo..."
+                            className="w-full md:w-64 bg-gray-800 border border-gray-700 text-white text-sm rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
+                    </div>
 
-            {itemsPerPage !== -1 && (
-                <div className="flex items-center gap-2">
-                    <button 
-                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                        disabled={currentPage === 1}
-                        className="px-3 py-1 rounded bg-gray-800 border border-gray-700 hover:bg-gray-700 disabled:opacity-50 text-white"
-                    >
-                        Anterior
-                    </button>
-                    <span className="text-white font-bold">{currentPage}</span>
-                    <button 
-                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                        disabled={currentPage === totalPages || totalPages === 0}
-                        className="px-3 py-1 rounded bg-gray-800 border border-gray-700 hover:bg-gray-700 disabled:opacity-50 text-white"
-                    >
-                        Siguiente
-                    </button>
+                    <div className="flex gap-2 w-full md:w-auto justify-end">
+                        <button
+                            onClick={() => setShowAdvanced(!showAdvanced)}
+                            className={`px-4 py-2 rounded-lg text-sm font-medium border flex items-center gap-2 transition-colors ${showAdvanced ? "bg-blue-900/30 border-blue-500 text-blue-400" : "bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700"}`}
+                        >
+                            <IconFilter /> Filtros
+                        </button>
+                        <button
+                            onClick={() => setShowNewModal(true)}
+                            className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg flex items-center gap-2 transition-transform hover:scale-105"
+                        >
+                            <span>+</span> Nuevo
+                        </button>
+                    </div>
                 </div>
+
+                {/* --- PANEL DE FILTROS AVANZADOS --- */}
+                {showAdvanced && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pt-4 border-t border-gray-800 animate-in slide-in-from-top-2">
+                        <div>
+                            <label className="block text-xs text-gray-400 mb-1 font-bold">Categoría</label>
+                            <input
+                                type="text"
+                                placeholder="Ej: Bebidas, Postres"
+                                className="w-full bg-gray-800 border border-gray-700 text-white text-sm rounded-lg px-3 py-2 outline-none focus:border-blue-500"
+                                value={categoriaFilter}
+                                onChange={(e) => setCategoriaFilter(e.target.value)}
+                            />
+                        </div>
+                        
+                        <div className="flex items-end justify-end">
+                            <button 
+                                onClick={() => {
+                                    setSearch("");
+                                    setCategoriaFilter("");
+                                }}
+                                className="text-sm text-blue-400 hover:text-blue-300 underline px-2 mb-2"
+                            >
+                                Limpiar filtros
+                            </button>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* --- TABLA --- */}
+            <div className="relative overflow-x-auto shadow-xl rounded-xl border border-gray-800 bg-gray-900">
+                <table className="w-full text-sm text-left text-gray-400">
+                    <thead className="bg-gray-900 border-b border-gray-800">
+                        <tr>
+                            <HeaderCell label="Platillo" sKey="nombre_platillo" />
+                            <HeaderCell label="Categoría" sKey="nombre_categoria" />
+                            <HeaderCell label="Precio" sKey="precio" />
+                            <th className="px-6 py-4 text-center text-gray-300 font-semibold text-xs uppercase">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {paginatedRows.length > 0 ? (
+                            paginatedRows.map((p, i) => (
+                                <tr key={p.id_platillo || i} className="bg-gray-900 border-b border-gray-800 hover:bg-gray-800/40 transition-colors group">
+                                    <td className="px-6 py-4 font-medium text-white text-base">
+                                        <div className="flex items-center gap-3">
+                                            <CeldaImagenPlatillo nombre={p.nombre_platillo} />
+                                            <span>{p.nombre_platillo}</span>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <span className="text-blue-300 bg-blue-900/20 px-2 py-1 rounded text-xs border border-blue-800/50">
+                                            {p.nombre_categoria}
+                                        </span>
+                                    </td>
+                                    
+                                    <td className="px-6 py-4 text-center">
+                                        <button
+                                            onClick={() => setEditingPlatillo(p)}
+                                            className="text-gray-400 hover:text-white bg-gray-800 hover:bg-blue-600 p-2 rounded-lg transition-colors border border-gray-700 hover:border-blue-500"
+                                            title="Editar Platillo"
+                                        >
+                                            <IconEdit />
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan={4} className="text-center py-10 text-gray-500">
+                                    No se encontraron platillos. 🥗
+                                </td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
+
+                {/* --- PAGINACIÓN --- */}
+                <div className="flex flex-col md:flex-row justify-between items-center p-4 border-t border-gray-800 bg-gray-900 gap-4 text-sm text-gray-400">
+                    <div className="flex items-center gap-2">
+                        <span>Mostrar</span>
+                        <select 
+                            className="bg-gray-800 border border-gray-700 text-white rounded px-2 py-1 outline-none cursor-pointer"
+                            value={itemsPerPage}
+                            onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                        >
+                            <option value={5}>5</option>
+                            <option value={10}>10</option>
+                            <option value={20}>20</option>
+                            <option value={-1}>Todos</option>
+                        </select>
+                    </div>
+                    
+                    <span>{paginatedRows.length} de {processedData.length} registros</span>
+
+                    {itemsPerPage !== -1 && (
+                        <div className="flex gap-2">
+                            <button 
+                                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                                disabled={currentPage === 1}
+                                className="px-3 py-1 rounded bg-gray-800 text-white disabled:opacity-50"
+                            >
+                                Anterior
+                            </button>
+                            <button 
+                                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                                disabled={currentPage === totalPages || totalPages === 0}
+                                className="px-3 py-1 rounded bg-gray-800 text-white disabled:opacity-50"
+                            >
+                                Siguiente
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* --- MODALES --- */}
+            {showNewModal && (
+                <ModalNuevoPlatillo 
+                    onClose={() => setShowNewModal(false)}
+                    onSave={handleCreateNew}
+                />
+            )}
+
+            {editingPlatillo && (
+                <ModalEditPlatillo
+                    platillo={editingPlatillo}
+                    onClose={() => setEditingPlatillo(null)}
+                    onSave={handleSaveEdit}
+                />
             )}
         </div>
-      </div>
-
-      {/* --- MODALES --- */}
-      {showNewModal && (
-        <ModalNuevoPlatillo 
-          onClose={() => setShowNewModal(false)}
-          onSave={handleCreateNew}
-        />
-      )}
-
-      {editingPlatillo && (
-        <ModalEditPlatillo
-          platillo={editingPlatillo}
-          onClose={() => setSelectedPlatillos(null)}
-          //@ts-ignore
-          onSave={handleSaveEdit}
-        />
-      )}
-    </div>
-  );
+    );
 }

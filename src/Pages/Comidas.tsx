@@ -103,7 +103,7 @@ export default function ComidasPage() {
                </div>
             </div>
           ) : (
-            <TablaPlatillos data={platillos}  />
+            <TablaPlatillos data={platillos}/>
           )}
       </div>
 
