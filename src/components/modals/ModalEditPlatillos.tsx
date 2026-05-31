@@ -1,11 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import { ActualizarPlatillo } from "../../services/platillos";
-import type { Platillo } from "../../interfaces/Platillos";
+//import { ActualizarPlatillo } from "../../services/platillos";
+import type { Platillo, categoriaPlatillo } from "../../interfaces/Platillos";
 import { useImagenesPlatillo } from "../Hooks/hookImagenes";
-
-interface CategoriaOption {
-    nombre_categoria: string;
-}
 
 interface ModalEditPlatilloProps {
     platillo: Platillo; // El objeto original a editar
@@ -16,7 +12,7 @@ interface ModalEditPlatilloProps {
 export default function ModalEditPlatillo({ platillo, onClose, onSave }: ModalEditPlatilloProps) {
     const [nombre, setNombre] = useState(platillo.nombre_platillo);
     const [categoria, setCategoria] = useState(platillo.nombre_categoria);
-    const [precio, setPrecio] = useState<number>(platillo.precio);
+    //const [precio, setPrecio] = useState<number>(platillo.precio);
 
     // Estados para la imagen
     const [imageFile, setImageFile] = useState<File | null>(null);
@@ -26,7 +22,7 @@ export default function ModalEditPlatillo({ platillo, onClose, onSave }: ModalEd
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [fueEliminada, setFueEliminada] = useState(false); // Flag para avisar si se borró la imagen original
 
-    const [listaCategorias, setListaCategorias] = useState<CategoriaOption[]>([]);
+    const [listaCategorias, setListaCategorias] = useState<categoriaPlatillo[]>([]);
     const [loading, setLoading] = useState(false);
 
     // Cargar categorías al montar
@@ -69,7 +65,7 @@ export default function ModalEditPlatillo({ platillo, onClose, onSave }: ModalEd
     // Enviamos los datos básicos
     formData.append("nombre_platillo", nombre.trim());
     formData.append("nombre_categoria", categoria);
-    formData.append("precio", precio.toString());
+    //formData.append("precio", precio.toString());
     
     // Solo enviamos el archivo si realmente hay uno nuevo seleccionado
     if (imageFile) {
@@ -177,23 +173,6 @@ export default function ModalEditPlatillo({ platillo, onClose, onSave }: ModalEd
                                 </option>
                             ))}
                         </select>
-                    </div>
-
-                    {/* PRECIO */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-400 mb-1">Precio</label>
-                        <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
-                            <input
-                                type="number"
-                                step="0.01"
-                                min=""
-                                className="w-full pl-7 pr-4 py-2.5 rounded-lg bg-gray-800 border border-gray-700 text-white focus:ring-2 focus:ring-orange-500 outline-none"
-                                value={precio}
-                                onChange={(e) => setPrecio(Number(e.target.value))}
-                                required
-                            />
-                        </div>
                     </div>
 
                     <div className="flex gap-3 pt-4">

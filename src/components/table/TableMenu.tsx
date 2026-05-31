@@ -3,13 +3,6 @@ import ModalNuevoMenu from "../modals/ModalNuevoMenu";
 import { useImagenesPlatillo } from "../Hooks/hookImagenes";
 import type { Menu_dario } from "../../interfaces/Platillos";
 
-interface Menu {
-    id: number;
-    Fecha: string;
-    NombrePlatillo: string;
-    monto: number;
-}
-
 interface TablaMenusProps {
     data: Menu_dario[];
     modalDta: any;

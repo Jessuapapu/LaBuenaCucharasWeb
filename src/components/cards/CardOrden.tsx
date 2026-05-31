@@ -10,7 +10,7 @@ interface Props extends CardPedidoProps {
 export default function CardPedido({Pedido, onClick, Actualizar}: Props) {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [mostrarDetalles, setmostarDetalles]= useState(false);
-    const { guardarOrden, loading, error, success } = useOrdenes();
+    const { guardarOrden } = useOrdenes();
 
 
     const handleOpenModal = (e: React.MouseEvent) => {
@@ -56,7 +56,7 @@ export default function CardPedido({Pedido, onClick, Actualizar}: Props) {
             <div className="p-4 bg-slate-900 border-b border-slate-800 flex justify-between items-center">
                 <div className="bg-blue-600/20 border border-blue-500/30 px-2 py-1 rounded-md">
                     <span className="text-[10px] font-black text-blue-400 uppercase">
-                        #{Pedido.id_pedido}
+                        #{Pedido.idOrden}
                     </span>
                 </div>
                 <div className={`flex items-center gap-1 px-2 py-1 rounded-full border text-[9px] font-black uppercase tracking-tighter ${currentStatusClass}`}>

@@ -143,10 +143,10 @@ export default function ModalNuevaFactura({ Ordenes= [], onClose, onSave }: Moda
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-36 overflow-y-auto pr-1">
                     {pedidosPendientes.map((pedido) => {
-                      const activo = facturaData.idOrdenes.includes(pedido.id_pedido);
+                      const activo = facturaData.idOrdenes.includes(pedido.idOrden);
                       return (
                         <button
-                          key={pedido.id_pedido}
+                          key={pedido.idOrden}
                           type="button"
                           onClick={() => alternarSeleccionPedido(pedido)}
                           className={`p-3 rounded-xl border text-left transition-all flex flex-col justify-between ${
@@ -156,7 +156,7 @@ export default function ModalNuevaFactura({ Ordenes= [], onClose, onSave }: Moda
                           }`}
                         >
                           <div className="flex justify-between items-center w-full">
-                            <span className="font-mono text-xs font-black text-slate-300">N° {pedido.id_pedido}</span>
+                            <span className="font-mono text-xs font-black text-slate-300">N° {pedido.idOrden}</span>
                             {activo && <Check size={14} className="text-blue-400 font-black" />}
                           </div>
                           <div className="text-sm mt-2 text-emerald-400 font-extrabold font-mono">
@@ -241,8 +241,8 @@ export default function ModalNuevaFactura({ Ordenes= [], onClose, onSave }: Moda
                   <span className="text-slate-400 uppercase font-bold text-[7px] block mb-1">Órdenes Vinculadas:</span>
                   <div className="max-h-24 overflow-y-auto pr-0.5 space-y-1">
                     {pedidosSeleccionados.map((pedido) => (
-                      <div className="flex justify-between text-[9px] text-slate-800 bg-slate-50 p-1 rounded" key={pedido.id_pedido}>
-                        <span className="font-bold">N° {pedido.id_pedido}</span>
+                      <div className="flex justify-between text-[9px] text-slate-800 bg-slate-50 p-1 rounded" key={pedido.idOrden}>
+                        <span className="font-bold">N° {pedido.idOrden}</span>
                         <span className="font-mono font-semibold">C$ {Number(pedido.monto_total).toFixed(2)}</span>
                       </div>
                     ))}

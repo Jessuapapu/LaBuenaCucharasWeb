@@ -21,7 +21,6 @@ export function useOrdenes() {
             setSuccess(true);
             return data;
         } catch (err) {
-            // Manejo seguro sin 'any'
             const errorMessage = err instanceof Error ? err.message : "Ocurrió un error inesperado";
             setError(errorMessage);
             return null;

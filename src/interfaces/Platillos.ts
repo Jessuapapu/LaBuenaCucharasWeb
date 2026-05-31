@@ -2,7 +2,7 @@ export interface Platillo {
   id_platillo?: number;
   nombre_platillo: string;
   nombre_categoria: string;
-  precio: number;
+  precio?: number;
   //imagen_url?: string;
 }
 

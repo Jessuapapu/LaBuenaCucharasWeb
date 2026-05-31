@@ -8,7 +8,7 @@ export const FoodCard = ({ platillo, onUpdate, ventas }: FoodCardProps) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   // Desestructuramos para mantener limpio el código, pero usamos los nombres de la interfaz
-  const { nombre_platillo, precio, nombre_categoria, id_platillo } = platillo;
+  const { nombre_platillo, nombre_categoria, id_platillo } = platillo;
   const { Urlimagen, cargando }=useImagenesPlatillo(nombre_platillo);
 
   const handleSave = (updated: Platillo) => {
@@ -68,13 +68,6 @@ export const FoodCard = ({ platillo, onUpdate, ventas }: FoodCardProps) => {
               Categoría: {nombre_categoria || 'General'} <br />
               Platillo listo para servicio en comedor.
             </p>
-
-            <div className="flex flex-col gap-0.5 pt-1">
-              <span className="text-[9px] uppercase text-slate-400 font-bold tracking-wider">Precio</span>
-              <span className="text-slate-900 font-black text-xl font-mono">
-                C$ {Number(precio).toFixed(2)}
-              </span>
-            </div>
           </div>
 
           {/* Footer de la Card: Metido ADENTRO del bloque contenedor flex-1 */}

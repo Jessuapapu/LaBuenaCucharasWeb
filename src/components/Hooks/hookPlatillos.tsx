@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { getPlatillos } from "../../services/platillos"; 
 import { getVentasPlatillos } from "../../services/ordenes";
+import type { categoriaPlatillo } from "../../interfaces/Platillos";
 
 export function usePlatillos() {
   const [platillos, setPlatillos] = useState<any[]>([]);
@@ -72,6 +73,25 @@ export function useVentasPlatillos() {
     errorVentas: error,
     refetchVentas: fetchVentas 
   };
+}
+
+export function usePlatillosForm() {
+  const [listaCategorias, setListaCategorias] = useState<categoriaPlatillo[]>([]);
+  const [loadingCategorias, setLoadingCategorias] = useState<boolean>(false);
+
+  useEffect(() => {
+    setLoadingCategorias(true);
+    fetch("http://127.0.0.1:8001/platillos/categoria")
+      .then((res) => {
+        if (!res.ok) throw new Error("Error al cargar categorías");
+        return res.json();
+      })
+      .then((data) => setListaCategorias(Array.isArray(data) ? data : []))
+      .catch((err) => console.error("Error cargando categorías:", err))
+      .finally(() => setLoadingCategorias(false));
+  }, []);
+
+  return { listaCategorias, loadingCategorias };
 }
 
 

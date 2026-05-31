@@ -1,17 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-
-// Interfaz para la respuesta del endpoint de categorías
-interface CategoriaOption {
-    nombre_categoria: string;
-}
-
-// Interfaz del objeto que vamos a guardar
-interface Platillo {
-    nombre_platillo: string;
-    nombre_categoria: string;
-    precio: number;
-    foto?: File | null;
-}
+import { useImagenesPlatillo } from "../Hooks/hookImagenes";
+import type { Platillo, categoriaPlatillo } from "../../interfaces/Platillos";
+import { crearPlatillo } from "../../services/platillos";
 
 interface ModalNuevoPlatilloProps {
     onClose: () => void;
@@ -22,14 +12,14 @@ interface ModalNuevoPlatilloProps {
 export default function ModalNuevoPlatillo({ onClose, onSave }: ModalNuevoPlatilloProps) {
     const [nombre, setNombre] = useState("");
     const [categoria, setCategoria] = useState("");
-    const [precio, setprecio]= useState<string>("");
+    //const [precio, setprecio]= useState<string>("");
 
     // Estados para la imagen
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     
-    const [listaCategorias, setListaCategorias] = useState<CategoriaOption[]>([]);
+    const [listaCategorias, setListaCategorias] = useState<categoriaPlatillo[]>([]);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -58,7 +48,7 @@ export default function ModalNuevoPlatillo({ onClose, onSave }: ModalNuevoPlatil
     const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!nombre.trim() || !categoria.trim() || !precio) {
+    if (!nombre.trim() || !categoria.trim()) {
         alert("Por favor completa todos los campos obligatorios.");
         return;
     }
@@ -67,22 +57,12 @@ export default function ModalNuevoPlatillo({ onClose, onSave }: ModalNuevoPlatil
 
     try {
         // Crear el platillo
-        const platilloRes = await fetch("http://127.0.0.1:8001/platillos/", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
+        const platilloData = await crearPlatillo ({
                 nombre_platillo: nombre,
                 nombre_categoria: categoria,
-                precio: parseFloat(precio)
-            }),
-        });
-
-        if (!platilloRes.ok) {
-            const errorData = await platilloRes.json();
-            throw new Error(errorData.detail || "Error al crear el platillo.");
-        }
+            })
         
-        const platilloData = await platilloRes.json();
+        //const platilloData = await platilloRes.json();
 
         // Subir la imagen si existe
         if (imageFile) {
@@ -192,21 +172,6 @@ export default function ModalNuevoPlatillo({ onClose, onSave }: ModalNuevoPlatil
 
                         
                     </div>
-                    {/* PRECIO */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-400 mb-1">Precio</label>
-                            <div className="relative">
-                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
-                                <input
-                                    type="number"
-                                    step="0.01"
-                                    className="w-full pl-7 pr-4 py-2.5 rounded-lg bg-gray-800 border border-gray-700 text-white focus:ring-2 focus:ring-blue-500 outline-none text-sm"
-                                    placeholder="0.00"
-                                    value={precio}
-                                    onChange={(e) => setprecio(e.target.value)}
-                                />
-                            </div>
-                        </div>
 
                     <div className="flex gap-3 pt-4 mt-2">
                         <button

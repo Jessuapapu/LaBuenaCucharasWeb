@@ -4,9 +4,6 @@ import { getClienteById, crearCliente, actualizarCliente, getClientes} from "../
 import type { cliente, NuevoCliente} from "../../interfaces/Clientes";
 import type { Contrato } from "../../interfaces/Contratos";
 
-
-
-
 export function useCliente(id_cliente: number | null){
     const [loading, setloading]= useState(false);
     const [error, setError]= useState<string | null>(null);
@@ -90,9 +87,6 @@ export function useEditarCliente() {
 
   return { editar, loading, error };
 }
-
-
-
 
 export function useClientes() {
   const [clientes, setClientes] = useState<cliente[]>([]);

@@ -32,7 +32,7 @@ export default function ModalPedido({ pedido, onClose, onSave }: ModalPedidoProp
     if (isAnulado) return;
     setDetalles([...detalles,
       {
-        id_orden: pedido.id_pedido,
+        id_orden: pedido.idOrden,
         nombre_platillo: "",
         cantidad: 1,
         precio_unitario: 0,

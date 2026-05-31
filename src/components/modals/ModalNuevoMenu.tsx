@@ -25,7 +25,7 @@ export default function ModalNuevoMenu({ MenuData, listaPlatillos, onClose, onSa
     // Estado para datos auxiliares
     const [loading, setLoading] = useState(false);
 
-    // 1. Cargar la lista de Platillos disponibles para el Select
+    // Cargar la lista de Platillos disponibles para el Select
     //useEffect(() => {
       //  fetch(`${API_URL}/platillos/`)
         //    .then((res) => res.json())
@@ -105,7 +105,7 @@ export default function ModalNuevoMenu({ MenuData, listaPlatillos, onClose, onSa
                                 required
                             >
                                 <option value="">Seleccionar...</option>
-                                {listaPlatillos.map((p, i) => (
+                                {(listaPlatillos || []).map((p, i) => (
                                     <option key={i} value={p.NombrePlatillo}>
                                         {p.NombrePlatillo}
                                     </option>

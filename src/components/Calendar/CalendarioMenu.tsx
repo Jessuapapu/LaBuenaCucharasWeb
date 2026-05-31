@@ -27,7 +27,6 @@ const Calendario: React.FC= ()=>{
     Anio,
     modalDta,
     setmodalDta,
-    datos,
     cambiarMes,
     obtenerPlatilloDia,
     listaPlatillos,
