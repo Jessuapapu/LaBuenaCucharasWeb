@@ -7,6 +7,5 @@ export default defineConfig({
   ],
   server: {
     host: '0.0.0.0', // Expone el servidor a la red
-    port: 8000
   }
 })
