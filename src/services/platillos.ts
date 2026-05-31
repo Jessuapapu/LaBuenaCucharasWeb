@@ -25,7 +25,7 @@ export async function ActualizarPlatillo(id_Platillo: number, payload: Partial<P
         headers: {
             "Content-Type": "application/json",
             ...(token ? { "Authorization": `Bearer ${token}` } : {})
-        }, 
+        },
         body: JSON.stringify(payload)
     })
     if (!response.ok) {
@@ -34,3 +34,23 @@ export async function ActualizarPlatillo(id_Platillo: number, payload: Partial<P
     }
     return response.json();
 }
+
+
+export async function getPlatillos(): Promise<any[]> {
+    const response = await fetch(`${API_URL}/platillos/`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            // Inyección de seguridad
+            ...(token ? { "Authorization": `Bearer ${token}` } : {})
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error("Error al obtener platillos");
+    }
+
+    const data = await response.json();
+    return Array.isArray(data) ? data : [];
+}
+

@@ -1,4 +1,3 @@
-import { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import TablaContratos from "../components/table/TableContratos";
 import { 
@@ -7,36 +6,25 @@ import {
   Activity, 
   Briefcase 
 } from "lucide-react";
+import { useContratos } from "../components/Hooks/hookContratos"; 
 
 export default function ContratosPage() {
-  const [data, setData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch("http://127.0.0.1:8001/clientes/contratos")
-      .then((res) => res.json())
-      .then((json) => setData(json))
-      .catch((err) => console.error("Error cargando contratos:", err))
-      .finally(() => setLoading(false));
-  }, []);
-
-  // --- CÁLCULO DE MÉTRICAS (KPIs) ---
-  const stats = useMemo(() => {
-    if (!data.length) return { total: 0, activos: 0, presupuesto: 0 };
-    
-    return {
-      total: data.length,
-      activos: data.filter((c: any) => c.Estado === "Activo").length,
-      presupuesto: data.reduce((acc: number, curr: any) => acc + (Number(curr.Presupuesto) || 0), 0)
-    };
-  }, [data]);
-
+  // Consumimos el hook que ya hace todo el trabajo
+  const { contratos: data, stats, loading, error } = useContratos();
+  
   const formatMoney = (amount: number) => 
     new Intl.NumberFormat('es-NI', { style: 'currency', currency: 'NIO', maximumFractionDigits: 0 }).format(amount);
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       
+      {/* Mensaje de Error (Opcional, pero recomendado) */}
+      {error && (
+        <div className="bg-red-900/50 border border-red-500 p-4 rounded-xl text-red-200 text-sm">
+          ⚠️ {error}
+        </div>
+      )}
+
       {/* 1. Encabezado Mejorado */}
       <div className="bg-gray-900 p-6 rounded-xl border border-gray-800 shadow-lg flex flex-col md:flex-row items-start md:items-center gap-4">
         

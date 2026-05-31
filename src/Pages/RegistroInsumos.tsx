@@ -1,59 +1,13 @@
-import { useEffect, useState, useMemo } from "react";
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import TablaRegistros from "../components/table/TableRegistro";
 import { ArrowDownCircle, Truck, ArrowRight, DollarSign } from "lucide-react";
-import { Cardstockmin } from "../components/cards/CardBar";
+import { useBodega } from "../components/Hooks/hookbodega";
 
 export default function RegistrosPage() {
-  const [data, setData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [stockAlerts, setStockAlerts] = useState<any[]>([]); // Para el grid de cards
-  
-  useEffect(() => {
-    //Ejecuta paralelamente
-    Promise.all([
-      fetch("http://127.0.0.1:8001/bodega/"),
-      fetch("http://127.0.0.1:8001/ingredientes"), //falta enrutamiento
-      fetch("http://127.0.0.1:8001/insumos")
-    ])
-      .then(async ([resBodega, resIng, resPrio]) => {
-        const jsonBodega = await resBodega.json(); //Cuanto entro y salio
-        const jsonIng = await resIng.json();
-        const jsonPrio = await resPrio.json(); //Prioridad de insumos
+  // Ya solo consumimos data y loading del hook
+  const { data, loading } = useBodega();
 
-        setData(jsonBodega);
-
-        // --- NORMALIZACIÓN DE DATOS ---
-        const alerts = [
-          ...jsonIng.map((i: any) => ({
-            id: `ing-${i.id || i.IdIngrediente}`,
-            nombre: i.nombre_ingrediente || i.NombreIngrediente,
-            tipo: "Ingrediente",
-            actual: Number(i.cantidad || i.Cantidad || 0),
-            minimo: Number(i.stock_minimo || i.StockMinimo)
-          })),
-          ...jsonPrio.map((p: any) => {
-            const prioridadStr= String(p.Prioridad).toUpperCase();
-            return{
-              id: `ins-${p.id || p.IdInsumo}`,
-            nombre: p.nombreinsumo,
-            tipo: `Insumo - Prioridad ${prioridadStr}`,
-            // Muestra la prioridad como alerta visual
-            actual: prioridadStr === "ALTA" ? 0 : prioridadStr === "MEDIA" ? 15 : 30, 
-            minimo: 30 // Valor base para la gráfica
-            }
-            
-          })
-        ];
-        
-        setStockAlerts(alerts);
-      })
-      .catch((err) => console.error("Error cargando datos:", err))
-      .finally(() => setLoading(false));
-
-  }, []);
-
-  // Calculamos el total gastado para mostrar un dato útil
   const totalCosto = useMemo(() => {
     return data.reduce((acc, curr) => acc + (Number(curr.CostoTotal) || 0), 0);
   }, [data]);
@@ -77,10 +31,8 @@ export default function RegistrosPage() {
         </div>
       </div>
 
-      {/* Grid de Métricas y Navegación (Estilo Clientes->Contratos) */}
+      {/* Grid de Métricas y Navegación */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        
-        {/* Card 1: KPI de Costos */}
         <div className="bg-gray-900 p-6 rounded-xl border border-gray-800 flex items-center justify-between shadow-lg">
             <div>
                 <p className="text-gray-400 text-xs font-bold uppercase tracking-wider">Costo Total Insumos</p>
@@ -95,7 +47,6 @@ export default function RegistrosPage() {
             </div>
         </div>
 
-        {/* Card 2: Acceso Directo a Proveedores */}
         <Link 
             to="/Inventario/Proveedores" 
             className="group relative bg-gray-900 p-6 rounded-xl border border-gray-800 hover:border-blue-500 hover:bg-gray-800/80 transition-all duration-300 flex items-center justify-between cursor-pointer shadow-lg"
@@ -111,25 +62,6 @@ export default function RegistrosPage() {
                 <Truck className="w-8 h-8" />
             </div>
         </Link>
-      </div>
-
-      {/*Stock minimo*/}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {loading? (// Skeleton simple para las cards mientras se carga
-            Array(4).fill(0).map((_, i) => (
-              <div key={i} className="h-[300px] bg-gray-900/50 animate-pulse rounded-2xl border border-gray-800" />
-            ))
-          ) : (
-            stockAlerts.map((alerta) => (
-              <Cardstockmin 
-                key={alerta.id}
-                nombre={alerta.nombre}
-                tipo={alerta.tipo}
-                stockactual={alerta.actual}
-                stockmin={alerta.minimo}
-              />
-            ))
-          )}
       </div>
 
       {/* Tabla de Registros */}

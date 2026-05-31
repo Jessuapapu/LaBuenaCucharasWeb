@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { proveedoresServiceEditar, proveedoresServiceNuevo, bodegaService, obtenerProveedoresServices, actualizarRegistro, getProveedores} from "../../services/proveedor"; // Ajusta la ruta
 import type { Proveedor, NuevoProveedor, PayloadRegistro } from "../../interfaces/Proveedor";
 
@@ -120,4 +120,30 @@ export function useEditarRegistro() {
   };
 
   return { listaProveedores, editar, loading, error };
+}
+
+
+export function useProveedores() {
+    const [data, setData] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    const fetchProveedores = useCallback(async () => {
+        setLoading(true);
+        try {
+            const json = await getProveedores();
+            setData(json);
+        } catch (error) {
+            console.error("Error cargando proveedores:", error);
+            setData([]); // Evitamos que la vista colapse si hay error
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchProveedores();
+    }, [fetchProveedores]);
+
+    // Retornamos exactamente lo que usaba tu página (data y loading) + una función para recargar
+    return { data, loading, refetch: fetchProveedores };
 }

@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import ModalNuevoContrato from "../modals/ModalNuevoContrato";
 import ModalEditarContrato from "../modals/ModalEditarContrato";
 import type { Contrato } from "../../interfaces/Contratos";
-// Interfaces
+
 
 interface TablaContratosProps {
   data: Contrato[];

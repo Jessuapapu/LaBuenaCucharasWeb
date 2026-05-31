@@ -1,19 +1,11 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import TablaProveedores from "../components/table/TablaProvedor";
 import { Truck, ArrowLeft } from "lucide-react"; 
+import { useProveedores } from "../components/Hooks/hookProveedor";
 
 export default function ProveedoresPage() {
-  const [data, setData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch("http://127.0.0.1:8001/proveedores/")
-      .then((res) => res.json())
-      .then((json) => setData(json))
-      .catch((err) => console.error("Error cargando proveedores:", err))
-      .finally(() => setLoading(false));
-  }, []);
+  // Solo llamamos a tu nuevo hook y extraemos lo que necesitamos
+  const { data, loading } = useProveedores();
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
@@ -51,7 +43,8 @@ export default function ProveedoresPage() {
                 <div>
                     <span className="text-xs text-gray-500 uppercase font-bold">Fijos</span>
                     <p className="text-2xl font-bold text-blue-400">
-                        {data.filter((p: any) => p.Tipo === 'FIJO').length}
+                        {/* Agregué .toUpperCase() por seguridad en caso de que la API lo devuelva como 'Fijo' o 'fijo' */}
+                        {data.filter((p: any) => p.Tipo?.toUpperCase() === 'FIJO' || p.tipo?.toUpperCase() === 'FIJO').length}
                     </p>
                 </div>
             </div>

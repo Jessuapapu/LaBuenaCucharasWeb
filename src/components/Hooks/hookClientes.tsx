@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback  } from "react";
 import { getContratosByCliente } from "../../services/contratos";
-import { getClienteById, crearCliente, actualizarCliente} from "../../services/clientes";
+import { getClienteById, crearCliente, actualizarCliente, getClientes} from "../../services/clientes";
 import type { cliente, NuevoCliente} from "../../interfaces/Clientes";
 import type { Contrato } from "../../interfaces/Contratos";
+
 
 
 
@@ -93,3 +94,37 @@ export function useEditarCliente() {
 
 
 
+export function useClientes() {
+  const [clientes, setClientes] = useState<cliente[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchClientes = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const data = await getClientes();
+      setClientes(data);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Error desconocido al cargar los clientes";
+      console.error(errorMessage);
+      setError(errorMessage);
+      setClientes([]); // Fallback seguro
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Se ejecuta automáticamente al montar la vista
+  useEffect(() => {
+    fetchClientes();
+  }, [fetchClientes]);
+
+  return { 
+    clientes, 
+    loading, 
+    error, 
+    refetch: fetchClientes 
+  };
+}

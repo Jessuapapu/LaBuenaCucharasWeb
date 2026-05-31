@@ -5,6 +5,7 @@ import type { Contrato } from "../../interfaces/Contratos";
 import { getContratosByCliente } from "../../services/contratos";
 import { getClienteById } from "../../services/clientes";
 import { pedidosService } from "../../services/pedidos";
+import { getFacturas } from "../../services/facturas";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -218,4 +219,54 @@ export function useFactura(idCliente: number | "") {
         error,
         guardarFactura
     };
+}
+
+
+
+export function useFacturasPage() {
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchFacturas = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const facturas = await getFacturas();
+      setData(facturas);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Error desconocido al cargar facturas";
+      console.error(errorMessage);
+      setError(errorMessage);
+      setData([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchFacturas();
+  }, [fetchFacturas]);
+
+  // --- CÁLCULO DE KPIs ---
+  const stats = useMemo(() => {
+    if (!data.length) return { total: 0, pagadas: 0, pendiente: 0 };
+    
+    return {
+      total: data.reduce((acc, curr) => acc + (Number(curr.monto_total) || 0), 0),
+      pagadas: data
+        .filter((f: any) => f.estado_factura === 'Pagada')
+        .reduce((acc, curr) => acc + (Number(curr.monto_total) || 0), 0),
+      pendiente: data
+        .filter((f: any) => f.estado_factura === 'Generada').length
+    };
+  }, [data]);
+
+  return { 
+    data, 
+    stats, 
+    loading, 
+    error, 
+    refetch: fetchFacturas 
+  };
 }

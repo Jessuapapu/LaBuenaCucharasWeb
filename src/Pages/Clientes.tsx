@@ -1,28 +1,25 @@
-import { useEffect, useState } from "react";
-import { Link, Outlet, useLocation } from "react-router-dom"; // Importamos useLocation
+import { Link, Outlet, useLocation } from "react-router-dom";
 import TablaClientes from "../components/table/TableCliente";
-import { Users, FileText, ArrowRight } from "lucide-react"; // Iconos para darle vida
+import { Users, FileText, ArrowRight } from "lucide-react";
+import { useClientes } from "../components/Hooks/hookClientes";// Ajusta la ruta de tu nuevo hook
 
 export default function ClientesPage() {
-  const [data, setData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const location = useLocation(); // Para saber en qué ruta estamos
+  // Consumimos el hook. Usamos el alias 'data' para mantener compatibilidad con tu JSX actual.
+  const { clientes: data, loading, error } = useClientes();
+  const location = useLocation();
 
-  useEffect(() => {
-    fetch("http://127.0.0.1:8001/clientes/")
-      .then((res) => res.json())
-      .then((json) => setData(json))
-      .catch((err) => console.error("Error cargando clientes:", err))
-      .finally(() => setLoading(false));
-  }, []);
-
-  // Detectar si estamos en la sub-ruta de contratos para ocultar la tabla de clientes si es necesario
-  // (Opcional: depende de si quieres ver la tabla y el outlet al mismo tiempo)
   const isRoot = location.pathname === "/Clientes" || location.pathname === "/Clientes/";
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       
+      {/* Manejo de errores visual (opcional pero recomendado) */}
+      {error && (
+        <div className="bg-red-900/50 border border-red-500 p-4 rounded-xl text-red-200 text-sm">
+          ⚠️ {error}
+        </div>
+      )}
+
       {/* 1. Encabezado */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-gray-900 p-6 rounded-xl border border-gray-800 shadow-lg">
         <div>
@@ -31,10 +28,10 @@ export default function ClientesPage() {
         </div>
       </div>
 
-      {/* 2. Grid de Resumen y Navegación (Más integrado) */}
+      {/* 2. Grid de Resumen y Navegación */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         
-        {/* Card 1: Métrica de Clientes (Visual) */}
+        {/* Card 1: Métrica de Clientes */}
         <div className="bg-gray-800 p-6 rounded-xl border border-gray-700 flex items-center justify-between">
             <div>
                 <p className="text-gray-400 text-sm font-medium uppercase">Total Clientes</p>
@@ -47,7 +44,7 @@ export default function ClientesPage() {
             </div>
         </div>
 
-        {/* Card 2: Acceso a Contratos (Interactivo) */}
+        {/* Card 2: Acceso a Contratos */}
         <Link 
             to="/Clientes/Contratos" 
             className="group relative bg-gray-800 p-6 rounded-xl border border-gray-700 hover:border-blue-500 hover:bg-gray-800/80 transition-all duration-300 flex items-center justify-between cursor-pointer"
@@ -66,21 +63,15 @@ export default function ClientesPage() {
       </div>
 
       {/* 3. Renderizado de Contenido */}
-      
-      {/* El Outlet renderiza las sub-rutas (como /Contratos) */}
       <Outlet />
 
-      {/* 4. Tabla de Clientes (Solo se muestra si no hay sub-ruta activa, o siempre, según tu preferencia) */}
-      {/* Si quieres que la tabla desaparezca cuando entras a contratos, envuélvela en: {isRoot && (...)} */}
-      
+      {/* 4. Tabla de Clientes */}
       <div className="mt-6">
         {loading ? (
             <div className="h-64 bg-gray-900 rounded-xl border border-gray-800 flex items-center justify-center text-blue-400 gap-2">
                 <span className="animate-pulse">Cargando directorio...</span>
             </div>
         ) : (
-            // Renderizamos la tabla solo si estamos en la raíz de clientes (opcional)
-            // Si quieres ver la tabla SIEMPRE debajo, quita la condición 'isRoot'
             isRoot && <TablaClientes data={data} />
         )}
       </div>

@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import ModalNuevoProveedor from "../modals/ModalNuevoProovedor";
 import ModalEditarProveedor from "../modals/ModalEditarProvedor";
-import type { Proveedor } from "../../interfaces/proveedor";
+import type { Proveedor } from "../../interfaces/Proveedor";
 
 interface TablaProveedoresProps {
   data: Proveedor[];

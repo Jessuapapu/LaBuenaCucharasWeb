@@ -2,7 +2,7 @@ import { mapOrdenes } from "../map/ordenes";
 import type { CrearOrden, ApiResponseCrearOrden } from "../interfaces/Ordenes";
 
 const API_URL = import.meta.env.VITE_API_URL;
-    const token = localStorage.getItem("access_token");
+const token = localStorage.getItem("access_token");
 
 export async function getOrdenesByCliente(idCliente: number) {
     const res = await fetch(`${API_URL}/clientes/detalles/${idCliente}`, {
@@ -51,4 +51,41 @@ export async function actualizarOrden(idOrden: number, payload: Partial<CrearOrd
         throw new Error(data.detail || "Error al actualizar la orden");
     }
     return data;
+}
+
+export async function getVentasPlatillos(): Promise<any[]> {
+    const response = await fetch(`${API_URL}/ordenes/platillos/conteo`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            // Inyección de seguridad
+            ...(token ? { "Authorization": `Bearer ${token}` } : {})
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error("Error al obtener estadísticas de ventas");
+    }
+
+    const data = await response.json();
+    return Array.isArray(data) ? data : [];
+}
+
+export async function getVentasSemanales(signal?: AbortSignal): Promise<any[]> {
+    const resGrafica = await fetch(`${API_URL}/ordenes/conteo/semanal`, { 
+        signal 
+    });
+    
+    if (!resGrafica.ok) {
+        throw new Error("Error al obtener las ventas semanales");
+    }
+    
+    const dataGrafica = await resGrafica.json();
+    
+    const formattedData = dataGrafica.map((d: any) => ({
+        x: d.dia.charAt(0).toUpperCase() + d.dia.slice(1),
+        y: d.conteo
+    }));
+    
+    return formattedData;
 }
