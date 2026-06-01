@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { Check, User, Search, Calendar, Trash2, Layers} from "lucide-react";
 import { useFactura } from "../Hooks/hookFacturas";
 import type { ModalNuevaFacturaProps, ClienteOrden } from "../../interfaces/Ordenes";
+import type { PayloadFactura } from "../../interfaces/Factura";
 
 interface ModalFacturaExtendidoProps extends ModalNuevaFacturaProps {
   idFacturaExistente?: number; // Opcional, para activar el modo edición automáticamente
@@ -68,8 +69,20 @@ export default function ModalNuevaFactura({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (loading || isFetching || facturaData.idOrdenes.length === 0) return;
+    //el contrato
+    const payloadFiscal: PayloadFactura = {
+      IdCliente: Number(clienteSeleccionado),
+      Cantidad: Number(facturaData.Cantidad || 1),
+      Fecha: facturaData.Fecha,
+      MetodoPago: facturaData.MetodoPago || "EFECTIVO",
+      CondicionPago: facturaData.CondicionPago || "CONTADO",
+      tipoDocumentoOrigen: facturaData.tipoDocumentoOrigen || "ORDEN",
+      MONTOTOTAL: Number(subTotalVisual || 0),
+      idOrdenes: facturaData.idOrdenes,
+      idContrato: facturaData.idContrato || null
+    };
 
-    guardarFactura((data) => {
+    guardarFactura(payloadFiscal, (data) => {
       onSave(data); // Notifica el éxito a la tabla de Control de Facturación
       onClose();    // Cierra el modal de forma limpia
     });

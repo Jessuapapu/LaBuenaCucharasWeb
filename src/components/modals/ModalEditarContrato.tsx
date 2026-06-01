@@ -76,8 +76,8 @@ export default function ModalNuevoContrato({ onClose }: ModalNuevoContratoProps)
                             >
                                 <option value="">-- Seleccionar Cliente --</option>
                                 {listaClientes.map((c, i) => (
-                                    <option key={i} value={c.nombre}>
-                                        {c.nombre}
+                                    <option key={i} value={c.NombreCliente}>
+                                        {c.NombreCliente}
                                     </option>
                                 ))}
                             </select>

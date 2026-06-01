@@ -1,18 +1,29 @@
 
 const API_URL = import.meta.env.VITE_API_URL;
 const token = localStorage.getItem("access_token");
+// Función auxiliar para obtener el token en tiempo real (evita problemas si el token cambia o se refresca)
+//Y da pereaza escribir de nuevo lo mismo
+const getHeaders = () => {
+  const token = localStorage.getItem("access_token");
+  return {
+    "Content-Type": "application/json",
+    ...(token ? { "Authorization": `Bearer ${token}` } : {})
+  };
+};
+import type { PayloadFactura, RespuestaFacturasPaginada, Factura, DetalleFacturaLinea } from "../interfaces/Factura";
+import { FacturaMapper } from "../map/facturas";
 
-import type { PayloadFactura, RespuestaFacturasPaginada } from "../interfaces/Factura";
 
-
-export async function crearFactura(payload: PayloadFactura): Promise<any> {
+export async function crearFactura(payload: PayloadFactura): Promise<{ message: string; id: number }> {
+    //El mapper traduce
+    const bodyBackend = FacturaMapper.toApiPayload(payload);
     const response = await fetch(`${API_URL}/facturas/`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             ...(token ? { "Authorization": `Bearer ${token}` } : {})
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(bodyBackend)
     });
 
     if (!response.ok) {
@@ -23,7 +34,7 @@ export async function crearFactura(payload: PayloadFactura): Promise<any> {
 }
 
 
-export async function getFacturas(): Promise<any[]> {
+export async function getFacturas(): Promise<Factura[]> {
     const response = await fetch(`${API_URL}/facturas/`, {
         method: "GET",
         headers: {
@@ -38,7 +49,7 @@ export async function getFacturas(): Promise<any[]> {
     }
 
     const data = await response.json();
-    return Array.isArray(data) ? data : [];
+    return FacturaMapper.toFrontendList(data);
 }
 export async function getFacturasPag(
     pagina: number = 1, 
@@ -47,60 +58,51 @@ export async function getFacturasPag(
     signal?: AbortSignal
 ): Promise<RespuestaFacturasPaginada> {
     
-    // 1. Construimos los Query Params base de la paginación
-    const params = new URLSearchParams({
-        pagina: pagina.toString(),
-        rows: rows.toString(),
-    });
+    //Query Params base de la paginación
+    const params = FacturaMapper.toApiParams(pagina, rows, filtros)
 
-    // 2. Inyectamos de forma dinámica los filtros activos (id_cliente, montos, fechas, etc.) si existen
-    Object.keys(filtros).forEach(key => {
-        const valor = filtros[key];
-        if (valor !== null && valor !== undefined && valor !== "") {
-            params.append(key, valor.toString());
-        }
-    });
-
-    // 3. Realizamos la petición enviando los params en la URL (?pagina=1&rows=10...)
     const response = await fetch(`${API_URL}/facturas/?${params.toString()}`, {
         method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            ...(token ? { "Authorization": `Bearer ${token}` } : {})
-        },
-        signal // Permite cancelar peticiones colgadas con el AbortController del Hook
+        headers: getHeaders(),
+        signal 
     });
 
-    if (!response.ok) {
-        throw new Error(`Error al obtener las facturas. Estado: ${response.status}`);
-    }
-
+    if (!response.ok) throw new Error(`Error al obtener las facturas paginadas.`);
     const json = await response.json();
     
-    // 4. Retornamos la estructura asegurando que cumpla con la interfaz
-    return {
-        data: json.data || [],
-        total: json.total || 0,
-        pagina: json.pagina || pagina,
-        rows: json.rows || rows
-    };
+    return FacturaMapper.toFrontendResponse(json, pagina, rows, filtros);
+}
+
+export async function obtenerDetalleFactura(idFactura: number): Promise<DetalleFacturaLinea[]> {
+    if (!idFactura) throw new Error("El ID de la factura es requerido.");
+
+    const response = await fetch(`${API_URL}/facturas/detalles/${idFactura}`, {
+        method: "GET",
+        headers: getHeaders(),
+    });
+
+    if (!response.ok) throw new Error(`Error al obtener los detalles de la factura #${idFactura}.`);
+    
+    const data = await response.json();
+    return Array.isArray(data) ? data : [];
 }
 
 export async function actualizarFactura(
     idFactura: number, 
     payload: PayloadFactura
-): Promise<any> {
+): Promise<{message: string}> {
     if (!idFactura) {
         throw new Error("El ID de la factura es obligatorio para realizar una actualización.");
     }
+    const bodyBackend = FacturaMapper.toApiPayload(payload);
 
     const response = await fetch(`${API_URL}/facturas/${idFactura}`, {
-        method: "PUT", // O PATCH, dependiendo de cómo tengas configurada tu ruta en FastAPI
+        method: "PUT",
         headers: {
             "Content-Type": "application/json",
             ...(token ? { "Authorization": `Bearer ${token}` } : {})
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(bodyBackend)
     });
 
     if (!response.ok) {
