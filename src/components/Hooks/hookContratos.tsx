@@ -49,7 +49,6 @@ export function useNuevoContrato() {
 }
 
 
-
 export function useContratos() {
   const [contratos, setContratos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);

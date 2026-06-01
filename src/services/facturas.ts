@@ -85,3 +85,27 @@ export async function getFacturasPag(
         rows: json.rows || rows
     };
 }
+
+export async function actualizarFactura(
+    idFactura: number, 
+    payload: PayloadFactura
+): Promise<any> {
+    if (!idFactura) {
+        throw new Error("El ID de la factura es obligatorio para realizar una actualización.");
+    }
+
+    const response = await fetch(`${API_URL}/facturas/${idFactura}`, {
+        method: "PUT", // O PATCH, dependiendo de cómo tengas configurada tu ruta en FastAPI
+        headers: {
+            "Content-Type": "application/json",
+            ...(token ? { "Authorization": `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+        throw new Error(`Error al actualizar la factura #${idFactura}. Verifica los datos.`);
+    }
+
+    return await response.json();
+}

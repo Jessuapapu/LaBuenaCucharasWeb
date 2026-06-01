@@ -1,32 +1,45 @@
 
 import { useCallback, useState, useEffect, useMemo } from "react";
-import type { FacturaForm, OrdenVisualizar, ClienteOrden } from "../../interfaces/Ordenes";
+//import type { OrdenVisualizar, ClienteOrden } from "../../interfaces/Ordenes";
 import type { Contrato } from "../../interfaces/Contratos";
 import { getContratosByCliente } from "../../services/contratos";
 import { getClienteById } from "../../services/clientes";
 import { pedidosService } from "../../services/pedidos";
-import { getFacturas, getFacturasPag } from "../../services/facturas";
+import { getFacturas, getFacturasPag, crearFactura, actualizarFactura } from "../../services/facturas";
+import type { Factura, PayloadFactura, DetalleFacturaLinea } from "../../interfaces/Factura";
 
 const API_URL = import.meta.env.VITE_API_URL;
+interface OrdenVisualizar {
+  idOrden: number;
+  monto_total: number;
+  [key: string]: any;
+}
 
-export function useFactura(idCliente: number | "") {
+interface ClienteOrden {
+  idCliente: number;
+  nombre_cliente: string;
+  direccion_cliente: string;
+}
+
+export function useFactura(idCliente: number | "", idFacturaExistente?: number) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [isFetching, setIsFetching] = useState(false);
     const [pedidosPendientes, setPedidosPendientes] = useState<OrdenVisualizar[]>([]);
     const [contratosActivos, setContratosActivos] = useState<Contrato[]>([]);
     
-    const [facturaData, setFacturaData] = useState<FacturaForm>({
-        idCliente: "",
-        Cantidad: "",
-        nombreCliente: "",
+    const [facturaData, setFacturaData] = useState<PayloadFactura & { nombreCliente: string; Direccion: string }>({
+        IdCliente: idCliente ? Number(idCliente) : 0,
+        Cantidad: 1,
         Fecha: new Date().toISOString().split("T")[0],
-        Direccion: "",
         MetodoPago: "Efectivo",
         CondicionPago: "Contado",
         tipoDocumentoOrigen: null,
+        MONTOTOTAL: 0,
         idOrdenes: [],
-        idContrato: null
+        idContrato: null,
+        nombreCliente: "",
+        Direccion: ""
     });
 
      // Estado derivado para el Subtotal (calculado en tiempo real en el cliente)
@@ -65,7 +78,7 @@ export function useFactura(idCliente: number | "") {
                 //const primerRegistro = resPedidos?.[0] ||contratos?.[0];
 
                 if (infoCliente) {
-                  setFacturaData(prev => ({...prev, idCliente,
+                  setFacturaData(prev => ({...prev, IdCliente: Number(idCliente),
                         nombreCliente: infoCliente?.nombre_cliente || prev.nombreCliente,
                         Direccion: infoCliente?.direccion_cliente|| prev.Direccion
                     }));
@@ -80,11 +93,48 @@ export function useFactura(idCliente: number | "") {
         buscarDatosCliente();
         return () => controller.abort();
     }, [idCliente])
+    // Nuevo useEffect para precargar datos si es una EDICIÓN
+useEffect(() => {
+    if (!idFacturaExistente) return;
+
+    const cargarDetalleFactura = async () => {
+        setIsFetching(true);
+        try {
+            // Suponiendo que tienes un servicio 'getFacturaDetalle' apuntando a tu backend
+            const response = await fetch(`${API_URL}/facturas/detalle/?id_factura=${idFacturaExistente}`);
+            const detalles: DetalleFacturaLinea[] = await response.json();
+            
+            if (detalles && detalles.length > 0) {
+                const primerDetalle = detalles[0];
+                const idsDeOrdenes = detalles.map(d => d.IdOrden);
+
+                // Re-calculamos el subtotal en base a los detalles devueltos por el SP
+                const totalInicial = detalles.reduce((acc, curr) => acc + Number(curr.CostoTotalOrden || 0), 0);
+
+                setFacturaData(prev => ({
+                    ...prev,
+                    IdCliente: primerDetalle.IdCliente || prev.IdCliente, // Si tu SP lo devuelve
+                    tipoDocumentoOrigen: "Pedido",
+                    idOrdenes: idsDeOrdenes,
+                    MONTOTOTAL: totalInicial
+                }));
+                setSubTotalVisual(totalInicial);
+            }
+        } catch (err) {
+            console.error("Error cargando el detalle de la factura para editar", err);
+            setError("No se pudieron recuperar los detalles de la factura.");
+        } finally {
+            setIsFetching(false);
+        }
+    };
+
+    cargarDetalleFactura();
+}, [idFacturaExistente]);
 
     const seleccionarCliente = useCallback((cliente: ClienteOrden) => {
         setFacturaData(prev => ({
             ...prev,
-            idCliente: cliente.idCliente,
+            IdCliente: cliente.idCliente,
             nombreCliente: cliente.nombre_cliente,
             Direccion: cliente.direccion_cliente,
             // Limpiamos selecciones anteriores si cambia de cliente
@@ -118,6 +168,7 @@ export function useFactura(idCliente: number | "") {
             return {...prev, tipoDocumentoOrigen:nuevasOrdenes.length > 0? "Pedido": null,
                 idOrdenes: nuevasOrdenes,
                 idContrato: null,
+                MONTOTOTAL: Number(calculoSubtotal.toFixed(2)),
                 MetodoPago: prev.MetodoPago === "Crédito" ? "Efectivo" : prev.MetodoPago, // Resetea si estaba en crédito corporativo
                 CondicionPago: "Contado"
             };
@@ -156,7 +207,7 @@ export function useFactura(idCliente: number | "") {
     const guardarFactura = useCallback(async (onSuccess: (data: any) => void) => {
         //setLoading(true);
         setError(null);
-        if (!facturaData.idCliente) { setError("Debe seleccionar un cliente");
+        if (!facturaData.IdCliente) { setError("Debe seleccionar un cliente");
                 return;
             }
 
@@ -174,7 +225,7 @@ export function useFactura(idCliente: number | "") {
 
         try {
             const payloadEnvio = {
-            IdCliente: Number(facturaData.idCliente),
+            IdCliente: Number(facturaData.IdCliente),
             Cantidad: facturaData.Cantidad || 1,
             Fecha: facturaData.Fecha,
             MetodoPago: facturaData.MetodoPago,
@@ -184,15 +235,14 @@ export function useFactura(idCliente: number | "") {
             idOrdenes: facturaData.idOrdenes,
             idContrato: facturaData.idContrato
         };
-            const response = await fetch(`${API_URL}/factura/`,
-                {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payloadEnvio)
-            });
-            const data = await response.json();
-            if (!response.ok) throw new Error(`Errr al facturar`);
-            onSuccess(data);
+            let resultado;
+            // Si el hook recibe un ID existente, ejecuta una actualización (PUT)
+            if (idFacturaExistente) {
+                resultado = await actualizarFactura(idFacturaExistente, payloadEnvio);
+            } else {
+                resultado = await crearFactura(payloadEnvio);
+            }
+            onSuccess(resultado);
         } catch (err: any) {
             setError(err.message || "Error al procesar");
         } finally {
@@ -220,11 +270,8 @@ export function useFactura(idCliente: number | "") {
         guardarFactura
     };
 }
-
-
-
 export function useFacturasPage() {
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<Factura[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -248,17 +295,19 @@ export function useFacturasPage() {
     fetchFacturas();
   }, [fetchFacturas]);
 
-  // --- CÁLCULO DE KPIs ---
+  // Sincronizado estricto con las propiedades mapeadas por tu backend corporativo
   const stats = useMemo(() => {
     if (!data.length) return { total: 0, pagadas: 0, pendiente: 0 };
     
     return {
       total: data.reduce((acc, curr) => acc + (Number(curr.monto_total) || 0), 0),
       pagadas: data
-        .filter((f: any) => f.estado_factura === 'Pagada')
+        .filter((f: Factura) => f.estado_factura?.toString().toUpperCase() === 'PAGADA')
         .reduce((acc, curr) => acc + (Number(curr.monto_total) || 0), 0),
-      pendiente: data
-        .filter((f: any) => f.estado_factura === 'Generada').length
+      pendiente: data.filter((f: Factura) => {
+        const est = f.estado_factura?.toString().toUpperCase();
+        return est === 'GENERADA' || est === 'PENDIENTE';
+      }).length
     };
   }, [data]);
 
@@ -270,8 +319,9 @@ export function useFacturasPage() {
     refetch: fetchFacturas 
   };
 }
+
 export function useFacturaPaginacion(initialPage = 1, initialRows = 10) {
-    const [data, setData] = useState<any[]>([]);
+    const [data, setData] = useState<Factura[]>([]);
     const [total, setTotal] = useState(0);
     const [pagina, setPagina] = useState(initialPage);
     const [rows, setRows] = useState(initialRows);
@@ -283,7 +333,6 @@ export function useFacturaPaginacion(initialPage = 1, initialRows = 10) {
         setLoading(true);
         setError(null);
         try {
-            // El servicio ahora procesa correctamente los argumentos sin quejas
             const respuesta = await getFacturasPag(pagina, rows, filtros, signal);
             setData(respuesta.data);
             setTotal(respuesta.total);
@@ -306,15 +355,18 @@ export function useFacturaPaginacion(initialPage = 1, initialRows = 10) {
     const cambiarRows = (nuevasRows: number) => { setRows(nuevasRows); setPagina(1); };
     const aplicarFiltros = (nuevosFiltros: Record<string, any>) => { setFiltros(nuevosFiltros); setPagina(1); };
 
-    // Cálculo dinámico de KPIs basados exclusivamente en la página visible
+    // Sincronización de KPIs en base al set paginado visible o filtrado
     const stats = useMemo(() => {
         if (!data.length) return { total: 0, pagadas: 0, pendiente: 0 };
         return {
             total: data.reduce((acc, curr) => acc + (Number(curr.monto_total) || 0), 0),
             pagadas: data
-                .filter((f: any) => f.estado_factura === 'Pagada')
+                .filter((f: Factura) => f.estado_factura?.toString().toUpperCase() === 'PAGADA')
                 .reduce((acc, curr) => acc + (Number(curr.monto_total) || 0), 0),
-            pendiente: data.filter((f: any) => f.estado_factura === 'Generada').length
+            pendiente: data.filter((f: Factura) => {
+                const est = f.estado_factura?.toString().toUpperCase();
+                return est === 'GENERADA' || est === 'PENDIENTE';
+            }).length
         };
     }, [data]);
 
@@ -325,7 +377,7 @@ export function useFacturaPaginacion(initialPage = 1, initialRows = 10) {
         rows,
         loading,
         error,
-        stats, // Añadido para que puedas reemplazar useFacturasPage por completo si lo deseas
+        stats, 
         cambiarPagina,
         cambiarRows,
         aplicarFiltros,
