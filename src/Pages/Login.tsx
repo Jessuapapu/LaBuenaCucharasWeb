@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { socket } from "../services/websocket";
+import { useAuth } from "../context/Auth";
 import { Lock, User, Loader2 } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 export default function LoginPage() {
     const navigate = useNavigate();
+    const { login } = useAuth();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
@@ -36,18 +37,9 @@ export default function LoginPage() {
                 throw new Error(data.detail || "Error en la autenticación");
             }
 
-            // Guardar sesión de forma segura
-            localStorage.setItem("access_token", data.access_token);
-            
-            // Si por alguna razón el backend no manda user_info, guardamos un fallback estructurado
+            // Usar el contexto de autenticación para sincronizar estado y socket
             const userInfo = data.user_info || { username: username, rol: "usuario" };
-            localStorage.setItem("user_info", JSON.stringify(userInfo));
-
-            // Sincronizar WebSocket de forma inmediata con el servidor Python
-            if (socket) {
-                socket.auth = { token: data.access_token };
-                socket.connect();
-            }
+            login(data.access_token, userInfo);
 
             // Redirección limpia
             navigate("/");

@@ -1,12 +1,22 @@
 import { useState } from "react";
 import Sidebar from "../components/sidebar/sidebar";
 import NavbarMobile from "../components/NavbarMobiles/NavbarMobile";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation, Navigate } from "react-router-dom";
 //import favicon from '../assets/Favicon.png'
 import labuenacuchara from '../assets/Labuenacucharalogo.png'
 
 export default function Layout() {
+
+
     const [sidebarOpen, setSidebarOpen] = useState(true);
+    const location = useLocation();
+    const isLogin = location.pathname.toLowerCase() === "/login";
+    const token = localStorage.getItem("access_token");
+
+    // Si no hay token y no estamos en /login, forzamos redirección
+    if (!token && !isLogin) {
+        return <Navigate to="/login" replace />;
+    }
 
     // Estilos que contienen la imagen SVG como fondo repetitivo
     const backgroundStyle = {
@@ -20,9 +30,19 @@ export default function Layout() {
         backgroundColor: '#080d15' 
     };
 
+    // Si estamos en la ruta de Login, no mostramos la sidebar
+    if (isLogin) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-900">
+                <main className="w-full">
+                    <Outlet />
+                </main>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen relative">
-            
             {/* --- FONDO REPETITIVO SVG --- */}
             <div 
                 className="fixed inset-0 z-0 opacity-[0.05] pointer-events-none"

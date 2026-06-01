@@ -1,90 +1,52 @@
-import { ResponsiveLine } from "@nivo/line";
+import { BarChart } from '@mui/x-charts/BarChart';
 import type { FormatoDatos } from "../../interfaces/graficos"; 
 
+// Card de barras semanal usando MUI X Charts
+export default function CardGraficoBarrasSemanal({ datos }: { datos: FormatoDatos[] }) {
 
-
-// Card lineal semanal
-export default function CardGraficoLinealSemanal({ datos }: { datos: FormatoDatos[] }) {
-
-  // esta estructura basica es para la grafica lineal, NO TOCAR XD
-  /*
-  const data = [
-    {
-      id: "Ventas",
-      color: "hsl(210, 70%, 50%)",
-      data: [
-        { x: "Ene", y: 40 },
-        { x: "Feb", y: 55 },
-        { x: "Mar", y: 70 },
-        { x: "Abr", y: 60 },
-      ],
-    },
-  ];
-  */
-
-
-
-
-  const Datos = [
-    {
-      id: "Ventas Semanales",
-      color: "hsl(210, 70%, 50%)",
-      data: datos,
-    },
-  ];
+  // Separamos las etiquetas (X) y los valores (Y)
+  const xLabels = datos.map((d) => d.x);
+  const yValues = datos.map((d) => Number(d.y));
 
   return (
     <div className="h-64 w-full bg-white rounded-xl p-4 shadow">
-      <ResponsiveLine
-        // @ts-ignore - Si se quita esto da error XD
-        data={Datos}
-        margin={{ top: 30, right: 30, bottom: 50, left: 50 }}
-        xScale={{ type: "point" }}
-        yScale={{ type: "linear", min: "auto", max: "auto" }}
-        curve="monotoneX"
-      
-        colors={['#8cd9d4']}
-        lineWidth={3}
-        enableArea={true} // Activa el sombreado
-        areaOpacity={0.2}
-        
-        // 1. Definimos el degradado
-        defs={[
+      <BarChart
+        xAxis={[
           {
-            id: "gradientA",
-            type: "linearGradient",
-            colors: [
-              { offset: 0, color: "#10b981", opacity: 1 },   // Color sólido arriba
-              { offset: 1, color: "#10b981", opacity: 0.1 }, // Casi transparente abajo
-            ],
+            data: xLabels,
+            scaleType: 'band', // <-- CRUCIAL para gráficos de barras en MUI X
+            tickLabelStyle: { fill: '#9ca3af' }, // Color del texto del eje X
           },
         ]}
-
-        // 2. Aplicamos el degradado al área
-        fill={[
-          { match: { id: "Ventas Semanales" }, id: "gradientA" },
-        ]}
-
-        // --- Resto de configuraciones ---
-        axisBottom={{
-          tickRotation: 0,
-        }}
-        pointSize={8}
-        pointBorderWidth={2}
-        pointLabelYOffset={-12}
-        useMesh={true}
-        pointColor={'#ffff'}
-        pointBorderColor={{ from: "serieColor"}}
-
-        // Tema para que combine con modo oscuro (opcional)
-        theme={{
-          axis: {
-            domain: { line: { stroke: "#4b5563" } },
-            ticks: { text: { fill: "#9ca3af" } },
+        yAxis={[
+          {
+            tickLabelStyle: { fill: '#9ca3af' }, // Color del texto del eje Y
           },
-          grid: {
-            line: { stroke: "#374151", strokeWidth: 1 }
-          }
+        ]}
+        series={[
+          {
+            id: 'ventasSem',
+            label: 'Ventas Semanales',
+            data: yValues,
+            color: '#10b981', // Color verde de las barras
+          },
+        ]}
+        // Configuración de márgenes para que los textos no se corten
+        margin={{ top: 30, right: 30, bottom: 50, left: 50 }}
+        // Mantenemos la grilla horizontal
+        grid={{ horizontal: true }}
+        // Estilos personalizados para el tema oscuro/gris de los ejes
+        sx={{
+          // Color de las líneas de los ejes
+          '.MuiChartsAxis-line': { stroke: '#4b5563' },
+          '.MuiChartsAxis-tick': { stroke: '#4b5563' },
+          // Color de la grilla de fondo
+          '.MuiChartsGrid-line': { stroke: '#374151', strokeWidth: 1, strokeDasharray: '4 4' }, // Añadí strokeDasharray para que la grilla sea punteada (opcional)
+          // Bordes redondeados en las barras (opcional, da un toque más moderno)
+          '.MuiBarElement-root': {
+            rx: 4, // Radio horizontal de los bordes
+            ry: 4, // Radio vertical de los bordes
+          },
         }}
       />
     </div>
