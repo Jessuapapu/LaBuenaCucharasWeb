@@ -11,7 +11,6 @@ interface TablaContratosProps {
 
 type SortKey = "numeroContrato" | "estado" | "presupuesto" | "fechaVencimiento" | "";
 
-
 const IconEdit = () => (<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>);
 
 export default function TablaContratos({ data }: TablaContratosProps) {
@@ -155,7 +154,7 @@ export default function TablaContratos({ data }: TablaContratosProps) {
                   <td className="px-6 py-4"><span className={`px-2 py-1 rounded text-xs font-bold border ${getStatusColor(c.estado)}`}>{c.estado}</span></td>
                   <td className="px-6 py-4 text-center">
                     <button 
-                        onClick={() => setSelectedContrato(c)} 
+                        onClick={() => handleEditClick(c)} 
                         className="text-gray-400 hover:text-white bg-gray-800 hover:bg-blue-600 p-2 rounded-lg transition-colors border border-gray-700 hover:border-blue-500"
                         title="Editar Contrato"
                     >
