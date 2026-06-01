@@ -4,40 +4,55 @@ import { FileText, ClipboardList, Trash2, Plus, User, Calendar } from "lucide-re
 import { useNuevoContrato } from "../Hooks/hookContratos";
 import { useMenu_diario } from "../Hooks/hookMenu_diario";
 import type { NuevoContrato } from "../../interfaces/Contratos";
-//import { usePedidos } from "../Hooks/hookPedidos";
+import { pedidosService } from "../../services/pedidos";
 
 interface DetalleItem {
   NombrePlatillo: string;
   cantidad: number;
   precioUnitario: number;
 }
+interface DatosEdicion {
+  id_pedido: number;
+  nombreContrato?: number;
+  nombre_cliente: string;
+  fecha: string;
+  tipo: "Evento" | "Contrato";
+  detalle: Array<{
+    nombre_platillo: string;
+    cantidad: number;
+    precio_unitario: number;
+  }>;
+}
 
 interface FormularioNuevoPedidoProps {
   onClose: () => void;
   onSave: () => void; // Para recargar la tabla al guardar
+  datosEdicion?: DatosEdicion | null;
 }
 
 type TipoRegistro = "Evento" | "Contrato";
 
 //interface MesaOption { numero_mesa: string; estado: string; }
 
-export default function FormularioNuevoPedido({ onClose, onSave }: FormularioNuevoPedidoProps) {
+export default function FormularioNuevoPedido({ onClose, onSave, datosEdicion }: FormularioNuevoPedidoProps) {
   // --- Estados de Datos (Listas para selects) ---
   const {listaClientes, crear: crearContratoServicio}=useNuevoContrato()
   const {listaPlatillos}=useMenu_diario()
   //const [listaMesas, setListaMesas] = useState<MesaOption[]>([]);
 
   // --- Estados del Formulario ---
-  const [cliente, setCliente] = useState("");
-  const [fecha, setFecha] = useState(new Date().toISOString().split("T")[0]); // Fecha de hoy por defecto
-  const [items, setItems] = useState<DetalleItem[]>([
-    { NombrePlatillo: "", cantidad: 1, precioUnitario: 0 },
-  ]);
+  const [cliente, setCliente] = useState(datosEdicion?.nombre_cliente||"");
+  const [fecha, setFecha] = useState(datosEdicion? new Date(datosEdicion.fecha).toISOString().split("T")[0]: new Date().toISOString().split("T")[0]); // Fecha de hoy por defecto
+  const [items, setItems] = useState<DetalleItem[]>(
+    datosEdicion ? datosEdicion.detalle.map(d => ({
+      NombrePlatillo: d.nombre_platillo,
+      cantidad: d.cantidad,
+      precioUnitario: d.precio_unitario
+    })): [{ NombrePlatillo: "", cantidad: 1, precioUnitario: 0 }],
+  );
 
   const [cargando, setCargando] = useState(false);//para no confuncir
-  //const [MesaSeleccionada, setMesaSeleccionada]= useState("")
 
-  
   // Manejadores de Detalles (Agregar / Quitar / Cambiar)
   const handleAddItem = () => {
     setItems([...items, { NombrePlatillo: "", cantidad: 1, precioUnitario: 0 }]);
@@ -64,31 +79,30 @@ export default function FormularioNuevoPedido({ onClose, onSave }: FormularioNue
     }
     setItems(newItems);
   };
-  const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8001";
+  //const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8001";
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!cliente || items.length === 0) {
       alert("Debes seleccionar un cliente y al menos un platillo.");
       return;
-    }
+    } setCargando(true);
     if (tipo === "Contrato") {
     
       const contratoPayload: NuevoContrato = {
-        numero_contrato: Math.floor(100000 + Math.random() * 900000), //codigo aleatorio
+        numero_contrato: datosEdicion?.nombreContrato||Math.floor(100000 + Math.random() * 900000), //codigo aleatorio
         nombre_cliente: cliente,
         fecha_inicio: fecha,
         fecha_fin: fecha,
         presupuesto: items.reduce((acc, item) => acc + item.cantidad * item.precioUnitario, 0),
-        // Si tu servicio/endpoint de contratos pide la estructura del detalle, la mapeas aquí
       };
 
       const exito = await crearContratoServicio(contratoPayload);
       if (exito) {
-        alert("Contrato creado con éxito ✅");
+        alert("Contrato creado con éxito");
         onSave();
         onClose();
       } else {
-        alert("Hubo un error al guardar el contrato ❌");
+        alert("Hubo un error al guardar el contrato");
       }
 
     } else {
@@ -103,32 +117,29 @@ export default function FormularioNuevoPedido({ onClose, onSave }: FormularioNue
           precio_unitario: Number(item.precioUnitario),
         })),
       };
+// Determinar si editamos o creamos usando el servicio
+    let exito = false;
+    if (datosEdicion) {
+      exito = await pedidosService.actualizarPedido(datosEdicion.id_pedido, PedidoPayload);
+    } else {
+      exito = await pedidosService.crearPedido(PedidoPayload);
+    }
 
-      try {
-        setCargando(true);
-        const response = await fetch(`${API_URL}/pedidos/`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(PedidoPayload),
-        });
+    setCargando(false);
 
-        if (!response.ok) throw new Error("Error al crear el pedido");
-
-        alert("Creado con exito");
-        onSave(); 
-        onClose(); 
-      } catch (error) {
-        console.error(error);
-        alert("Hubo un error al guardar el pedido");
-      } finally {
-        setCargando(false);
-      }
+    if (exito) {
+      alert(datosEdicion ? "Pedido actualizado con éxito ✅" : "Pedido creado con éxito ✅");
+      onSave();
+      onClose();
+    } else {
+      alert("Hubo un error al procesar el pedido ❌");
+    }
     }
   };
 
   // Calcular total visual
   const totalEstimado = items.reduce((acc, item) => acc + item.cantidad * item.precioUnitario, 0);
-  const [tipo, setTipo] = useState<TipoRegistro>("Evento");
+  const [tipo, setTipo] = useState<TipoRegistro>(datosEdicion?.tipo ||"Evento");
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
       <div className="bg-slate-900 rounded-3xl text-white max-w-5xl w-full border border-slate-700 shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 max-h-[90vh]">
@@ -138,7 +149,7 @@ export default function FormularioNuevoPedido({ onClose, onSave }: FormularioNue
           <div>
             <header className="mb-6 flex justify-between items-center">
               <div>
-                <h2 className="text-2xl font-black text-white uppercase tracking-tighter">Registrar la orden</h2>
+                <h2 className="text-2xl font-black text-white uppercase tracking-tighter">{datosEdicion ? "Editar orden" : "Registrar la orden"}</h2>
                 <p className="text-slate-400 text-sm">Selecciona el tipo de registro manual</p>
               </div>
             </header>
@@ -147,15 +158,17 @@ export default function FormularioNuevoPedido({ onClose, onSave }: FormularioNue
             <div className="flex gap-2 p-1 bg-slate-950 rounded-2xl mb-6">
               <button
                 type="button"
+                disabled={!!datosEdicion} // Deshabilitado si estás editando para evitar romper consistencia
                 onClick={() => setTipo("Evento")}
                 className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold transition-all ${
                   tipo === "Evento" ? "bg-blue-600 text-white shadow-lg" : "text-slate-500 hover:text-slate-300"
                 }`}
               >
-                <ClipboardList size={18} /> Orden Regular
+                <ClipboardList size={18} /> Pedido
               </button>
               <button
                 type="button"
+                disabled={!!datosEdicion}
                 onClick={() => setTipo("Contrato")}
                 className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold transition-all ${
                   tipo === "Contrato" ? "bg-amber-300/90 text-white shadow-lg" : "text-slate-500 hover:text-slate-300"

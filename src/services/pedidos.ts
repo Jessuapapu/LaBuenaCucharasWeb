@@ -3,6 +3,15 @@ import type { OrdenVisualizar } from "../interfaces/Ordenes";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const token = localStorage.getItem("access_token");
+// Función auxiliar para obtener el token en tiempo real (evita problemas si el token cambia o se refresca)
+//Y da pereaza escribir de nuevo lo mismo
+const getHeaders = () => {
+  const token = localStorage.getItem("access_token");
+  return {
+    "Content-Type": "application/json",
+    ...(token ? { "Authorization": `Bearer ${token}` } : {})
+  };
+};
 
 export const pedidosService = {
   //Obtiene los pedidos activos de un cliente específico pasados por Query Params
@@ -30,6 +39,44 @@ export const pedidosService = {
     } catch (error) {
       console.error("Error en pedidosService.getPedidosByCliente:", error);
       throw error;
+    }
+  },
+
+  async crearPedido(pedidoPayload: any): Promise<boolean> {
+    try {
+      const response = await fetch(`${API_URL}/pedidos/`, {
+        method: "POST",
+        headers: getHeaders(),
+        body: JSON.stringify(pedidoPayload)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error al crear el pedido: ${response.status}`);
+      }
+
+      return true;
+    } catch (error) {
+      console.error("Error en pedidosService.crearPedido:", error);
+      return false;
+    }
+  },
+
+  async actualizarPedido(idPedido: number, pedidoPayload: any): Promise<boolean> {
+    try {
+      const response = await fetch(`${API_URL}/pedidos/${idPedido}/`, {
+        method: "PUT", // Puedes cambiar a PATCH si tu backend maneja actualizaciones parciales
+        headers: getHeaders(),
+        body: JSON.stringify(pedidoPayload)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error al actualizar el pedido: ${response.status}`);
+      }
+
+      return true;
+    } catch (error) {
+      console.error(`Error en pedidosService.actualizarPedido para ID ${idPedido}:`, error);
+      return false;
     }
   }
 };

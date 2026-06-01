@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
-import ModalPedido from "../modals/ModalPedido";
+import FormularioNuevoPedido from "../forms/PedidosForms";
+import type { DetallePlatillo } from "../../interfaces/Platillos";
 
 // --- Iconos SVG ---
 const IconSort = () => (<svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" /></svg>);
@@ -7,12 +8,6 @@ const IconSortUp = () => (<svg className="w-4 h-4 text-blue-400" fill="none" str
 const IconSortDown = () => (<svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h5m4 0v12m0 0l-4-4m4 4l4-4" /></svg>);
 const IconFilter = () => (<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" /></svg>);
 
-// --- Interfaces ---
-interface Detalle {
-  nombre_platillo: string;
-  cantidad: number;
-  precio_unitario: number;
-}
 
 interface Pedido {
   id_pedido: number;
@@ -24,15 +19,14 @@ interface Pedido {
     nombre_cliente: string;
     direccion_cliente: string;
   };
-  detalles: Detalle[];
-  factura?: { monto_total: number };
+  detalles: DetallePlatillo[];
 }
 
 interface Row {
   id_unico: number;
   numero_pedido: number;
   resumen: Pedido;
-  detalles: Detalle[];
+  detalles: DetallePlatillo[];
   montoCalculado: number;
 }
 
@@ -303,7 +297,7 @@ export default function TablaPedidos({ data, externalStatus }: TablaPedidosProps
         </table>
       </div>
 
-      {selected && <ModalPedido pedido={selected} onClose={() => setSelected(null)} onSave={handleSave} />}
+      {selected && <FormularioNuevoPedido onClose={() => setSelected(null)} onSave={handleSave} />}
     </div>
   );
 }

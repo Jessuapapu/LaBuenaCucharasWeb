@@ -14,6 +14,11 @@ export interface Menu_dario{
     Monto: number;
     //detalle: DetalleMenu[];
 }
+export interface DetallePlatillo {
+  nombre_platillo: string;
+  cantidad: number;
+  precio_unitario: number;
+}
 
 export interface Imagenes{
     IdImagen: number;

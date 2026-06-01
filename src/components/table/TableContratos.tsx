@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
-import ModalNuevoContrato from "../modals/ModalNuevoContrato";
-import ModalEditarContrato from "../modals/ModalEditarContrato";
+//import ModalNuevoContrato from "../modals/ModalNuevoContrato";
+//import ModalEditarContrato from "../modals/ModalEditarContrato";
 import type { Contrato } from "../../interfaces/Contratos";
+import FormularioNuevoPedido from "../forms/PedidosForms";
 
 
 interface TablaContratosProps {
@@ -105,12 +106,28 @@ export default function TablaContratos({ data }: TablaContratosProps) {
         </div>
     </th>
   );
+  // Mapear datos de edición al formato que espera el Formulario Unificado
+  const handleEditClick = (contrato: Contrato) => {
+    setSelectedContrato(contrato);
+    setShowCreate(true);
+  };
+
+  const datosEdicionFormulario = useMemo(() => {
+    if (!selectedContrato) return null;
+    return {
+      id_pedido: selectedContrato.idContrato, // Sincronizado con tu backend
+      nombre_cliente: (selectedContrato.idCliente ?? "").toString(), 
+      fecha: selectedContrato.fechaInicio,
+      tipo: "Contrato" as const,
+      detalle: [] // Si tu interfaz Contrato maneja detalles, mapéalos aquí
+    };
+  }, [selectedContrato]);
 
   return (
     <div className="w-full space-y-4 animate-in fade-in duration-500">
       <div className="bg-gray-900 p-4 rounded-xl shadow-lg border border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4">
         <input type="text" placeholder="🔍 Buscar contrato, cliente, estado..." className="w-full md:w-80 bg-gray-800 border border-gray-700 text-white text-sm rounded-lg px-4 py-2 outline-none focus:border-blue-500" value={search} onChange={(e) => setSearch(e.target.value)} />
-        <button onClick={() => setShowCreate(true)} className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg shadow-green-900/20 flex items-center gap-2"><span>📄+</span> Nuevo Contrato</button>
+        <button onClick={() => { setSelectedContrato(null); setShowCreate(true)}} className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg shadow-green-900/20 flex items-center gap-2"><span>📄+</span> Nuevo Contrato</button>
       </div>
 
       <div className="relative overflow-x-auto shadow-xl rounded-xl border border-gray-800 bg-gray-900">
@@ -154,15 +171,9 @@ export default function TablaContratos({ data }: TablaContratosProps) {
         </table>
       </div>
 
-      {showCreate && <ModalNuevoContrato onClose={() => setShowCreate(false)}  />}
-      
-      {/* Aseguramos que solo renderizamos el modal si IdContrato existe */}
-      {selectedContrato && selectedContrato.idContrato && (
-        <ModalEditarContrato 
-            contrato={selectedContrato as Contrato & { IdContrato: number }} 
-            onClose={() => setSelectedContrato(null)} 
-        />
-      )}
+      {showCreate && <FormularioNuevoPedido datosEdicion={datosEdicionFormulario}
+          onClose={() => { setShowCreate(false); setSelectedContrato(null); }}
+          onSave={() => { setShowCreate(false); setSelectedContrato(null); window.location.reload(); }}  />}
     </div>
   );
 }
