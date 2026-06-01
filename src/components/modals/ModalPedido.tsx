@@ -7,7 +7,7 @@ import type { Platillo } from "../../interfaces/Platillos";
 import { useOrdenes } from "../Hooks/hookOrdenes";
 
 interface ModalPedidoProps {
-    Orden: OrdenVisualizar;
+    Orden?: OrdenVisualizar;
     listaPlatillos: Platillo[];
     onClose: () => void;
     onSave: (resultado: any) => void;
@@ -17,9 +17,9 @@ export default function ModalOrden({ Orden, listaPlatillos, onClose, onSave }: M
     const [idCliente, setIdCliente] = useState<number>(0);
     const [NombreCliente, setNombreCliente]= useState("")
     const {actualizarOrden, guardarOrden, loading, error:ApiError}= useOrdenes();
-    const [estado, setEstado] = useState(Orden.estado_pedido);
+    const [estado, setEstado] = useState(Orden?.estado_pedido|| "Pendiente");
     const isEditModal= !!(Orden && Orden.idOrden)
-    const [detalles, setDetalles] = useState<DetalleOrdenLista[]>(Orden.detalles || []);
+    const [detalles, setDetalles] = useState<DetalleOrdenLista[]>(Orden?.detalles || []);
     //const [platillos, setPlatillos] = useState<string[]>([]);
     const isAnulado = estado === "ANULADO";
 
@@ -175,7 +175,7 @@ export default function ModalOrden({ Orden, listaPlatillos, onClose, onSave }: M
                         <input
                             type="text"
                             className="w-full px-2 py-1 rounded bg-gray-300 text-gray-800 cursor-not-allowed font-medium"
-                            value={Orden.cliente?.direccion_cliente || "No especificada"}
+                            value={Orden?.cliente?.direccion_cliente || "No especificada"}
                             readOnly 
                         />
                     </div>
@@ -203,7 +203,7 @@ export default function ModalOrden({ Orden, listaPlatillos, onClose, onSave }: M
                         <label className="block text-gray-200">Fecha:</label>
                         <input 
                             type="text" 
-                            value={Orden.fecha || "Hoy"} 
+                            value={Orden?.fecha || "Hoy"} 
                             disabled 
                             className="w-full px-2 py-1 rounded bg-gray-600 text-white cursor-not-allowed"
                         />

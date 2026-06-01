@@ -1,8 +1,51 @@
 import { mapOrdenes } from "../map/ordenes";
 import type { CrearOrden, ApiResponseCrearOrden } from "../interfaces/Ordenes";
+import type { Platillo } from "../interfaces/Platillos";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const token = localStorage.getItem("access_token");
+// Función auxiliar para obtener el token en tiempo real (evita problemas si el token cambia o se refresca)
+//Y da pereaza escribir de nuevo lo mismo
+const getHeaders = () => {
+  const token = localStorage.getItem("access_token");
+  return {
+    "Content-Type": "application/json",
+    ...(token ? { "Authorization": `Bearer ${token}` } : {})
+  };
+};
+
+/**
+ * 1. OBTENER TODAS LAS ÓRDENES (Agregado para usar en OrdenesPage)
+ */
+export async function obtenerTodasLasOrdenes(): Promise<any[]> {
+  const res = await fetch(`${API_URL}/ordenes/`, {
+    method: "GET",
+    headers: getHeaders()
+  });
+
+  if (!res.ok) throw new Error("Error al obtener el catálogo completo de órdenes");
+
+  const data = await res.json();
+  // Si tu backend devuelve las órdenes envueltas en { data: [...] }, extraemos el arreglo
+  const arregloOrdenes = data.data ?? data;
+  
+  return mapOrdenes(arregloOrdenes);
+}
+
+/**
+ * 2. OBTENER TODOS LOS PLATILLOS (Agregado para usar en OrdenesPage)
+ */
+export async function obtenerTodosLosPlatillos(): Promise<Platillo[]> {
+  const res = await fetch(`${API_URL}/platillos/`, {
+    method: "GET",
+    headers: getHeaders()
+  });
+
+  if (!res.ok) throw new Error("Error al cargar el catálogo de platillos");
+
+  const data = await res.json();
+  return data.data ?? data;
+}
 
 export async function getOrdenesByCliente(idCliente: number) {
     const res = await fetch(`${API_URL}/clientes/detalles/${idCliente}`, {
