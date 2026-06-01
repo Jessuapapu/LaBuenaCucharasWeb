@@ -9,3 +9,9 @@ export interface PayloadFactura {
   idOrdenes: number[];
   idContrato: number | null;
 }
+export interface RespuestaFacturasPaginada {
+    data: any[];
+    total: number;
+    pagina: number;
+    rows: number;
+}

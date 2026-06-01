@@ -8,7 +8,7 @@ interface TablaClientesProps {
   data: cliente[];
 }
 
-type SortKey = "nombre" | "correo" | "direccion" | "";
+type SortKey = "NombreCliente" | "correo" | "dirreccion" | "";
 
 // Iconos
 const IconSort = () => (<svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" /></svg>);
@@ -25,7 +25,7 @@ export default function TablaClientes({ data }: TablaClientesProps) {
   const [selectedCliente, setSelectedCliente] = useState<cliente | null>(null);
 
   // Orden y Paginación
-  const [sortKey, setSortKey] = useState<SortKey>("nombre");
+  const [sortKey, setSortKey] = useState<SortKey>("NombreCliente");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -42,7 +42,7 @@ export default function TablaClientes({ data }: TablaClientesProps) {
     let rows = clientes.filter((c) => {
       const term = search.toLowerCase();
       return (
-        (c.nombre || "").toLowerCase().includes(term) ||
+        (c.NombreCliente || "").toLowerCase().includes(term) ||
         (c.correo || "").toLowerCase().includes(term) ||
         (c.telefono || "").includes(term)
       );
@@ -77,7 +77,7 @@ export default function TablaClientes({ data }: TablaClientesProps) {
   const handleUpdate = (updated: cliente) => {
     setClientes(prev => prev.map(c => 
         // Compara por ID si existe, sino por nombre (fallback)
-        (c.idCliente && c.idCliente === updated.idCliente) || c.nombre === updated.nombre ? updated : c
+        (c.IdCliente && c.IdCliente === updated.IdCliente) || c.NombreCliente === updated.NombreCliente ? updated : c
     ));
     setSelectedCliente(null);
   };
@@ -116,8 +116,8 @@ export default function TablaClientes({ data }: TablaClientesProps) {
         <table className="w-full text-sm text-left text-gray-400">
           <thead className="text-xs uppercase bg-gray-900 border-b border-gray-800">
             <tr>
-              <HeaderCell label="Nombre" sKey="nombre" />
-              <HeaderCell label="Dirección" sKey="direccion" />
+              <HeaderCell label="Nombre" sKey="NombreCliente" />
+              <HeaderCell label="Dirección" sKey="dirreccion" />
               <HeaderCell label="Correo" sKey="correo" />
               <th className="px-6 py-4 text-gray-300">Teléfono</th>
               <th className="px-6 py-4 text-center text-gray-300">Acciones</th>
@@ -127,8 +127,8 @@ export default function TablaClientes({ data }: TablaClientesProps) {
             {paginatedRows.length > 0 ? (
               paginatedRows.map((c, i) => (
                 <tr key={i} className="bg-gray-900 border-b border-gray-800 hover:bg-gray-800/60 transition-colors">
-                  <td className="px-6 py-4 font-medium text-white">{c.nombre}</td>
-                  <td className="px-6 py-4 truncate max-w-xs" title={c.direccion}>{c.direccion}</td>
+                  <td className="px-6 py-4 font-medium text-white">{c.NombreCliente}</td>
+                  <td className="px-6 py-4 truncate max-w-xs" title={c.dirreccion}>{c.dirreccion}</td>
                   <td className="px-6 py-4 text-blue-300">{c.correo}</td>
                   <td className="px-6 py-4">{c.telefono}</td>
                   <td className="px-6 py-4 text-center">

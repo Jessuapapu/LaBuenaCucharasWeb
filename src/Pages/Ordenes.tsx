@@ -1,9 +1,11 @@
 import { useState, useMemo } from "react";
 //import { useOrdenes } from "../components/Hooks/hookOrdenes";
 import CardPedido from "../components/cards/CardOrden";
+import type { Platillo } from "../interfaces/Platillos";
 export default function OrdenesPage(){
     const [data, setData] = useState<any[]>([]);
     const [activeFilter, setActiveFilter] = useState<string>("");
+    const [listaPlatillos, setListaPlatillos] = useState<Platillo[]>([]);
     const filteredData = useMemo(() => {
             if (!activeFilter) return data;
             return data.filter(p => p.estado_pedido?.toUpperCase() === activeFilter.toUpperCase());
@@ -19,6 +21,7 @@ export default function OrdenesPage(){
             <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {filteredData.map((Orden) =>(
                 <CardPedido Pedido={Orden} 
+                listaPlatillos={listaPlatillos}
                 Actualizar={(actualizado) => {
                 // Opcional: Actualizar la lista local si no quieres recargar
                 console.log("Pedido actualizado:", actualizado);
