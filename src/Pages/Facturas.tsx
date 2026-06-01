@@ -73,7 +73,7 @@ export default function FacturasPage() {
             <span className="text-sm font-medium animate-pulse">Cargando facturas...</span>
         </div>
       ) : (
-        <TablaFacturas data={data} />
+        <TablaFacturas />
       )}
     </div>
   );
