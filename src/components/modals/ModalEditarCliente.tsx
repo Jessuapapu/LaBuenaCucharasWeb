@@ -22,7 +22,7 @@ export default function ModalEditarCliente({ cliente, onClose, onSave }: ModalEd
     e.preventDefault();
 
     // Delegamos la ejecución al hook
-    const exito = await editar(cliente.idCliente, formData);
+    const exito = await editar(cliente.IdCliente, formData);
 
     if (exito) {
       onSave(formData);
@@ -42,7 +42,7 @@ export default function ModalEditarCliente({ cliente, onClose, onSave }: ModalEd
         </button>
 
         <h2 className="text-2xl font-bold mb-1 text-blue-400">Editar Cliente</h2>
-        <p className="text-gray-400 text-sm mb-6">Modifica los datos de {cliente.nombre}.</p>
+        <p className="text-gray-400 text-sm mb-6">Modifica los datos de {cliente.NombreCliente}.</p>
 
         {/* Mostramos el error si el hook falla */}
         {error && <div className="mb-4 text-red-400 text-sm">{error}</div>}
@@ -50,11 +50,11 @@ export default function ModalEditarCliente({ cliente, onClose, onSave }: ModalEd
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm text-gray-300 mb-1">Nombre</label>
-            <input name="nombre" value={formData.nombre} onChange={handleChange} className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white focus:border-blue-500 outline-none" />
+            <input name="nombre" value={formData.NombreCliente} onChange={handleChange} className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white focus:border-blue-500 outline-none" />
           </div>
           <div>
             <label className="block text-sm text-gray-300 mb-1">Dirección</label>
-            <input name="direccion" value={formData.direccion} onChange={handleChange} className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white focus:border-blue-500 outline-none" />
+            <input name="direccion" value={formData.dirreccion} onChange={handleChange} className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white focus:border-blue-500 outline-none" />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>

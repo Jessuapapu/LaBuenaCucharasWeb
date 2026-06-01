@@ -3,11 +3,13 @@ import ModalPedido from "../modals/ModalPedido";
 import { useState } from "react";
 import type { CrearOrden, CardPedidoProps, OrdenVisualizar } from "../../interfaces/Ordenes";
 import { useOrdenes } from "../Hooks/hookOrdenes";
+import type { Platillo } from "../../interfaces/Platillos";
 
 interface Props extends CardPedidoProps {
   Pedido: OrdenVisualizar;
+  listaPlatillos: Platillo[];
 }
-export default function CardPedido({Pedido, onClick, Actualizar}: Props) {
+export default function CardPedido({Pedido, onClick, listaPlatillos}: Props) {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [mostrarDetalles, setmostarDetalles]= useState(false);
     const { guardarOrden } = useOrdenes();
@@ -138,7 +140,8 @@ export default function CardPedido({Pedido, onClick, Actualizar}: Props) {
             {/* Modal de Pedido */}
             {isEditModalOpen && (
                 <ModalPedido
-                    pedido={Pedido} 
+                    Orden={Pedido} 
+                    listaPlatillos={listaPlatillos}
                     onClose={() => setIsEditModalOpen(false)}
                     onSave={handleSave}
                 />

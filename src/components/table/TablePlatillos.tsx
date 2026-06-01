@@ -206,7 +206,6 @@ export default function TablaComidas({ data }: TablaComidasProps) {
                         <tr>
                             <HeaderCell label="Platillo" sKey="nombre_platillo" />
                             <HeaderCell label="Categoría" sKey="nombre_categoria" />
-                            <HeaderCell label="Precio" sKey="precio" />
                             <th className="px-6 py-4 text-center text-gray-300 font-semibold text-xs uppercase">Acciones</th>
                         </tr>
                     </thead>
