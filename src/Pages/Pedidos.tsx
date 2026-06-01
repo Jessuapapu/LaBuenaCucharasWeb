@@ -4,7 +4,7 @@ import CardGraficoLinealSemanal from "../components/cards/CardsLineales/CardGrap
 import FormularioNuevoPedido from "../components/forms/PedidosForms";
 import { TrendingUp, Package, Clock, CheckCircle, DollarSign, Plus } from "lucide-react";
 import CardPedido from "../components/cards/CardOrden";
-
+import type { Platillo } from "../interfaces/Platillos";
 
 // Interfaces
 interface DatoGrafico {
@@ -21,6 +21,7 @@ const KpiCard = ({ title, value, sub, icon, color, onClick, isActive }: any) => 
         yellow: isActive ? 'bg-yellow-500 border-yellow-500 ring-yellow-500/50' : 'hover:border-yellow-500/50',
         purple: isActive ? 'bg-purple-500 border-purple-500 ring-purple-500/50' : 'hover:border-purple-500/50',
     };
+    
 
     return (
         <div 
@@ -50,7 +51,7 @@ export default function PedidosPage() {
     const [datosVentas, setDatosVentas] = useState<DatoGrafico[]>([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
-    
+    const [listaPlatillos, setListaPlatillos]= useState<Platillo[]>([])
     // Filtro activo para los KPIs
     const [activeFilter, setActiveFilter] = useState<string>("");
     const API_URL = import.meta.env.VITE_API_URL;
@@ -191,7 +192,8 @@ export default function PedidosPage() {
 
             <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {filteredData.map((Pedido) =>(
-                    <CardPedido Pedido={Pedido} 
+                    <CardPedido Pedido={Pedido}
+                    listaPlatillos={listaPlatillos} 
                         Actualizar={(actualizado) => {
                             // Opcional: Actualizar la lista local si no quieres recargar
                             console.log("Pedido actualizado:", actualizado);

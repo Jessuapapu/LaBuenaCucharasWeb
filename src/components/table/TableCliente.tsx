@@ -76,7 +76,7 @@ export default function TablaClientes({ data }: TablaClientesProps) {
 
   const handleUpdate = (updated: cliente) => {
     setClientes(prev => prev.map(c => 
-        // Compara por ID si existe, sino por NombreCliente (fallback)
+        // Compara por ID si existe, sino por nombre (fallback)
         (c.IdCliente && c.IdCliente === updated.IdCliente) || c.NombreCliente === updated.NombreCliente ? updated : c
     ));
     setSelectedCliente(null);
@@ -116,7 +116,7 @@ export default function TablaClientes({ data }: TablaClientesProps) {
         <table className="w-full text-sm text-left text-gray-400">
           <thead className="text-xs uppercase bg-gray-900 border-b border-gray-800">
             <tr>
-              <HeaderCell label="NombreCliente" sKey="NombreCliente" />
+              <HeaderCell label="Nombre" sKey="NombreCliente" />
               <HeaderCell label="Dirección" sKey="dirreccion" />
               <HeaderCell label="Correo" sKey="correo" />
               <th className="px-6 py-4 text-gray-300">Teléfono</th>

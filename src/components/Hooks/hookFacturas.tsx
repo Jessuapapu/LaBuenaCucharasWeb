@@ -5,7 +5,7 @@ import type { Contrato } from "../../interfaces/Contratos";
 import { getContratosByCliente } from "../../services/contratos";
 import { getClienteById } from "../../services/clientes";
 import { pedidosService } from "../../services/pedidos";
-import { getFacturas } from "../../services/facturas";
+import { getFacturas, getFacturasPag } from "../../services/facturas";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -269,4 +269,66 @@ export function useFacturasPage() {
     error, 
     refetch: fetchFacturas 
   };
+}
+export function useFacturaPaginacion(initialPage = 1, initialRows = 10) {
+    const [data, setData] = useState<any[]>([]);
+    const [total, setTotal] = useState(0);
+    const [pagina, setPagina] = useState(initialPage);
+    const [rows, setRows] = useState(initialRows);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [filtros, setFiltros] = useState<Record<string, any>>({});
+
+    const fetchFacturas = useCallback(async (signal?: AbortSignal) => {
+        setLoading(true);
+        setError(null);
+        try {
+            // El servicio ahora procesa correctamente los argumentos sin quejas
+            const respuesta = await getFacturasPag(pagina, rows, filtros, signal);
+            setData(respuesta.data);
+            setTotal(respuesta.total);
+        } catch (err: any) {
+            if (err.name !== 'AbortError') {
+                setError(err.message || "Error al cargar facturas");
+            }
+        } finally {
+            setLoading(false);
+        }
+    }, [pagina, rows, filtros]);
+
+    useEffect(() => {
+        const controller = new AbortController();
+        fetchFacturas(controller.signal);
+        return () => controller.abort();
+    }, [fetchFacturas]);
+
+    const cambiarPagina = (nuevaPagina: number) => setPagina(nuevaPagina);
+    const cambiarRows = (nuevasRows: number) => { setRows(nuevasRows); setPagina(1); };
+    const aplicarFiltros = (nuevosFiltros: Record<string, any>) => { setFiltros(nuevosFiltros); setPagina(1); };
+
+    // Cálculo dinámico de KPIs basados exclusivamente en la página visible
+    const stats = useMemo(() => {
+        if (!data.length) return { total: 0, pagadas: 0, pendiente: 0 };
+        return {
+            total: data.reduce((acc, curr) => acc + (Number(curr.monto_total) || 0), 0),
+            pagadas: data
+                .filter((f: any) => f.estado_factura === 'Pagada')
+                .reduce((acc, curr) => acc + (Number(curr.monto_total) || 0), 0),
+            pendiente: data.filter((f: any) => f.estado_factura === 'Generada').length
+        };
+    }, [data]);
+
+    return {
+        data,
+        total,
+        pagina,
+        rows,
+        loading,
+        error,
+        stats, // Añadido para que puedas reemplazar useFacturasPage por completo si lo deseas
+        cambiarPagina,
+        cambiarRows,
+        aplicarFiltros,
+        refetch: fetchFacturas
+    };
 }
