@@ -17,6 +17,7 @@ import InformesPage from "./Pages/infome";
 import MeasasPage from "./Pages/Mesas";
 import LoginPage from "./Pages/Login";
 import { RutaProtegida } from "./context/RutaProtegida";
+import OrdenesPage from "./Pages/Ordenes";
 
 const router = createBrowserRouter([
   {
@@ -34,6 +35,7 @@ const router = createBrowserRouter([
           { path: "/Comidas", element: <ComidasPage />, },
           { path: "/Menu_Diario", element: <Menu_Diario /> },
           { path: "/Mesas", element: <MeasasPage /> },
+          { path: "/ordenes", element: <OrdenesPage/>},
           {
             path: "/Clientes",
             children: [

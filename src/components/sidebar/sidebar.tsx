@@ -90,6 +90,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, logoSrc, business
                     <LinkItem to="/Clientes" icon={<span role="img" aria-label="Clientes">👤</span>} label="Clientes" />
                     <LinkItem to="/Inventario" icon={<span role="img" aria-label="Inventario">🖥️</span>} label="Inventario" />
                     <LinkItem to= "/Mesas" icon={<span role="img" aria-label="Mesas"><CircleDashed/></span>} label="Mesas" />
+                    <LinkItem to= "/ordenes" icon={<span role="img" aria-label="Ordenes"><CircleDashed/></span>} label="Ordenes" />
                     {/* Puedes añadir más LinkItems aquí */}
                 </nav>
 
