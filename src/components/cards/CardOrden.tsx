@@ -1,5 +1,5 @@
 import { Calendar, Clock, Settings2, ChevronUp, ChevronDown } from "lucide-react";
-import ModalPedido from "../modals/ModalPedido";
+import ModalPedido from "../modals/ModalOrden";
 import { useState } from "react";
 import type { CrearOrden, CardPedidoProps, OrdenVisualizar } from "../../interfaces/Ordenes";
 import { useOrdenes } from "../Hooks/hookOrdenes";
@@ -48,6 +48,7 @@ export default function CardPedido({Pedido, onClick, listaPlatillos}: Props) {
   const detallesAMostrar = mostrarDetalles
     ? Pedido.detalles
     : Pedido.detalles?.slice(0, 2);
+    const tienePlatillos = Pedido.detalles && Pedido.detalles.length > 0;
 
     return (
         <div 
@@ -81,26 +82,31 @@ export default function CardPedido({Pedido, onClick, listaPlatillos}: Props) {
             </div>
           </div>
 
-          {/* CONTENEDOR DE DETALLES DE PRODUCTOS */}
-          <div className="bg-black/30 rounded-xl p-3 border border-white/5 space-y-2">
-            {detallesAMostrar && detallesAMostrar.length > 0 ? (
-              detallesAMostrar.map((item, idx) => (
-                <div key={idx} className="flex justify-between items-center text-[11px] animate-fade-in">
-                  <span className="text-slate-400 truncate flex-1 pr-2">
-                    <span className="font-bold text-blue-500 font-mono">{item.cantidad}x</span>{" "}
-                    {item.nombre_platillo}
-                  </span>
-                  <span className="text-slate-300 font-mono font-semibold">
-                    C$ {(Number(item.precio_unitario) * item.cantidad).toFixed(2)}
-                  </span>
-                </div>
-              ))
-            ) : (
-              <div className="text-[10px] text-slate-500 italic py-1 text-center">Sin platillos cargados</div>
+          {/* Contenedor desplegable*/}
+          <div className="bg-black/30 rounded-xl border border-white/5 p-3 space-y-2 transition-all">
+            
+            {/* Solo renderiza las filas si y solo si el usuario expandió el control */}
+            {mostrarDetalles && detallesAMostrar.map((item, idx) => (
+              <div key={idx} className="flex justify-between items-center text-[11px] animate-fade-in">
+                <span className="text-slate-400 truncate flex-1 pr-2">
+                  <span className="font-bold text-blue-500 font-mono">{item.cantidad}x</span>{" "}
+                  {item.nombre_platillo}
+                </span>
+                <span className="text-slate-300 font-mono font-semibold">
+                  C$ {(Number(item.precio_unitario) * item.cantidad).toFixed(2)}
+                </span>
+              </div>
+            ))}
+
+            {/* Mensaje de colapso preventivo */}
+            {!mostrarDetalles && (
+              <div className="text-[10px] text-slate-500 italic py-0.5 text-center font-medium">
+                Desglose de comanda oculto
+              </div>
             )}
 
-            {/* BOTÓN EXPANDIR (MUTADO CON DETALLES DINÁMICOS) */}
-            {Pedido.detalles && Pedido.detalles.length > 2 && (
+            {/* CONTROL DISPARADOR EXPANDIBLE */}
+            {tienePlatillos ? (
               <button
                 type="button"
                 onClick={handleToggleDetalles}
@@ -109,16 +115,19 @@ export default function CardPedido({Pedido, onClick, listaPlatillos}: Props) {
                 {mostrarDetalles ? (
                   <>
                     <ChevronUp size={12} className="stroke-[2.5]" />
-                    <span>Mostrar menos</span>
+                    <span>Ocultar detalles</span>
                   </>
                 ) : (
                   <>
                     <ChevronDown size={12} className="stroke-[2.5]" />
-                    <span>Ver más ({Pedido.detalles.length - 2})</span>
+                    <span>Ver detalles ({Pedido.detalles?.length})</span>
                   </>
                 )}
               </button>
+            ) : (
+              <div className="text-[10px] text-slate-500 italic py-1 text-center">Sin platillos cargados</div>
             )}
+
           </div>
         </div>
       </div>

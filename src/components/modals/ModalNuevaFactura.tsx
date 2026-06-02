@@ -76,10 +76,10 @@ export default function ModalNuevaFactura({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (loading || isFetching || facturaData.idOrdenes.length === 0) return;
+    if (loading || isFetching || facturaData.idOrdenes.length === 0|| !idClienteDetectado) return; //si no hay id, nada
     //el contrato
     const payloadFiscal: PayloadFactura = {
-      IdCliente: Number(clienteSeleccionado),
+      IdCliente: Number(idClienteDetectado),
       Cantidad: Number(facturaData.Cantidad || 1),
       Fecha: facturaData.Fecha,
       MetodoPago: facturaData.MetodoPago || "EFECTIVO",

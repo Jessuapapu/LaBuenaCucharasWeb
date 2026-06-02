@@ -7,7 +7,7 @@ import { getContratosByCliente } from "../../services/contratos";
 import { getFacturas, getFacturasPag, crearFactura, actualizarFactura } from "../../services/facturas";
 import type { Factura, PayloadFactura  } from "../../interfaces/Factura";
 import { getOrdenesByCliente } from "../../services/ordenes";
-import { useClientes } from "./hookClientes";
+import { useSoloClientes } from "./hookClientes";
 
 interface EstadoFormularioFactura extends Omit<PayloadFactura, "IdCliente" | "MONTOTOTAL"> {
   nombreCliente: string;
@@ -35,7 +35,7 @@ export function useFactura(busquedaNombre: string | "", idFacturaExistente?: num
     const [facturaData, setFacturaData] = useState<EstadoFormularioFactura>(estadoInicial);
      // Estado derivado para el Subtotal (calculado en tiempo real en el cliente)
     //const [subTotalVisual, setSubTotalVisual] = useState<number>(0);
-    const { clientes, loading: loadingClientes, error: errorClientes } = useClientes();
+    const { clientes, loading: loadingClientes, error: errorClientes } = useSoloClientes();
     const clienteEncontrado = useMemo(() => {
     if (!busquedaNombre.trim()) return null;
     return clientes.find(c => 

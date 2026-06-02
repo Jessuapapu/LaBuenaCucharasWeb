@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import TablaRegistros from "../components/table/TableRegistro";
 import { ArrowDownCircle, Truck, ArrowRight, DollarSign } from "lucide-react";
 import { useBodega } from "../components/Hooks/hookBodega";
+import { Cardstockmin } from "../components/cards/CardBar";
 
 export default function RegistrosPage() {
   // Ya solo consumimos data y loading del hook

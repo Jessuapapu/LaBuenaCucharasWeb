@@ -4,6 +4,7 @@ import ModalEditarCliente from "../modals/ModalEditarCliente";
 import type { cliente } from "../../interfaces/Clientes";
 
 
+
 interface TablaClientesProps {
   data: cliente[];
 }

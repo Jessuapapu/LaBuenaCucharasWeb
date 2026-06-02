@@ -4,7 +4,7 @@ import CardPedido from "../components/cards/CardOrden";
 import type { Platillo } from "../interfaces/Platillos";
 import type { CrearOrden, OrdenVisualizar } from "../interfaces/Ordenes";
 import { Plus, Filter } from "lucide-react";
-import ModalOrden from "../components/modals/ModalPedido";
+import ModalOrden from "../components/modals/ModalOrden";
 
 
 export default function OrdenesPage(){

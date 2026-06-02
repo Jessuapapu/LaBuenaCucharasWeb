@@ -1,11 +1,11 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
 import TablaClientes from "../components/table/TableCliente";
 import { Users, FileText, ArrowRight } from "lucide-react";
-import { useClientes } from "../components/Hooks/hookClientes";// Ajusta la ruta de tu nuevo hook
+import { useSoloClientes } from "../components/Hooks/hookClientes";// Ajusta la ruta de tu nuevo hook
 
 export default function ClientesPage() {
   // Consumimos el hook. Usamos el alias 'data' para mantener compatibilidad con tu JSX actual.
-  const { clientes: data, loading, error } = useClientes();
+  const { clientes: data, loading, error } = useSoloClientes();
   const location = useLocation();
 
   const isRoot = location.pathname === "/Clientes" || location.pathname === "/Clientes/";
