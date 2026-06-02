@@ -3,13 +3,11 @@ import { useCallback, useState, useEffect, useMemo } from "react";
 //import type { OrdenVisualizar, ClienteOrden } from "../../interfaces/Ordenes";
 import type { Contrato } from "../../interfaces/Contratos";
 import { getContratosByCliente } from "../../services/contratos";
-//import { getClienteById } from "../../services/clientes";
-//import { pedidosService } from "../../services/pedidos";
+
 import { getFacturas, getFacturasPag, crearFactura, actualizarFactura } from "../../services/facturas";
 import type { Factura, PayloadFactura  } from "../../interfaces/Factura";
 import { getOrdenesByCliente } from "../../services/ordenes";
 import { useClientes } from "./hookClientes";
-
 
 interface EstadoFormularioFactura extends Omit<PayloadFactura, "IdCliente" | "MONTOTOTAL"> {
   nombreCliente: string;
@@ -31,6 +29,7 @@ export function useFactura(busquedaNombre: string | "", idFacturaExistente?: num
     const [error, setError] = useState<string | null>(null);
     const [isFetching, setIsFetching] = useState(false);
     const [pedidosPendientes, setPedidosPendientes] = useState<any[]>([]);
+    const [contratosActivos, setContratosActivos] = useState<Contrato[]>([]);
     
     
     const [facturaData, setFacturaData] = useState<EstadoFormularioFactura>(estadoInicial);
