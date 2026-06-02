@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 //import { Trash2 } from "lucide-react";
 import type { Menu_dario } from "../../interfaces/Platillos";
-const API_URL = import.meta.env.VITE_API_URL;
+
 // Estructura auxiliar para llenar el select de platillos
 interface PlatilloOption {
-    NombrePlatillo: string;
+    nombre_platillo: string;
 }
 
 interface ModalNuevoMenuProps {
@@ -106,8 +106,8 @@ export default function ModalNuevoMenu({ MenuData, listaPlatillos, onClose, onSa
                             >
                                 <option value="">Seleccionar...</option>
                                 {(listaPlatillos || []).map((p, i) => (
-                                    <option key={i} value={p.NombrePlatillo}>
-                                        {p.NombrePlatillo}
+                                    <option key={i} value={p.nombre_platillo}>
+                                        {p.nombre_platillo}
                                     </option>
                                 ))}
                             </select>

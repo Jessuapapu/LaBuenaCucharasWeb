@@ -1,15 +1,12 @@
 
 import { useCallback, useState, useEffect, useMemo } from "react";
 //import type { OrdenVisualizar, ClienteOrden } from "../../interfaces/Ordenes";
-import type { Contrato } from "../../interfaces/Contratos";
-import { getContratosByCliente } from "../../services/contratos";
-import { getClienteById } from "../../services/clientes";
-import { pedidosService } from "../../services/pedidos";
+
 import { getFacturas, getFacturasPag, crearFactura, actualizarFactura, obtenerDetalleFactura } from "../../services/facturas";
 import type { Factura, PayloadFactura  } from "../../interfaces/Factura";
 import type { ClienteOrden } from "../../interfaces/Ordenes";
 
-const API_URL = import.meta.env.VITE_API_URL;
+
 interface EstadoFormularioFactura extends Omit<PayloadFactura, "IdCliente" | "MONTOTOTAL"> {
   nombreCliente: string;
 }
@@ -30,7 +27,7 @@ export function useFactura(idCliente: number | "", idFacturaExistente?: number) 
     const [error, setError] = useState<string | null>(null);
     const [isFetching, setIsFetching] = useState(false);
     const [pedidosPendientes, setPedidosPendientes] = useState<any[]>([]);
-    const [contratosActivos, setContratosActivos] = useState<Contrato[]>([]);
+    
     
     const [facturaData, setFacturaData] = useState<EstadoFormularioFactura>(estadoInicial);
      // Estado derivado para el Subtotal (calculado en tiempo real en el cliente)

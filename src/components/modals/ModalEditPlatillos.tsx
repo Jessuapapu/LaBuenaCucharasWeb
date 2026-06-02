@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-//import { ActualizarPlatillo } from "../../services/platillos";
 import type { Platillo, categoriaPlatillo } from "../../interfaces/Platillos";
 import { useImagenesPlatillo } from "../Hooks/hookImagenes";
 
@@ -9,16 +8,17 @@ interface ModalEditPlatilloProps {
     onSave: (editado: Platillo) => void;
 }
 
+const API_URL = import.meta.env.VITE_API_URL;
+const token = localStorage.getItem("access_token");
+
 export default function ModalEditPlatillo({ platillo, onClose, onSave }: ModalEditPlatilloProps) {
     const [nombre, setNombre] = useState(platillo.nombre_platillo);
     const [categoria, setCategoria] = useState(platillo.nombre_categoria);
-    //const [precio, setPrecio] = useState<number>(platillo.precio);
 
     // Estados para la imagen
     const [imageFile, setImageFile] = useState<File | null>(null);
-    //const { nombre_platillo, precio, nombre_categoria, id_platillo } = platillo;
     const { Urlimagen } = useImagenesPlatillo(platillo.nombre_platillo);
-    const [imagePreview, setImagePreview] = useState<string | null>( Urlimagen||null);
+    const [imagePreview, setImagePreview] = useState<string | null>(Urlimagen || null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [fueEliminada, setFueEliminada] = useState(false); // Flag para avisar si se borró la imagen original
 
@@ -27,17 +27,25 @@ export default function ModalEditPlatillo({ platillo, onClose, onSave }: ModalEd
 
     // Cargar categorías al montar
     useEffect(() => {
-        fetch("http://127.0.0.1:8001/platillos/categoria")
-            .then((res) => res.json())
-            .then((data) => setListaCategorias(data))
-            .catch((err) => console.error("Error cargando categorías:", err));
+        fetch(`${API_URL}/platillos/categoria`, {
+            method: 'GET',
+            headers: { "Content-Type": "application/json", ...(token ? { "Authorization": `Bearer ${token}` } : {}) }
+        })
+        .then((res) => {
+            if (!res.ok) throw new Error("Error al cargar categorías");
+            return res.json();
+        })
+        .then((data) => {
+            setListaCategorias(data);
+        })
+        .catch((err) => console.error("Error cargando categorías:", err));
     }, []);
 
     const CambioImagen = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
             setImageFile(file);
-            setFueEliminada(false)
+            setFueEliminada(false);
             const reader = new FileReader();
             reader.onloadend = () => setImagePreview(reader.result as string);
             reader.readAsDataURL(file);
@@ -52,54 +60,75 @@ export default function ModalEditPlatillo({ platillo, onClose, onSave }: ModalEd
             setFueEliminada(true); // Marcamos que el usuario eliminó una foto existente de la BD
         }
     };
+
     const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    // Validación básica antes de enviar
-    if (!nombre.trim() ) {
-        alert("Datos inválidos");
-        return;
-    }
-    setLoading(true);
+        e.preventDefault();
+        
+        // Validación básica antes de enviar
+        if (!nombre.trim()) {
+            alert("Datos inválidos");
+            return;
+        }
+        
+        setLoading(true);
 
-    const formData = new FormData();
-    // Enviamos los datos básicos
-    formData.append("nombre_platillo", nombre.trim());
-    formData.append("nombre_categoria", categoria);
-    //formData.append("precio", precio.toString());
-    
-    // Solo enviamos el archivo si realmente hay uno nuevo seleccionado
-    if (imageFile) {
-        formData.append("file", imageFile); 
-    }
-
-    // Avisar si se eliminó la imagen actual y no se subió una nueva
-    if (!fueEliminada) {
-        formData.append("eliminar_imagen", "true");
-    }
-
-    try {
-        // Usamos el ID original para que el backend sepa qué editar
-        // aunque el nombre haya cambiado.
-        const response = await fetch(`http://127.0.0.1:8001/platillos/${platillo.id_platillo}`, {
-            method: "PUT", 
-            body: formData,
-        });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(errorText || "Error al actualizar");
+        const formData = new FormData();
+        // Enviamos los datos básicos
+        formData.append("nombre_platillo", nombre.trim());
+        formData.append("nombre_categoria", categoria);
+        
+        // Solo enviamos el archivo si realmente hay uno nuevo seleccionado
+        if (imageFile) {
+            formData.append("file", imageFile);
         }
 
-        const data = await response.json();
-        onSave(data);
-        onClose();
-    } catch (error: any) {
-        console.error(error);
-        alert(`Error: ${error.message}`);
-    } finally {
-        setLoading(false);
-    }
-};
+        // Avisar si se eliminó la imagen actual y no se subió una nueva
+        if (fueEliminada) {
+            formData.append("eliminar_imagen", "true");
+        }
+
+        try {
+            // Buscamos el ID real, ya sea id_platillo o simplemente id
+            const idReal = platillo.id_platillo || (platillo as any).id;
+
+            if (!idReal) {
+                alert("Error interno: El platillo no tiene un ID válido para editar.");
+                setLoading(false);
+                return;
+            }
+
+            // Usamos el ID real encontrado para que la URL sea válida
+            const response = await fetch(`${API_URL}/platillos/${idReal}`, {
+                method: "PUT", 
+                body: formData,
+                headers: {  ...(token ? { "Authorization": `Bearer ${token}` } : {}) }
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || "Error al actualizar");
+            }
+
+            const data = await response.json();
+            
+            // Formateamos la data para que la tabla no se rompa al actualizar
+            const platilloActualizado = {
+                ...platillo,
+                ...data,
+                id_platillo: idReal, // Aseguramos mantener el ID correcto
+                nombre_platillo: nombre.trim(),
+                nombre_categoria: categoria,
+            };
+
+            onSave(platilloActualizado);
+            onClose();
+        } catch (error: any) {
+            console.error(error);
+            alert(`Error: ${error.message}`);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 animate-in fade-in duration-300">
@@ -154,7 +183,7 @@ export default function ModalEditPlatillo({ platillo, onClose, onSave }: ModalEd
                             type="text"
                             className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white focus:ring-2 focus:ring-orange-500 outline-none transition-all"
                             value={nombre}
-                            onChange={(e) => (e.target.value)}
+                            onChange={(e) => setNombre(e.target.value)}
                         />
                     </div>
 
@@ -164,7 +193,7 @@ export default function ModalEditPlatillo({ platillo, onClose, onSave }: ModalEd
                         <select
                             className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white focus:ring-2 focus:ring-orange-500 outline-none appearance-none cursor-pointer"
                             value={categoria}
-                            
+                            onChange={(e) => setCategoria(e.target.value)}
                             required
                         >
                             {listaCategorias.map((cat, index) => (

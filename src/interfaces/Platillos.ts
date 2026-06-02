@@ -55,3 +55,18 @@ export interface categoriaPlatillo{
     idPlatillo: number;
     nombre_categoria: string;
 }
+
+
+export interface Platillos {
+    id: number;
+    Fecha: string;
+    NombrePlatillo: string;
+    Monto?: number;
+    PrecioUnico?: number; 
+}
+
+
+export interface PlatilloExtraDB {
+    nombre_platillo: string;
+    nombre_categoria: string;
+}

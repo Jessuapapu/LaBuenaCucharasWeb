@@ -1,14 +1,12 @@
 import { useState, useEffect, useMemo } from "react";
-//import ModalPlatillo from "../modals/ModalPlatillo";
-import ModalNuevoPlatillo from "../modals/ModalAgregarPlatillos"
+import ModalNuevoPlatillo from "../modals/ModalAgregarPlatillos";
 import ModalEditPlatillo from "../modals/ModalEditPlatillos";
 import type { Platillo } from "../../interfaces/Platillos";
 import { useImagenesPlatillo } from "../Hooks/hookImagenes";
-import { useMenu_diario } from "../Hooks/hookMenu_diario";
+// import { useMenu_diario } from "../Hooks/hookMenu_diario";
 
 interface TablaComidasProps {
   data: Platillo[];
-  //listaPlatillos: any[]; 
 }
 
 // Subcomponente para renderizar la imagen asíncronamente desde el hook
@@ -21,13 +19,13 @@ function CeldaImagenPlatillo({ nombre }: { nombre: string }) {
 
     return (
         <img
-            src={Urlimagen || "https://placehold.co/100x100/1f2937/ffffff?text=🍽️"}
+            src={Urlimagen && Urlimagen.trim() !== "" ? Urlimagen : "https://placehold.co/100x100/1f2937/ffffff?text=🍽️"}
             alt={nombre}
             className="w-9 h-9 rounded-xl object-cover border border-gray-700 bg-gray-800 shadow-md transition-transform group-hover:scale-105"
         />
     );
 }
-// Eliminado "estado" de las claves de ordenamiento
+
 type SortKey = "nombre_platillo" | "nombre_categoria" | "precio" | "";
 
 // --- Iconos SVG ---
@@ -46,7 +44,6 @@ export default function TablaComidas({ data }: TablaComidasProps) {
   // --- Filtros Avanzados ---
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [categoriaFilter, setCategoriaFilter] = useState("");
-  // Eliminado: estadoFilter
   
   // --- Ordenamiento y Paginación ---
   const [sortKey, setSortKey] = useState<SortKey>("");
@@ -56,7 +53,6 @@ export default function TablaComidas({ data }: TablaComidasProps) {
 
   // --- Modales ---
   const [editingPlatillo, setEditingPlatillo] = useState<Platillo | null>(null);
-  const [selectedPlatillos, setSelectedPlatillos] = useState<Platillo[] | null>(null);
   const [showNewModal, setShowNewModal] = useState(false);
 
   useEffect(() => {
@@ -71,12 +67,12 @@ export default function TablaComidas({ data }: TablaComidasProps) {
   // --- LÓGICA DE FILTRADO ---
   const processedData = useMemo(() => {
     let rows = platillos.filter((p) => {
-      // 1. Búsqueda por Nombre
-      const matchSearch = p.nombre_platillo.toLowerCase().includes(search.toLowerCase());
+      // 1. Búsqueda por Nombre con fallback
+      const matchSearch = (p.nombre_platillo || "").toLowerCase().includes(search.toLowerCase());
       
-      // 2. Filtro Categoría
+      // 2. Filtro Categoría con fallback
       const matchCategoria = categoriaFilter
-        ? p.nombre_categoria.toLowerCase().includes(categoriaFilter.toLowerCase())
+        ? (p.nombre_categoria || "").toLowerCase().includes(categoriaFilter.toLowerCase())
         : true;
 
       return matchSearch && matchCategoria;
@@ -113,7 +109,6 @@ export default function TablaComidas({ data }: TablaComidasProps) {
     }
   };
 
-
   const handleSaveEdit = (editado: Platillo) => {
     setPlatillos(prev => prev.map(p => 
       // Comparamos por ID si existe, o por nombre como fallback
@@ -124,8 +119,18 @@ export default function TablaComidas({ data }: TablaComidasProps) {
     setEditingPlatillo(null);
   };
   
-  const handleCreateNew = (nuevo: Platillo) => {
-    setPlatillos(prev => [...prev, nuevo]);
+  const handleCreateNew = (nuevo: any) => {
+    // Interceptamos y forzamos los nombres exactos que necesita la tabla
+    const platilloSeguro = {
+      ...nuevo,
+      id_platillo: nuevo.id_platillo || Date.now(),
+      // Mapeamos varias opciones por si el backend usa nombres diferentes
+      nombre_platillo: nuevo.nombre_platillo || nuevo.nombre || "Nuevo Platillo",
+      nombre_categoria: nuevo.nombre_categoria || nuevo.categoria || "Sin Categoría",
+      precio: nuevo.precio || 0
+    };
+
+    setPlatillos(prev => [...prev, platilloSeguro]);
     setShowNewModal(false);
   };
 
@@ -212,10 +217,10 @@ export default function TablaComidas({ data }: TablaComidasProps) {
                     <tbody>
                         {paginatedRows.length > 0 ? (
                             paginatedRows.map((p, i) => (
-                                <tr key={p.id_platillo || i} className="bg-gray-900 border-b border-gray-800 hover:bg-gray-800/40 transition-colors group">
+                                <tr key={p.id_platillo ? p.id_platillo : `platillo-${Date.now()}-${i}`} className="bg-gray-900 border-b border-gray-800 hover:bg-gray-800/40 transition-colors group">
                                     <td className="px-6 py-4 font-medium text-white text-base">
                                         <div className="flex items-center gap-3">
-                                            <CeldaImagenPlatillo nombre={p.nombre_platillo} />
+                                            <CeldaImagenPlatillo nombre={p.nombre_platillo || "Sin Nombre"} />
                                             <span>{p.nombre_platillo}</span>
                                         </div>
                                     </td>
@@ -238,7 +243,7 @@ export default function TablaComidas({ data }: TablaComidasProps) {
                             ))
                         ) : (
                             <tr>
-                                <td colSpan={4} className="text-center py-10 text-gray-500">
+                                <td colSpan={3} className="text-center py-10 text-gray-500">
                                     No se encontraron platillos. 🥗
                                 </td>
                             </tr>
@@ -301,5 +306,5 @@ export default function TablaComidas({ data }: TablaComidasProps) {
                 />
             )}
         </div>
-    );
+  );
 }

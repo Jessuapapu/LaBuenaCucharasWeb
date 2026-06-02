@@ -6,8 +6,11 @@ interface PlatilloOption {
     NombrePlatillo: string;
     Monto: number;// es el precio pero en el backend es monro (evitamos nombres mezclados y que typesciprt no coloapse)
 }
-export function useMenu_diario(dataInicial: any[]=[]){
-    const diaHoy =  useMemo(()=> new Date(),[]) ;
+
+const token = localStorage.getItem("access_token");
+
+export function useMenu_diario(dataInicial: any[] = []) {
+    const diaHoy = useMemo(() => new Date(), []);
     const [fecha, setfecha] = useState(new Date());
     const [datos, setDatos] = useState<Menu_dario[]>([]);
     const [cargando, setCargando] = useState(false);
@@ -20,12 +23,12 @@ export function useMenu_diario(dataInicial: any[]=[]){
             setCargando(true);
             const response = await fetch(`${API_URL}/menu/`);
             if (!response.ok) throw new Error("Error en la petición");
-            
+
             const data = await response.json();
-            setDatos(Array.isArray(data) ? data: []);
+            setDatos(Array.isArray(data) ? data : []);
         } catch (error) {
             console.error("Error al cargar menús:", error);
-            if(dataInicial) setDatos(dataInicial);
+            if (dataInicial) setDatos(dataInicial);
         } finally {
             setCargando(false);
         }
@@ -33,7 +36,16 @@ export function useMenu_diario(dataInicial: any[]=[]){
 
     const cargarPlatillosBase = async () => {
         try {
-            const response = await fetch(`${API_URL}/platillos/`);
+            const response = await fetch(`${API_URL}/platillos/`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    // Inyección de seguridad
+                    ...(token ? { "Authorization": `Bearer ${token}` } : {})
+                }
+            }
+
+            );
             if (!response.ok) throw new Error("Error al obtener platillos base");
             const data = await response.json();
             setListaPlatillos(Array.isArray(data) ? data : []);
@@ -46,7 +58,7 @@ export function useMenu_diario(dataInicial: any[]=[]){
         cargarMenus();
     }, [fecha]);
 
-    useEffect(()=>{
+    useEffect(() => {
         cargarPlatillosBase();
     }, [])
 
@@ -72,22 +84,22 @@ export function useMenu_diario(dataInicial: any[]=[]){
         if (!dia) return [];
         const fechaStr = `${Anio}-${String(meses + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
         return datos.filter(item => {
-        if (!item.Fecha) return false;
-        
-        // Si el string de la API viene como "2026-05-09T00:00:00.000Z", 
-        // split('T')[0] se queda únicamente con "2026-05-09"
-        const fechaApiStr = item.Fecha.includes('T') ? item.Fecha.split('T')[0] : item.Fecha.substring(0, 10);
-        return fechaApiStr === fechaStr;
-    });
+            if (!item.Fecha) return false;
+
+            // Si el string de la API viene como "2026-05-09T00:00:00.000Z", 
+            // split('T')[0] se queda únicamente con "2026-05-09"
+            const fechaApiStr = item.Fecha.includes('T') ? item.Fecha.split('T')[0] : item.Fecha.substring(0, 10);
+            return fechaApiStr === fechaStr;
+        });
     };
 
     const manejarClickDia = (dia: number) => {
         const fechaStr = `${Anio}-${String(meses + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
         setmodalDta({
             id: undefined,         // Clave primaria del GET
-        Fecha: fechaStr,       // Fecha del GET
-        NombrePlatillo: "",    // Nombre del GET
-        Monto: 0
+            Fecha: fechaStr,       // Fecha del GET
+            NombrePlatillo: "",    // Nombre del GET
+            Monto: 0
         } as any); //Para que no este como loco buscando
     };
 
@@ -101,23 +113,29 @@ export function useMenu_diario(dataInicial: any[]=[]){
                 const url = `${API_URL}/menu/${modalDta.id}`;
                 const response = await fetch(url, {
                     method: "PUT",
-                    headers: { "Content-Type": "application/json" },
+                    headers: {
+                        "Content-Type": "application/json"
+                        , ...(token ? { "Authorization": `Bearer ${token}` } : {})
+                    },
                     body: JSON.stringify({ nombre_platillo: platilloData.NombrePlatillo })
                 });
                 if (!response.ok) throw new Error("Error al actualizar");
             } else {
                 // Pide un MenuIn (day, nombre_platillo, monto), esto es de creacion
                 const url = `${API_URL}/menu/`;
-            const response = await fetch(url, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    day: platilloData.Fecha,                  // Traduce 'Fecha' a 'day'
-                    nombre_platillo: platilloData.NombrePlatillo, // Traduce 'NombrePlatillo' a 'nombre_platillo'
-                    monto: Number(platilloData.Monto)             // Traduce 'Monto' a 'monto'
-                })
-            });
-            if (!response.ok) throw new Error("Error al crear lote");
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        ...(token ? { "Authorization": `Bearer ${token}` } : {})
+                    },
+                    body: JSON.stringify({
+                        day: platilloData.Fecha,                  // Traduce 'Fecha' a 'day'
+                        nombre_platillo: platilloData.NombrePlatillo, // Traduce 'NombrePlatillo' a 'nombre_platillo'
+                        monto: Number(platilloData.Monto)             // Traduce 'Monto' a 'monto'
+                    })
+                });
+                if (!response.ok) throw new Error("Error al crear lote");
             }
             //Porque se tiene que mapear PORQUE Typescript se vuelve loco buscando nombres cruzados como day y luego fecha, etc
             // Refrescamos la interfaz y cerramos el modal limpiando estados
@@ -129,8 +147,8 @@ export function useMenu_diario(dataInicial: any[]=[]){
         }
     };
 
-    const AsignarPlatilloRapido = async (dia: string, nombrePlatillo: string)=>{
-        if(!nombrePlatillo) return;
+    const AsignarPlatilloRapido = async (dia: string, nombrePlatillo: string) => {
+        if (!nombrePlatillo) return;
         try {
             const response = await fetch(`${API_URL}/menu/`, {
                 method: "POST",
@@ -143,9 +161,9 @@ export function useMenu_diario(dataInicial: any[]=[]){
             });
 
             if (!response.ok) throw new Error("Error en la asignación rápida");
-            
+
             // re-ejecutamos el GET
-            await cargarMenus(); 
+            await cargarMenus();
         } catch (error) {
             console.error("Error en asignación rápida (Hook):", error);
             alert("No se pudo asignar el platillo rápido.");

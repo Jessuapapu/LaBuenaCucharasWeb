@@ -14,10 +14,11 @@ import ProveedoresPage from "./Pages/Provedores";
 import RegistrosPage from "./Pages/RegistroInsumos";
 import FacturasPage from "./Pages/Facturas";
 import InformesPage from "./Pages/infome";
-import MeasasPage from "./Pages/Mesas";
 import LoginPage from "./Pages/Login";
 import { RutaProtegida } from "./context/RutaProtegida";
 import OrdenesPage from "./Pages/Ordenes";
+import MenuMesas from "./Pages/Mesas2";
+import IndexMesas from "./Pages/Mesas";
 
 const router = createBrowserRouter([
   {
@@ -34,8 +35,9 @@ const router = createBrowserRouter([
           { path: "/Pedidos", element: <Pedidos /> },
           { path: "/Comidas", element: <ComidasPage />, },
           { path: "/Menu_Diario", element: <Menu_Diario /> },
-          { path: "/Mesas", element: <MeasasPage /> },
-          { path: "/ordenes", element: <OrdenesPage/>},
+          { path: "/Mesas", element: <IndexMesas /> },
+          { path: "/mesa/:id", element: <MenuMesas /> },
+          { path: "/ordenes", element: <OrdenesPage /> },
           {
             path: "/Clientes",
             children: [
