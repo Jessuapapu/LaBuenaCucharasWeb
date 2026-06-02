@@ -77,7 +77,7 @@ export function useFactura(busquedaNombre: string | "", idFacturaExistente?: num
     };
 
     cargarDatos();
-  }, [clienteEncontrado, busquedaNombre]);
+  }, [clienteEncontrado]);
 
   //const seleccionarCliente = useCallback((cliente: ClienteOrden) => {
    // setFacturaData(prev => ({

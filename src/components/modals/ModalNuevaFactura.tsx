@@ -18,7 +18,7 @@ export default function ModalNuevaFactura({
   
   const [BusquedaCliente, setBusquedaCliente] = useState(""); 
   const [mostarSelector, setmostarselector] = useState(false);
-  const [clienteSeleccionado, setclienteSeleccionado] = useState<number | "">("");
+//const [clienteSeleccionado, setclienteSeleccionado] = useState<number | "">("");
 
   //const { clientes, loading: loadingClientes, error: errorClientes } = useClientes();
 
@@ -41,13 +41,13 @@ export default function ModalNuevaFactura({
   } = useFactura(BusquedaCliente, idFacturaExistente);
 
   // Sincronizar dinámicamente el conteo de cubiertos/cantidad con las órdenes seleccionadas
-  useEffect(() => {
-    const totalOrdenes = facturaData.idOrdenes.length;
-    setFacturaData(prev => ({
-      ...prev,
-      Cantidad: totalOrdenes > 0 ? totalOrdenes : 1
-    }));
-  }, [facturaData.idOrdenes.length, setFacturaData]);
+//useEffect(() => {
+ // const totalOrdenes = facturaData.idOrdenes.length;
+ // setFacturaData(prev => ({
+  //  ...prev,
+ //   Cantidad: totalOrdenes > 0 ? totalOrdenes : 1
+ // }));
+//}, [facturaData.idOrdenes.length, setFacturaData]);
 
   // Filtrado predictivo de clientes en tiempo real
   const clientesFiltrados = useMemo(() => {
@@ -98,6 +98,7 @@ export default function ModalNuevaFactura({
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm animate-fade-in">
+     <div className="fixed inset-0" onClick={() => setmostarselector(false)} />
       <div className="bg-slate-900 rounded-3xl text-white max-w-4xl w-full border border-slate-700 shadow-2xl overflow-hidden flex flex-col md:flex-row">
         
         {/* LADO IZQUIERDO: FORMULARIO */}
@@ -119,51 +120,49 @@ export default function ModalNuevaFactura({
             )}
               
             {/* SELECTOR BUSCADOR PERSONALIZADO DE CLIENTE */}
-            <div className="space-y-1 relative">
-              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                <User size={12} className="text-blue-500" /> Selector de Cliente Relacional
-              </label>
-              <div className="relative">
-                <Search className="absolute left-3.5 top-3.5 text-slate-500" size={16} />
-                <input
-                  type="text"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-950 border border-slate-800 focus:border-blue-500 outline-none text-sm transition-colors text-white font-medium cursor-pointer"
-                  placeholder="Haga clic para buscar o seleccionar..."
-                  value={BusquedaCliente}
-                  onChange={(e) => {
-                    setBusquedaCliente(e.target.value);
-                    setmostarselector(true);
-                  }}
-                  onFocus={() => setmostarselector(true)}
-                />
-                {isFetching && (
-                  <Loader2 className="absolute right-3 top-3.5 text-blue-500 animate-spin" size={16} />
-                )}
-              </div>
-
-              {/* Dropdown flotante */}
-              {mostarSelector && (
-                <div className="absolute z-30 w-full mt-1 bg-slate-950 border border-slate-800 rounded-xl shadow-2xl max-h-48 overflow-y-auto divide-y divide-slate-900 custom-scrollbar">
-                  {clientesFiltrados.length > 0 ? (
-                    clientesFiltrados.map((cliente) => (
-                      <div
-                        key={cliente.IdCliente}
-                        onClick={() => handleSeleccioncliente(cliente.NombreCliente)}
-                        className="px-4 py-3 text-sm text-slate-300 hover:bg-blue-600 hover:text-white cursor-pointer font-medium transition-colors flex justify-between items-center"
-                      >
-                        <span>{cliente.NombreCliente}</span>
-                        <span className="text-[10px] bg-slate-900 text-slate-400 px-2 py-0.5 rounded-md font-mono">ID: {cliente.IdCliente}</span>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="px-4 py-3 text-xs text-slate-500 text-center italic">Ningún cliente coincide con la búsqueda</div>
+             <div className="space-y-1 relative" onClick={(e) => e.stopPropagation()}>
+                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
+                  <User size={12} className="text-blue-500" /> Selector de Cliente Relacional
+                </label>
+                <div className="relative">
+                  <Search className="absolute left-3.5 top-3.5 text-slate-500" size={16} />
+                  <input
+                    type="text"
+                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-950 border border-slate-800 focus:border-blue-500 outline-none text-sm transition-colors text-white font-medium cursor-pointer"
+                    placeholder="Haga clic para buscar o seleccionar..."
+                    value={BusquedaCliente}
+                    onChange={(e) => {
+                      setBusquedaCliente(e.target.value);
+                      setmostarselector(true);
+                    }}
+                    onFocus={() => setmostarselector(true)}
+                  />
+                  {isFetching && (
+                    <Loader2 className="absolute right-3 top-3.5 text-blue-500 animate-spin" size={16} />
                   )}
                 </div>
-              )}
-              {mostarSelector && (
-                <div className="fixed inset-0 z-20" onClick={() => setmostarselector(false)} />
-              )}
-            </div>
+
+                {/* Dropdown flotante */}
+                {mostarSelector && (
+                  <div className="absolute z-30 w-full mt-1 bg-slate-950 border border-slate-800 rounded-xl shadow-2xl max-h-48 overflow-y-auto divide-y divide-slate-900 custom-scrollbar">
+                    {clientesFiltrados.length > 0 ? (
+                      clientesFiltrados.map((cliente) => (
+                        <div
+                          key={cliente.IdCliente}
+                          onClick={() => handleSeleccioncliente(cliente.NombreCliente)}
+                          className="px-4 py-3 text-sm text-slate-300 hover:bg-blue-600 hover:text-white cursor-pointer font-medium transition-colors flex justify-between items-center"
+                        >
+                          <span>{cliente.NombreCliente}</span>
+                          <span className="text-[10px] bg-slate-900 text-slate-400 px-2 py-0.5 rounded-md font-mono">ID: {cliente.IdCliente}</span>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="px-4 py-3 text-xs text-slate-500 text-center italic">Ningún cliente coincide con la búsqueda</div>
+                    )}
+                  </div>
+                )}
+              </div>
+              
 
             {/* CONTENEDOR DE DOCUMENTOS PENDIENTES */}
             {idClienteDetectado && (

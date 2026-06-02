@@ -30,7 +30,7 @@ export const FacturaMapper = {
     return {
       id_cliente: payload.IdCliente,
       fecha: payload.Fecha,
-      Estado: payload.CondicionPago || "PENDIENTE", // Vinculado al estado/condición de pago inicial
+      estado: payload.CondicionPago || "PENDIENTE", // Vinculado al estado/condición de pago inicial
       // FastAPI espera un array de objetos: detalles: [{ IdOrden: X }, { IdOrden: Y }]
       detalles: Array.isArray(payload.idOrdenes)
         ? payload.idOrdenes.map((id) => ({ IdOrden: id }))

@@ -309,7 +309,7 @@ export default function FormularioNuevoPedido({ onClose, onSave, datosEdicion }:
               form="form-pedido"
               disabled={cargando} 
               className={`flex-[2] py-3 rounded-xl font-black text-sm tracking-wide transition-all ${
-                tipo === "Evento" ? "bg-blue-600 hover:bg-blue-500" : "bg-purple-600 hover:bg-purple-500"
+                tipo === "Evento" ? "bg-blue-600 hover:bg-blue-500" : "bg-amber-600 hover:bg-purple-500"
               } disabled:opacity-50`}
             >
               {cargando ? "PROCESANDO..." : `GENERAR ${tipo.toUpperCase()}`}
