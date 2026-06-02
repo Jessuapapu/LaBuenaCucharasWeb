@@ -1,10 +1,14 @@
 
 import { useCallback, useState, useEffect, useMemo } from "react";
 //import type { OrdenVisualizar, ClienteOrden } from "../../interfaces/Ordenes";
-
-import { getFacturas, getFacturasPag, crearFactura, actualizarFactura, obtenerDetalleFactura } from "../../services/facturas";
+import type { Contrato } from "../../interfaces/Contratos";
+import { getContratosByCliente } from "../../services/contratos";
+//import { getClienteById } from "../../services/clientes";
+//import { pedidosService } from "../../services/pedidos";
+import { getFacturas, getFacturasPag, crearFactura, actualizarFactura } from "../../services/facturas";
 import type { Factura, PayloadFactura  } from "../../interfaces/Factura";
-import type { ClienteOrden } from "../../interfaces/Ordenes";
+import { getOrdenesByCliente } from "../../services/ordenes";
+import { useClientes } from "./hookClientes";
 
 
 interface EstadoFormularioFactura extends Omit<PayloadFactura, "IdCliente" | "MONTOTOTAL"> {
@@ -22,7 +26,7 @@ const estadoInicial: EstadoFormularioFactura = {
   nombreCliente: ""
 };
 
-export function useFactura(idCliente: number | "", idFacturaExistente?: number) {
+export function useFactura(busquedaNombre: string | "", idFacturaExistente?: number) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [isFetching, setIsFetching] = useState(false);
@@ -32,121 +36,111 @@ export function useFactura(idCliente: number | "", idFacturaExistente?: number) 
     const [facturaData, setFacturaData] = useState<EstadoFormularioFactura>(estadoInicial);
      // Estado derivado para el Subtotal (calculado en tiempo real en el cliente)
     //const [subTotalVisual, setSubTotalVisual] = useState<number>(0);
+    const { clientes, loading: loadingClientes, error: errorClientes } = useClientes();
+    const clienteEncontrado = useMemo(() => {
+    if (!busquedaNombre.trim()) return null;
+    return clientes.find(c => 
+      c.NombreCliente.toLowerCase() === busquedaNombre.toLowerCase()
+    );
+  }, [busquedaNombre, clientes]);
 
-    // Buscar datos (Solo si estamos CREANDO
+    // Busca las ordenes (las carga)
     useEffect(() => {
-    if (!idCliente) {
+    if (!clienteEncontrado) {
       setPedidosPendientes([]);
+      setContratosActivos([])
+      setFacturaData(prev => ({ ...prev, nombreCliente: busquedaNombre, idOrdenes: [], idContrato: null, Cantidad: 1 }));
       return;
     }
 
     const cargarDatos = async () => {
       setIsFetching(true);
       setError(null);
+      const idCliente = clienteEncontrado.IdCliente;
       try {
-        if (idFacturaExistente) {
-          // MODO EDICIÓN: Consultamos al Service las líneas asociadas al SP de la factura
-          const detallesLineas = await obtenerDetalleFactura(idFacturaExistente);
-          
-          // Simulamos la lista de pedidos pendientes en base a lo que ya está facturado
-          const ordenesMapeadas = detallesLineas.map(linea => ({
-            idOrden: linea.IdOrden,
-            monto_total: linea.CostoTotalOrden
-          }));
+        setFacturaData(prev => ({
+          ...prev,
+          nombreCliente: clienteEncontrado.NombreCliente
+        }));
+        const [ordenesData, contratosData] = await Promise.all([
+          getOrdenesByCliente(idCliente).catch(() => []), // Si falla uno, no tumba al otro
+          getContratosByCliente(idCliente).catch(() => [])
+        ]);
 
-          setPedidosPendientes(ordenesMapeadas);
-
-          // Inicializamos los arreglos de selección del formulario
-          setFacturaData(prev => ({
-            ...prev,
-            idOrdenes: ordenesMapeadas.map(o => o.idOrden),
-            Cantidad: ordenesMapeadas.length > 0 ? ordenesMapeadas.length : 1
-          }));
-        } else {
-          // MODO CREACIÓN: Aquí harías el fetch real a tu endpoint de órdenes pendientes por cliente,
-          // por ejemplo: const ordenes = await getOrdenesPendientesByCliente(clienteSeleccionadoId);
-          // Por ahora simularemos que se limpia o se alimenta dinámicamente.
-          setFacturaData(prev => ({ ...prev, idOrdenes: [], Cantidad: 1 }));
-        }
-      } catch (err: any) {
-        console.error("Error en inicialización del hook useFactura:", err);
-        setError(err.message || "Error al sincronizar los registros del cliente.");
+        setPedidosPendientes(ordenesData);
+        setContratosActivos(contratosData);
+        setError(null);
+      } catch (err) {
+        setError("Error al cargar las órdenes del cliente seleccionado");
       } finally {
         setIsFetching(false);
       }
     };
 
     cargarDatos();
-  }, [idCliente, idFacturaExistente]);
+  }, [clienteEncontrado, busquedaNombre]);
 
-  /**
-   * 2. ACCIÓN: SELECCIONAR CLIENTE
-   * Actualiza el nombre en el estado para el renderizado del ticket de previsualización
-   */
-  const seleccionarCliente = useCallback((cliente: ClienteOrden) => {
+  //const seleccionarCliente = useCallback((cliente: ClienteOrden) => {
+   // setFacturaData(prev => ({
+    //  ...prev,
+     // nombreCliente: cliente.nombre_cliente,
+     // idOrdenes: [], // Limpiamos órdenes previas de forma segura
+     // Cantidad: 1
+    //}));
+  //}, []);
+
+  const cambiarTipoDocumentoOrigen = useCallback((tipo: "ORDEN" | "CONTRATO") => {
     setFacturaData(prev => ({
       ...prev,
-      nombreCliente: cliente.nombre_cliente,
-      idOrdenes: [], // Limpiamos órdenes previas de forma segura
+      tipoDocumentoOrigen: tipo,
+      idOrdenes: [],
+      idContrato: null,
       Cantidad: 1
     }));
   }, []);
 
-  /**
-   * 3. ACCIÓN: SELECCIONAR / DESELECCIONAR ÓRDENES
-   * Controla de forma unidireccional y reactiva la lista de IDs de órdenes y calcula la Cantidad de forma interna
-   */
-  const alternarSeleccionPedido = useCallback((pedido: { idOrden: number; monto_total: number }) => {
+  const seleccionarContrato = useCallback((id: number | null) => {
+    setFacturaData(prev => ({
+      ...prev,
+      idContrato: id,
+      Cantidad: id ? 1 : 1
+    }));
+  }, []);
+
+  const alternarSeleccionPedido = useCallback((pedido: any) => {
     setFacturaData(prev => {
       const yaExiste = prev.idOrdenes.includes(pedido.idOrden);
       const nuevasOrdenes = yaExiste
         ? prev.idOrdenes.filter(id => id !== pedido.idOrden)
         : [...prev.idOrdenes, pedido.idOrden];
 
-      return {
-        ...prev,
-        idOrdenes: nuevasOrdenes,
+      return {...prev, idOrdenes: nuevasOrdenes,
         // Sincronización interna directa: Protege contra bucles de renders infinitos
-        Cantidad: nuevasOrdenes.length > 0 ? nuevasOrdenes.length : 1
-      };
+        Cantidad: nuevasOrdenes.length > 0 ? nuevasOrdenes.length : 1};
     });
   }, []);
 
-  /**
-   * 4. ACCIÓN: LIMPIAR SELECCIÓN
-   */
   const limpiarSeleccionDocumentos = useCallback(() => {
-    setFacturaData(prev => ({
-      ...prev,
-      idOrdenes: [],
-      Cantidad: 1
-    }));
+    setFacturaData(prev => ({...prev, idOrdenes: [], Cantidad: 1}));
   }, []);
 
-  /**
-   * 5. DERIVACIÓN DE DATOS (useMemo)
-   * Filtra los objetos de órdenes completos que están seleccionados actualmente para dibujar la lista del ticket
-   */
   const pedidosSeleccionados = useMemo(() => {
     return pedidosPendientes.filter(pedido => 
-      facturaData.idOrdenes.includes(pedido.idOrden)
-    );
+      facturaData.idOrdenes.includes(pedido.idOrden));
   }, [pedidosPendientes, facturaData.idOrdenes]);
 
-  /**
-   * 6. CÁLCULO DEL MONTO TOTAL VISUAL
-   * Suma aritmética en tiempo real de los montos de las órdenes seleccionadas
-   */
-  const subTotalVisual = useMemo(() => {
-    return pedidosSeleccionados.reduce((acc, pedido) => 
-      acc + Number(pedido.monto_total || 0), 0
-    );
-  }, [pedidosSeleccionados]);
+  const contratoSeleccionadoData = useMemo(() => {
+    return contratosActivos.find(c => c.idContrato === facturaData.idContrato) || null;
+  }, [contratosActivos, facturaData.idContrato]);
 
-  /**
-   * 7. ACCIÓN: GUARDAR / PERSISTIR (POST o PUT)
-   * Consume de forma transparente la capa de Services, abstrayendo al Modal de los mapeos complejos del Backend
-   */
+  const subTotalVisual = useMemo(() => {
+    if (facturaData.tipoDocumentoOrigen === "CONTRATO") {
+      return Number(contratoSeleccionadoData?.presupuesto || 0);
+    }
+    return pedidosSeleccionados.reduce((acc, pedido) => 
+      acc + Number(pedido.monto_total || 0), 0);
+  }, [pedidosSeleccionados, facturaData.tipoDocumentoOrigen, contratoSeleccionadoData]);
+
   const guardarFactura = useCallback(async (
     payloadListo: PayloadFactura, 
     onSuccessCallback: (data: any) => void
@@ -178,16 +172,22 @@ export function useFactura(idCliente: number | "", idFacturaExistente?: number) 
     facturaData,
     setFacturaData,
     subTotalVisual,
-    seleccionarCliente,
+    //seleccionarCliente,
+    contratosActivos,
+    cambiarTipoDocumentoOrigen,
+    contratoSeleccionadoData,
+    seleccionarContrato,
     pedidosPendientes,
     setPedidosPendientes, // Permite alimentar las órdenes externas si el modal las recibe por props
     alternarSeleccionPedido,
     limpiarSeleccionDocumentos,
     pedidosSeleccionados,
     loading,
-    isFetching,
-    error,
-    guardarFactura
+    isFetching: isFetching || loadingClientes,
+    error: error || errorClientes,
+    guardarFactura,
+    clientesCatalogo: clientes,
+    idClienteDetectado: clienteEncontrado?.IdCliente
   };
 }
 export function useFacturasPage() {
