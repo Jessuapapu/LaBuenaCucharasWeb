@@ -3,6 +3,7 @@ import { getContratosByCliente } from "../../services/contratos";
 import { getClienteById, crearCliente, actualizarCliente, getClientes} from "../../services/clientes";
 import type { cliente, NuevoCliente} from "../../interfaces/Clientes";
 import type { Contrato } from "../../interfaces/Contratos";
+import { mapClientes } from "../../map/clientes";
 
 export function useCliente(id_cliente: number | null){
     const [loading, setloading]= useState(false);
@@ -33,6 +34,44 @@ export function useCliente(id_cliente: number | null){
         buscarCliente();
     }, [id_cliente]);
     return { cliente, contratos, loading, error };
+}
+//prueba
+export function useSoloClientes() {
+  const [clientes, setClientes] = useState<cliente[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchClientes = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const data = await getClientes();
+      
+      //para normalizar la respuesta de la API
+      const clientesNormalizados = mapClientes(data);
+      
+      setClientes(clientesNormalizados);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Error desconocido al cargar los clientes";
+      console.error(errorMessage);
+      setError(errorMessage);
+      setClientes([]); 
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchClientes();
+  }, [fetchClientes]);
+
+  return { 
+    clientes, 
+    loading, 
+    error, 
+    refetch: fetchClientes 
+  };
 }
 
 

@@ -14,9 +14,6 @@ const getHeaders = () => {
   };
 };
 
-/**
- * 1. OBTENER TODAS LAS ÓRDENES (Agregado para usar en OrdenesPage)
- */
 export async function obtenerTodasLasOrdenes(): Promise<any[]> {
   const res = await fetch(`${API_URL}/ordenes/`, {
     method: "GET",
@@ -32,9 +29,6 @@ export async function obtenerTodasLasOrdenes(): Promise<any[]> {
   return mapOrdenes(arregloOrdenes);
 }
 
-/**
- * 2. OBTENER TODOS LOS PLATILLOS (Agregado para usar en OrdenesPage)
- */
 export async function obtenerTodosLosPlatillos(): Promise<Platillo[]> {
   const res = await fetch(`${API_URL}/platillos/`, {
     method: "GET",

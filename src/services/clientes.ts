@@ -7,7 +7,7 @@ const token = localStorage.getItem("access_token");
 
 // Obtiene todos los clientes
 export async function getClientes() {
-  const res = await fetch(`${API_URL}/clientes`, {
+  const res = await fetch(`${API_URL}/clientes/`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
