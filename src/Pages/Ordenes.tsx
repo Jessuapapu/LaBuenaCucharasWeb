@@ -1,125 +1,164 @@
-import { useState, useMemo, useEffect } from "react";
-import { useOrdenes } from "../components/Hooks/hookOrdenes";
-import CardPedido from "../components/cards/CardOrden";
-import type { Platillo } from "../interfaces/Platillos";
-import type { CrearOrden, OrdenVisualizar } from "../interfaces/Ordenes";
-import { Plus, Filter } from "lucide-react";
-import ModalOrden from "../components/modals/ModalPedido";
+import { useState, useCallback, useEffect } from 'react';
+import { useGestionOrdenes, type OrdenHistorial } from '../ordenes/hooks/hookOrdenes';
+import { ModalEditorOrden } from '../ordenes/modales/ModalOrdenes';
+import { TablaOrdenes } from '../ordenes/tables/TableOrdenes';
+import { FileText, Plus } from 'lucide-react';
+import { MetricasOrdenes } from '../ordenes/comunes/MetricasOrdenes';
+
+// IMPORTANTE: Ajusta esta ruta a donde tengas exportada tu instancia de socket
+import { socket } from '../services/websocket'; 
+
+export function OrdenesPage() {
+  const [page, setPage] = useState(1);
+  const [rows, setRows] = useState(10);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const { ordenes, cargando, refetch } = useGestionOrdenes(page, rows, searchQuery);
+
+  const [modalAbierto, setModalAbierto] = useState(false);
+  const [ordenAEditar, setOrdenAEditar] = useState<OrdenHistorial | null>(null);
 
 
-export default function OrdenesPage(){
-  const [data, setData] = useState<OrdenVisualizar[]>([]);
-  const [activeFilter, setActiveFilter] = useState<string>("");
-  const [listaPlatillos, setListaPlatillos] = useState<Platillo[]>([]);
-  
-  // Estado para controlar la apertura del modal de creación (si lo necesitas)
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // Consumimos el hook real de órdenes en el sistema
-  const { ordenes, platillos, loading, fetchOrdenes, guardarOrden } = useOrdenes();
-
-  // Sincronizamos los datos asíncronos del hook con el estado local de la página
   useEffect(() => {
-    if (ordenes) setData(ordenes as OrdenVisualizar[]);
-    if (platillos) setListaPlatillos(platillos);
-  }, [ordenes, platillos]);
+    const manejarCambioWebsocket = () => {
+      console.log("[WS] Cambio detectado en el sistema de órdenes. Sincronizando tabla...");
+      refetch();
+    };
 
-  // Filtrado predictivo en memoria
-  const filteredData = useMemo(() => {
-    if (!activeFilter) return data;
-    return data.filter(p => p.estado_pedido?.toUpperCase() === activeFilter.toUpperCase());
-  }, [data, activeFilter]);
+    socket.on("orden_actualizada", manejarCambioWebsocket);
+    socket.on("crear_orden", manejarCambioWebsocket); 
+    socket.on("orden_generada", manejarCambioWebsocket);
 
-  const handleNuevaOrden = async(nuevaOrden: CrearOrden) => {
-    const resultado = await guardarOrden(nuevaOrden);
-    if (resultado) {
-      setIsModalOpen(false);
-      fetchOrdenes(); // Forzamos recarga limpia del backend
-    }
+    return () => {
+      socket.off("orden_actualizada", manejarCambioWebsocket);
+      socket.off("crear_orden", manejarCambioWebsocket);
+      socket.off("orden_generada", manejarCambioWebsocket);
+    };
+  }, [refetch]);
+
+  let timeoutId: any;
+  const manejarBusquedaCliente = useCallback((query: string) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      setSearchQuery(query);
+      setPage(1);
+    }, 500);
+  }, []);
+
+  const manejarCambioDeFilas = (cantidad: number) => {
+    setRows(cantidad);
+    setPage(1); 
   };
 
+  const abrirCreacion = () => {
+    setOrdenAEditar(null);
+    setModalAbierto(true);
+  };
+
+  const abrirEdicion = (orden: OrdenHistorial) => {
+    setOrdenAEditar(orden);
+    setModalAbierto(true);
+  };
+
+  const hasNextPage = ordenes.length === rows;
+
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
-      
-      {/* ENCABEZADO CON BOTÓN DE ACCIÓN */}
-      <div className="bg-gray-900 p-6 rounded-xl border border-gray-800 shadow-lg flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-white tracking-tight">Registro de pedidos</h1>
-          <p className="text-gray-400 mt-1 text-sm">Gestiona los pedidos y flujos de cocina en tiempo real.</p>
-        </div>
-        
-        <button
-          type="button"
-          onClick={() => setIsModalOpen(true)}
-          className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm tracking-wide shadow-lg shadow-blue-950/30 transition-all active:scale-[0.98] self-start sm:self-center uppercase"
+    <div className="min-h-[100dvh] text-slate-200 p-4 md:p-6 lg:p-8 font-sans antialiased">
+      <div className="max-w-[1400px] mx-auto flex flex-col gap-8">
+
+        {/* Header */}
+        <header
+          className="
+        relative
+        overflow-hidden
+        rounded-3xl
+        border
+        border-slate-700/40
+        bg-gradient-to-r
+        from-slate-900/90
+        via-slate-800/90
+        to-slate-900/90
+        p-6
+        md:p-8
+    "
         >
-          <Plus size={18} className="stroke-[3]" />
-          Nueva Orden
-        </button>
-      </div>
+          {/* Glow decorativo */}
+          <div className="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-blue-500/10 blur-3xl" />
+          <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-cyan-500/10 blur-3xl" />
 
-      {/* BOTONERA DE FILTROS (Agregada para dar uso real a activeFilter) */}
-      <div className="flex flex-wrap items-center gap-2 bg-slate-900/40 p-2 rounded-xl border border-slate-800/60 w-fit">
-        <div className="flex items-center gap-1.5 px-3 py-1.5 text-slate-500 text-xs font-bold uppercase tracking-wider border-r border-slate-800 mr-1">
-          <Filter size={12} />
-          <span>Filtros:</span>
-        </div>
-        {[
-          { label: "Todos", value: "" },
-          { label: "Pendientes", value: "PENDIENTE" },
-          { label: "Entregados", value: "ENTREGADO" },
-          { label: "Anulados", value: "ANULADO" }
-        ].map((tab) => (
-          <button
-            key={tab.value}
-            type="button"
-            onClick={() => setActiveFilter(tab.value)}
-            className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
-              activeFilter === tab.value
-                ? "bg-slate-800 text-white shadow-md border border-slate-700"
-                : "text-slate-400 hover:text-slate-200 hover:bg-slate-900/60"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+          <div className="relative flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+            <div className="flex items-center gap-4">
+              <div className="p-4 rounded-2xl bg-blue-500/10 border border-blue-500/20">
+                <FileText
+                  size={30}
+                  className="text-blue-400"
+                />
+              </div>
 
-      {/* DETECTOR DE CARGA (LOADING STATE) */}
-      {loading && data.length === 0 ? (
-        <div className="text-center py-12 text-sm text-slate-500 font-medium font-mono">
-          Sincronizando registros con el servidor de comandas...
-        </div>
-      ) : (
-        /* REJILLA DE PEDIDOS (GRID) - Centrada perfectamente para los 320px de tus Cards */
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 justify-items-center sm:justify-items-start">
-          {filteredData.length > 0 ? (
-            filteredData.map((Orden) => (
-              <CardPedido 
-                key={Orden.idOrden} 
-                Pedido={Orden} 
-                listaPlatillos={listaPlatillos}
-                onClick={() => {
-                  console.log("Card seleccionada de forma externa:", Orden.idOrden);
-                }}
-              />
-            ))
-          ) : (
-            <div className="col-span-full w-full text-center py-12 text-sm text-slate-500 italic bg-gray-950/40 rounded-2xl border border-dashed border-gray-850">
-              No se encontraron pedidos bajo el estado seleccionado
+              <div>
+                <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight">
+                  Registro de Órdenes
+                </h1>
+
+                <p className="mt-2 text-slate-400">
+                  Historial, facturación y control de órdenes
+                </p>
+              </div>
             </div>
-          )}
-        </div>
-      )}
 
-      {/* MODAL DE CREACIÓN (Se activa con el botón del encabezado) */}
-      {isModalOpen && (
-        <ModalOrden
-          listaPlatillos={listaPlatillos}
-          onClose={() => setIsModalOpen(false)}
-          onSave={handleNuevaOrden}
-        />
-      )}
+            <button
+              onClick={abrirCreacion}
+              className="
+                flex items-center gap-2
+                px-5 py-3
+                rounded-xl
+                bg-blue-600
+                hover:bg-blue-500
+                transition-all
+                duration-200
+                font-semibold
+                text-white
+                shadow-lg
+                shadow-blue-500/20
+                hover:shadow-blue-500/40
+            "
+            >
+              <Plus size={18} />
+              Nueva Orden
+            </button>
+          </div>
+        </header>
+
+        {/* Métricas */}
+        <section className="w-full">
+          <MetricasOrdenes />
+        </section>
+
+        {/* Tabla */}
+        <section className="border border-slate-700/40 rounded-3xl overflow-hidden backdrop-blur-sm">
+          <TablaOrdenes
+            ordenes={ordenes}
+            cargando={cargando}
+            paginaActual={page}
+            cambiarPagina={setPage}
+            hayMasPaginas={hasNextPage}
+            alEditar={abrirEdicion}
+            alBuscarCliente={manejarBusquedaCliente}
+            filasPorPagina={rows}
+            alCambiarFilas={manejarCambioDeFilas}
+          />
+        </section>
+
+      </div>
+
+      <ModalEditorOrden
+        abierto={modalAbierto}
+        alCerrar={() => setModalAbierto(false)}
+        alCompletar={refetch}
+        ordenEdicion={ordenAEditar}
+      />
     </div>
   );
 }
+
+export default OrdenesPage;

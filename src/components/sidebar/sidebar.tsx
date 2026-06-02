@@ -83,6 +83,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, logoSrc, business
 
                 <nav className="flex-1 px-2 py-6 space-y-2">
                     <LinkItem to="/" icon={<span role="img" aria-label="Inicio">🏠</span>} label="Inicio" />
+                    <LinkItem to= "/ordenes" icon={<span role="img" aria-label="Ordenes">📝</span>} label="Ordenes" />
                     <LinkItem to="/Pedidos" icon={<span role="img" aria-label="Pedidos">📝</span>} label="Pedidos" />
                     <LinkItem to="/Facturas" icon={<span role="img" aria-label="Facturas">📒</span>} label="Facturas" />
                     <LinkItem to="/Comidas" icon={<span role="img" aria-label="Comidas">🍔</span>} label="Comidas" />
@@ -90,7 +91,6 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, logoSrc, business
                     <LinkItem to="/Clientes" icon={<span role="img" aria-label="Clientes">👤</span>} label="Clientes" />
                     <LinkItem to="/Inventario" icon={<span role="img" aria-label="Inventario">🖥️</span>} label="Inventario" />
                     <LinkItem to= "/Mesas" icon={<span role="img" aria-label="Mesas"><CircleDashed/></span>} label="Mesas" />
-                    <LinkItem to= "/ordenes" icon={<span role="img" aria-label="Ordenes"><CircleDashed/></span>} label="Ordenes" />
                     {/* Puedes añadir más LinkItems aquí */}
                 </nav>
 
