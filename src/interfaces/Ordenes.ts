@@ -1,4 +1,4 @@
-import type { cliente } from "./Clientes";
+//import type { cliente } from "./Clientes";
 
 export interface Orden {
   idOrden: number;

@@ -4,7 +4,7 @@ import ModalNuevoPlatillo from "../modals/ModalAgregarPlatillos"
 import ModalEditPlatillo from "../modals/ModalEditPlatillos";
 import type { Platillo } from "../../interfaces/Platillos";
 import { useImagenesPlatillo } from "../Hooks/hookImagenes";
-import { useMenu_diario } from "../Hooks/hookMenu_diario";
+//import { useMenu_diario } from "../Hooks/hookMenu_diario";
 
 interface TablaComidasProps {
   data: Platillo[];
@@ -56,7 +56,7 @@ export default function TablaComidas({ data }: TablaComidasProps) {
 
   // --- Modales ---
   const [editingPlatillo, setEditingPlatillo] = useState<Platillo | null>(null);
-  const [selectedPlatillos, setSelectedPlatillos] = useState<Platillo[] | null>(null);
+  //const [selectedPlatillos, setSelectedPlatillos] = useState<Platillo[] | null>(null);
   const [showNewModal, setShowNewModal] = useState(false);
 
   useEffect(() => {

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 //import { Trash2 } from "lucide-react";
 import type { Menu_dario } from "../../interfaces/Platillos";
-const API_URL = import.meta.env.VITE_API_URL;
+//const API_URL = import.meta.env.VITE_API_URL;
 // Estructura auxiliar para llenar el select de platillos
 interface PlatilloOption {
     NombrePlatillo: string;

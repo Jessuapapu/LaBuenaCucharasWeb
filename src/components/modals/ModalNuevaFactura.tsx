@@ -1,7 +1,8 @@
 import { useState, useMemo, useEffect } from "react";
-import { Check, User, Search, Calendar, Trash2, Layers} from "lucide-react";
+import { Check, User, Search, Calendar, Trash2, Layers, Loader2} from "lucide-react";
 import { useFactura } from "../Hooks/hookFacturas";
-import type { ModalNuevaFacturaProps, ClienteOrden } from "../../interfaces/Ordenes";
+//import { useClientes } from "../Hooks/hookClientes";
+import type { ModalNuevaFacturaProps } from "../../interfaces/Ordenes";
 import type { PayloadFactura } from "../../interfaces/Factura";
 
 interface ModalFacturaExtendidoProps extends ModalNuevaFacturaProps {
@@ -9,7 +10,7 @@ interface ModalFacturaExtendidoProps extends ModalNuevaFacturaProps {
 }
 
 export default function ModalNuevaFactura({ 
-  Ordenes = [], 
+  //Ordenes = [], 
   onClose, 
   onSave,
   idFacturaExistente 
@@ -19,12 +20,14 @@ export default function ModalNuevaFactura({
   const [mostarSelector, setmostarselector] = useState(false);
   const [clienteSeleccionado, setclienteSeleccionado] = useState<number | "">("");
 
+  //const { clientes, loading: loadingClientes, error: errorClientes } = useClientes();
+
   // Utilizando nuestro hook optimizado (Soporta creación y edición automática)
   const {
     facturaData,
     setFacturaData,
     subTotalVisual,
-    seleccionarCliente,
+    //seleccionarCliente,
     pedidosPendientes,
     alternarSeleccionPedido,
     limpiarSeleccionDocumentos,
@@ -32,8 +35,10 @@ export default function ModalNuevaFactura({
     loading,
     isFetching,
     error,
-    guardarFactura
-  } = useFactura(clienteSeleccionado, idFacturaExistente);
+    guardarFactura,
+    clientesCatalogo,
+    idClienteDetectado
+  } = useFactura(BusquedaCliente, idFacturaExistente);
 
   // Sincronizar dinámicamente el conteo de cubiertos/cantidad con las órdenes seleccionadas
   useEffect(() => {
@@ -46,11 +51,11 @@ export default function ModalNuevaFactura({
 
   // Filtrado predictivo de clientes en tiempo real
   const clientesFiltrados = useMemo(() => {
-    if (!BusquedaCliente.trim()) return Ordenes;
-    return Ordenes.filter(cliente =>
-      cliente.nombre_cliente.toLowerCase().includes(BusquedaCliente.toLowerCase())
+    if (!BusquedaCliente.trim()) return clientesCatalogo;
+    return clientesCatalogo.filter(cliente =>
+      cliente.NombreCliente.toLowerCase().includes(BusquedaCliente.toLowerCase())
     );
-  }, [BusquedaCliente, Ordenes]);
+  }, [BusquedaCliente, clientesCatalogo]);
 
   // Cálculo matemático del precio promedio real por orden vinculada
   const precioUnitario = useMemo(() => {
@@ -59,11 +64,14 @@ export default function ModalNuevaFactura({
     return cantidad > 0 ? total / cantidad : total;
   }, [subTotalVisual, facturaData?.idOrdenes.length]);
   
-  const handleSeleccioncliente = (cliente: ClienteOrden) => {
-    setBusquedaCliente(cliente.nombre_cliente);
-    setclienteSeleccionado(cliente.idCliente);
+  const handleSeleccioncliente = (nombreCliente: string) => {
+    setBusquedaCliente(nombreCliente);
+    //setclienteSeleccionado(c.idCliente);
     setmostarselector(false);
-    seleccionarCliente(cliente);
+    //seleccionarCliente({
+     // idCliente: c.idCliente,
+     // nombre_cliente: c.nombre_cliente
+    //});
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -128,20 +136,23 @@ export default function ModalNuevaFactura({
                   }}
                   onFocus={() => setmostarselector(true)}
                 />
+                {isFetching && (
+                  <Loader2 className="absolute right-3 top-3.5 text-blue-500 animate-spin" size={16} />
+                )}
               </div>
 
               {/* Dropdown flotante */}
               {mostarSelector && (
-                <div className="absolute应用 z-30 w-full mt-1 bg-slate-950 border border-slate-800 rounded-xl shadow-2xl max-h-48 overflow-y-auto divide-y divide-slate-900 custom-scrollbar">
+                <div className="absolute z-30 w-full mt-1 bg-slate-950 border border-slate-800 rounded-xl shadow-2xl max-h-48 overflow-y-auto divide-y divide-slate-900 custom-scrollbar">
                   {clientesFiltrados.length > 0 ? (
                     clientesFiltrados.map((cliente) => (
                       <div
-                        key={cliente.idCliente}
-                        onClick={() => handleSeleccioncliente(cliente)}
+                        key={cliente.IdCliente}
+                        onClick={() => handleSeleccioncliente(cliente.NombreCliente)}
                         className="px-4 py-3 text-sm text-slate-300 hover:bg-blue-600 hover:text-white cursor-pointer font-medium transition-colors flex justify-between items-center"
                       >
-                        <span>{cliente.nombre_cliente}</span>
-                        <span className="text-[10px] bg-slate-900 text-slate-400 px-2 py-0.5 rounded-md font-mono">ID: {cliente.idCliente}</span>
+                        <span>{cliente.NombreCliente}</span>
+                        <span className="text-[10px] bg-slate-900 text-slate-400 px-2 py-0.5 rounded-md font-mono">ID: {cliente.IdCliente}</span>
                       </div>
                     ))
                   ) : (
@@ -155,7 +166,7 @@ export default function ModalNuevaFactura({
             </div>
 
             {/* CONTENEDOR DE DOCUMENTOS PENDIENTES */}
-            {clienteSeleccionado && (
+            {idClienteDetectado && (
               <div className="bg-slate-950 border border-slate-800 rounded-2xl p-4 relative z-10 animate-fade-in">
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1">
@@ -236,7 +247,7 @@ export default function ModalNuevaFactura({
             </button>
             <button
               type="submit"
-              disabled={loading || isFetching || !BusquedaCliente.trim() || facturaData.idOrdenes.length === 0}
+              disabled={loading || isFetching || !idClienteDetectado || facturaData.idOrdenes.length === 0}
               className={`flex-[2] py-3 rounded-xl font-black text-sm text-slate-950 tracking-wide transition-all uppercase shadow-lg
                 ${loading || isFetching || facturaData.idOrdenes.length === 0
                   ? "bg-slate-800 text-slate-500 cursor-not-allowed shadow-none"

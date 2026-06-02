@@ -5,10 +5,6 @@ import ModalNuevaFactura from "../modals/ModalNuevaFactura";
 import { useFacturaPaginacion } from "../Hooks/hookFacturas";
 import type { Factura } from "../../interfaces/Factura";
 
-interface Cliente {
-  nombre_cliente: string;
-  direccion_cliente: string;
-}
 
 type SortKey = "Id_factura" | "monto_total" | "fecha_factura" | "estado_factura" | "";
 
