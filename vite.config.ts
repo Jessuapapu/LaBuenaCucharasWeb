@@ -6,6 +6,6 @@ export default defineConfig({
     tailwindcss(),
   ],
   server: {
-    host: '0.0.0.0', // Expone el servidor a la red
+    host: '0.0.0.0',
   }
 })

@@ -1,5 +1,6 @@
 
 const API_URL = import.meta.env.VITE_API_URL;
+
 const token = localStorage.getItem("access_token");
 // Función auxiliar para obtener el token en tiempo real (evita problemas si el token cambia o se refresca)
 //Y da pereaza escribir de nuevo lo mismo

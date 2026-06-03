@@ -137,6 +137,7 @@ export function useEstado() {
     } finally {
         setCargandoAccion(false);
     }
+    window.location.reload()
   };
 
   return { 
