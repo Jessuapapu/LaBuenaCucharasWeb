@@ -74,6 +74,8 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, logoSrc, business
         <>
             {/* --- DESKTOP SIDEBAR --- */}
             <aside
+                onMouseEnter={() => setSidebarOpen(true)}  // Abre al posicionarse encima
+                onMouseLeave={() => setSidebarOpen(false)} // Cierra al retirar el mouse
                 className={`hidden lg:flex flex-col fixed left-0 top-0 h-screen text-white shadow-2xl z-50 transition-all duration-300 ease-in-out border-r border-white/5
                 ${sidebarOpen ? "w-64" : "w-20"}`}
                 style={{ backgroundColor: '#0b1323' }} 
@@ -95,12 +97,13 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, logoSrc, business
                 </nav>
 
                 {/* Botón para contraer/expandir en Desktop */}
-                <button 
+                {/*<button 
                     onClick={() => setSidebarOpen(!sidebarOpen)}
                     className="absolute -right-3 top-1/2 translate-y-1/2 w-6 h-6 bg-blue-600 hover:bg-blue-500 rounded-full flex items-center justify-center shadow-xl border border-white/20 z-[60] transition-transform active:scale-90"
                 >
                     {sidebarOpen ? <ChevronLeft size={14} className="text-white" /> : <ChevronRight size={14} className="text-white" />}
-                </button>
+                </button>*/}
+                
 
                 <div className="p-4 border-t border-white/5">
                     <div className={`flex items-center justify-center bg-white/5 rounded-xl py-2 transition-all ${!sidebarOpen ? 'px-0' : 'px-4'}`}>
@@ -141,6 +144,9 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, logoSrc, business
                                 <Link to="/Pedidos" onClick={() => setSidebarOpen(false)} className={getLinkClass("/Pedidos")}>📝 Pedidos</Link>
                                 <Link to="/Comidas" onClick={() => setSidebarOpen(false)} className={getLinkClass("/Comidas")}>🍔 Comidas</Link>
                                 <Link to="/Menu_Diario" onClick={() => setSidebarOpen(false)} className={getLinkClass("/Menu_Diario")}>🧾 Menu Diario</Link>
+                                <Link to="/ordenes" onClick={() => setSidebarOpen(false)} className={getLinkClass("/ordenes")}>🧾 Ordenes</Link>
+                                <Link to="/Facturas" onClick={() => setSidebarOpen(false)} className={getLinkClass("/Facturas")}>🧾 Facturas</Link>
+                                <Link to="/Clientes" onClick={() => setSidebarOpen(false)} className={getLinkClass("/Clientes")}>👤 Clientes</Link>
                                 {/* Añade el resto de enlaces si son necesarios */}
                             </nav>
                         </motion.aside>
