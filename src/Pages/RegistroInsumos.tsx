@@ -2,12 +2,13 @@ import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import TablaRegistros from "../components/table/TableRegistro";
 import { ArrowDownCircle, Truck, ArrowRight, DollarSign } from "lucide-react";
-import { useBodega } from "../components/Hooks/hookBodega";
+import { useBodega, useinsumoseIngredientes } from "../components/Hooks/hookBodega";
 import { Cardstockmin } from "../components/cards/CardBar";
 
 export default function RegistrosPage() {
   // Ya solo consumimos data y loading del hook
   const { data, loading } = useBodega();
+  const { inventarioGeneral, evaluarEstadoAlerta}= useinsumoseIngredientes();
 
   const totalCosto = useMemo(() => {
     return data.reduce((acc, curr) => acc + (Number(curr.CostoTotal) || 0), 0);
@@ -63,6 +64,21 @@ export default function RegistrosPage() {
                 <Truck className="w-8 h-8" />
             </div>
         </Link>
+      </div>
+      <div className="flex flex-wrap gap-4 p-6">
+        {inventarioGeneral.map((item) => {
+          const alerta = evaluarEstadoAlerta(item);
+              return (
+                <Cardstockmin
+                  key={item.idRegistro}
+                  nombre={item.nombre}
+                  tipo={"Ingredientes"} //Para mientras a que no de errror porque hay que mapear bien
+                  stockactual={item.cantidad_actual || 0}
+                  stockmin={typeof item.stock_minimo === "number" ? item.stock_minimo : 0}
+                  // Puedes pasarle 'alerta.colorClase' o 'alerta.textoEstado' si tu Cardstockmin los admite para estilizado dinámico
+                />
+              );
+            })}
       </div>
 
       {/* Tabla de Registros */}

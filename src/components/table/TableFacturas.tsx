@@ -239,7 +239,7 @@ export default function TablaFacturas() {
       {/* un solo modal */}
       {(showCreate || selectedFactura) && (
         <ModalNuevaFactura 
-          idFacturaExistente={selectedFactura?.Id_factura} // Si viene de selectedFactura, se activa el modo edición automáticamente
+          idFactura={selectedFactura?.Id_factura} // Si viene de selectedFactura, se activa el modo edición automáticamente
           onClose={() => {
             setShowCreate(false);
             setSelectedFactura(null);

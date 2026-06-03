@@ -6,33 +6,34 @@ import { getContratosByCliente } from "../../services/contratos";
 
 import { getFacturas, getFacturasPag, crearFactura, actualizarFactura } from "../../services/facturas";
 import type { Factura, PayloadFactura  } from "../../interfaces/Factura";
-import { getOrdenesByCliente } from "../../services/ordenes";
+import { obtenerOrdenporNombre } from "../../services/ordenes";
 import { useSoloClientes } from "./hookClientes";
 
-interface EstadoFormularioFactura extends Omit<PayloadFactura, "IdCliente" | "MONTOTOTAL"> {
+//se utiliza porque typescript necesita saber que contenia el prev xd
+interface EstadoFacturaForm {
   nombreCliente: string;
+  idOrdenes: number[];
+  idContrato: number | null;
+  Cantidad: number;
+  Fecha: string;
+  tipoDocumentoOrigen?: "ORDEN" | "CONTRATO";
+  MetodoPago?: "Efectivo"| "Transferencia"
+  CondicionPago?:"Contado"
 }
-
-const estadoInicial: EstadoFormularioFactura = {
-  Cantidad: 1,
-  Fecha: new Date().toISOString().split("T")[0], // Formato YYYY-MM-DD para el input type="date"
-  MetodoPago: "EFECTIVO",
-  CondicionPago: "CONTADO",
-  tipoDocumentoOrigen: "ORDEN",
-  idOrdenes: [],
-  idContrato: null,
-  nombreCliente: ""
-};
-
-export function useFactura(busquedaNombre: string | "", idFacturaExistente?: number) {
+export function useFactura(busquedaNombre: string | "", idFactura?: number) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [isFetching, setIsFetching] = useState(false);
     const [pedidosPendientes, setPedidosPendientes] = useState<any[]>([]);
     const [contratosActivos, setContratosActivos] = useState<Contrato[]>([]);
-    
-    
-    const [facturaData, setFacturaData] = useState<EstadoFormularioFactura>(estadoInicial);
+    const [facturaData, setFacturaData] = useState<EstadoFacturaForm>({
+    nombreCliente: busquedaNombre,
+    idOrdenes: [],
+    idContrato: null,
+    Cantidad: 1,
+    Fecha: "",
+    tipoDocumentoOrigen: "ORDEN"
+    });
      // Estado derivado para el Subtotal (calculado en tiempo real en el cliente)
     //const [subTotalVisual, setSubTotalVisual] = useState<number>(0);
     const { clientes, loading: loadingClientes, error: errorClientes } = useSoloClientes();
@@ -48,7 +49,7 @@ export function useFactura(busquedaNombre: string | "", idFacturaExistente?: num
     if (!clienteEncontrado) {
       setPedidosPendientes([]);
       setContratosActivos([])
-      setFacturaData(prev => ({ ...prev, nombreCliente: busquedaNombre, idOrdenes: [], idContrato: null, Cantidad: 1 }));
+      setFacturaData({ nombreCliente: busquedaNombre, idOrdenes: [], idContrato: null, Cantidad: 1, Fecha:"" });
       return;
     }
 
@@ -59,10 +60,10 @@ export function useFactura(busquedaNombre: string | "", idFacturaExistente?: num
       try {
         setFacturaData(prev => ({
           ...prev,
-          nombreCliente: clienteEncontrado.NombreCliente
+          nombreCliente: clienteEncontrado.NombreCliente//
         }));
         const [ordenesData, contratosData] = await Promise.all([
-          getOrdenesByCliente(idCliente).catch(() => []), // Si falla uno, no tumba al otro
+          obtenerOrdenporNombre(clienteEncontrado.NombreCliente).catch(() => []), // Si falla uno, no tumba al otro
           getContratosByCliente(idCliente).catch(() => [])
         ]);
 
@@ -149,9 +150,9 @@ export function useFactura(busquedaNombre: string | "", idFacturaExistente?: num
 
     try {
       let respuesta;
-      if (idFacturaExistente) {
+      if (idFactura) {
         // Ejecuta actualización vía PUT
-        respuesta = await actualizarFactura(idFacturaExistente, payloadListo);
+        respuesta = await actualizarFactura(idFactura,payloadListo);
       } else {
         // Ejecuta inserción vía POST
         respuesta = await crearFactura(payloadListo);
@@ -165,7 +166,7 @@ export function useFactura(busquedaNombre: string | "", idFacturaExistente?: num
     } finally {
       setLoading(false);
     }
-  }, [idFacturaExistente]);
+  }, [idFactura]);
 
   return {
     facturaData,

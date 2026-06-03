@@ -126,3 +126,18 @@ export async function getVentasSemanales(signal?: AbortSignal): Promise<any[]> {
     
     return formattedData;
 }
+
+export async function obtenerOrdenporNombre(NombreCliente:string): Promise<any[]> {
+    //nombeCliente porque asi lo espera el backend y todo true ara que los datos no se mutilen al cargar
+    const response= await fetch(`${API_URL}/ordenes/?nombeCliente=${encodeURIComponent(NombreCliente)}&todo=true`, {
+        method: "GET",
+        headers: getHeaders(),
+    })
+    if(!response.ok){
+        throw new Error("No se encontro ordenes")
+    }
+    const data=  await response.json();
+    //Ya que retorna la lista de un solo desde el MostrarOrdenes
+    const arregloOrdenes= data.data ??data;
+    return mapOrdenes(arregloOrdenes)
+}

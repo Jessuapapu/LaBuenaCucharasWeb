@@ -1,26 +1,29 @@
-import { useState, useMemo, useEffect } from "react";
-import { Check, User, Search, Calendar, Trash2, Layers, Loader2} from "lucide-react";
+import { useState, useMemo, useEffect, useRef } from "react";
+import { Check, User, Search, Calendar, Trash2, Download,
+   Layers, Loader2} from "lucide-react";
 import { useFactura } from "../Hooks/hookFacturas";
 //import { useClientes } from "../Hooks/hookClientes";
 import type { ModalNuevaFacturaProps } from "../../interfaces/Ordenes";
 import type { PayloadFactura } from "../../interfaces/Factura";
+import jsPDF from "jspdf";
+import html2canvas  from "html2canvas"
 
 interface ModalFacturaExtendidoProps extends ModalNuevaFacturaProps {
-  idFacturaExistente?: number; // Opcional, para activar el modo edición automáticamente
+  idFactura?: number; // Opcional, para activar el modo edición automáticamente
 }
 
 export default function ModalNuevaFactura({ 
   //Ordenes = [], 
   onClose, 
   onSave,
-  idFacturaExistente 
+  idFactura 
 }: ModalFacturaExtendidoProps) {
   
   const [BusquedaCliente, setBusquedaCliente] = useState(""); 
   const [mostarSelector, setmostarselector] = useState(false);
+  const [Exportapdf, setExportapdf]= useState(false);
+  const ticketpreviwe= useRef<HTMLDivElement>(null);
 //const [clienteSeleccionado, setclienteSeleccionado] = useState<number | "">("");
-
-  //const { clientes, loading: loadingClientes, error: errorClientes } = useClientes();
 
   // Utilizando nuestro hook optimizado (Soporta creación y edición automática)
   const {
@@ -38,7 +41,7 @@ export default function ModalNuevaFactura({
     guardarFactura,
     clientesCatalogo,
     idClienteDetectado
-  } = useFactura(BusquedaCliente, idFacturaExistente);
+  } = useFactura(BusquedaCliente, idFactura);
 
   // Sincronizar dinámicamente el conteo de cubiertos/cantidad con las órdenes seleccionadas
 //useEffect(() => {
@@ -66,12 +69,54 @@ export default function ModalNuevaFactura({
   
   const handleSeleccioncliente = (nombreCliente: string) => {
     setBusquedaCliente(nombreCliente);
+    limpiarSeleccionDocumentos()
     //setclienteSeleccionado(c.idCliente);
     setmostarselector(false);
     //seleccionarCliente({
      // idCliente: c.idCliente,
      // nombre_cliente: c.nombre_cliente
     //});
+  };
+  const handleDescargarPDF = async () => {
+    if (!ticketpreviwe.current || Exportapdf) return;
+
+    try {
+      setExportapdf(true);
+
+      const elemento = ticketpreviwe.current;
+      
+      // Capturamos el elemento con alta densidad de píxeles (escala 2x para evitar textos borrosos)
+      const canvas = await html2canvas(elemento, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#FFFFFF", // Forzamos fondo limpio
+        logging: false
+      });
+
+      const imgData = canvas.toDataURL("image/png");
+      
+      // Dimensiones proporcionales basadas en formato de ticket alto
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: [80, 150] // Formato estandarizado de ticket térmico de 80mm
+      });
+
+      const widthPDF = pdf.internal.pageSize.getWidth();
+      const heightPDF = (canvas.height * widthPDF) / canvas.width;
+
+      // Inyectamos la captura procesada dentro del documento
+      pdf.addImage(imgData, "PNG", 0, 0, widthPDF, heightPDF);
+      
+      // Generación de nombre descriptivo dinámico
+      const nombreArchivo = `Ticket_${facturaData.nombreCliente?.replace(/\s+/g, "_") || "Consumidor_Final"}_${facturaData.Fecha || "emision"}.pdf`;
+      pdf.save(nombreArchivo);
+
+    } catch (err) {
+      console.error("Error al procesar la exportación del comprobante:", err);
+    } finally {
+      setExportapdf(false);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -95,21 +140,22 @@ export default function ModalNuevaFactura({
       onClose();    // Cierra el modal de forma limpia
     });
   };
+  
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm animate-fade-in">
-     <div className="fixed inset-0" onClick={() => setmostarselector(false)} />
-      <div className="bg-slate-900 rounded-3xl text-white max-w-4xl w-full border border-slate-700 shadow-2xl overflow-hidden flex flex-col md:flex-row">
+     <div className="fixed inset-0 z-20" onClick={() => setmostarselector(false)} />
+      <div className="bg-slate-900 rounded-3xl text-white max-w-4xl w-full border border-slate-700 shadow-2xl overflow-hidden flex flex-col md:flex-row z-30">
         
         {/* LADO IZQUIERDO: FORMULARIO */}
         <form onSubmit={handleSubmit} className="p-6 md:p-8 flex-1 border-b md:border-b-0 md:border-r border-slate-800 flex flex-col justify-between">
           <div className="space-y-5">
             <header>
               <h2 className="text-2xl font-black text-white uppercase tracking-tighter flex items-center gap-2">
-                {idFacturaExistente ? "Modificar Factura" : "Emisión de Factura"}
+                {idFactura ? "Modificar Factura" : "Emisión de Factura"}
               </h2>
               <p className="text-slate-400 text-sm">
-                {idFacturaExistente ? `Editando registro fiscal de la Factura #${idFacturaExistente}` : "Emisión de comprobantes y órdenes de cobro corporativo"}
+                {idFactura ? `Editando registro fiscal de la Factura #${idFactura}` : "Emisión de comprobantes y órdenes de cobro corporativo"}
               </p>
             </header>
 
@@ -120,7 +166,7 @@ export default function ModalNuevaFactura({
             )}
               
             {/* SELECTOR BUSCADOR PERSONALIZADO DE CLIENTE */}
-             <div className="space-y-1 relative" onClick={(e) => e.stopPropagation()}>
+             <div className="space-y-1 relative z-40" onClick={(e) => e.stopPropagation()}>
                 <label className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
                   <User size={12} className="text-blue-500" /> Selector de Cliente Relacional
                 </label>
@@ -144,7 +190,7 @@ export default function ModalNuevaFactura({
 
                 {/* Dropdown flotante */}
                 {mostarSelector && (
-                  <div className="absolute z-30 w-full mt-1 bg-slate-950 border border-slate-800 rounded-xl shadow-2xl max-h-48 overflow-y-auto divide-y divide-slate-900 custom-scrollbar">
+                  <div className="absolute z-50 w-full mt-1 bg-slate-950 border border-slate-800 rounded-xl shadow-2xl max-h-48 overflow-y-auto divide-y divide-slate-900 custom-scrollbar">
                     {clientesFiltrados.length > 0 ? (
                       clientesFiltrados.map((cliente) => (
                         <div
@@ -227,7 +273,7 @@ export default function ModalNuevaFactura({
                   type="date"
                   className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-blue-500 outline-none text-sm transition-colors text-slate-200 font-mono"
                   style={{ colorScheme: "dark" }}
-                  value={facturaData.Fecha}
+                  value={facturaData.Fecha || ""}
                   onChange={(e) => setFacturaData(prev => ({ ...prev, Fecha: e.target.value }))}
                   required
                 />
@@ -252,7 +298,7 @@ export default function ModalNuevaFactura({
                   ? "bg-slate-800 text-slate-500 cursor-not-allowed shadow-none"
                   : "bg-blue-500 hover:bg-blue-400 shadow-blue-950/20 active:scale-[0.99]"}`}
             >
-              {loading ? "PROCESANDO..." : idFacturaExistente ? "ACTUALIZAR REGISTRO" : "CONFIRMAR FACTURA"}
+              {loading ? "PROCESANDO..." : idFactura ? "ACTUALIZAR REGISTRO" : "CONFIRMAR FACTURA"}
             </button>
           </div>
         </form>
@@ -260,10 +306,32 @@ export default function ModalNuevaFactura({
         {/* PREVIEW TICKET DE FACTURA */}
         <div className="bg-slate-950 p-6 md:p-8 w-full md:w-80 flex flex-col justify-between border-t md:border-t-0 border-slate-800">
           <div>
+            <div className="flex justify-between items-center mb-4">
             <h3 className="text-xs font-black text-slate-600 uppercase tracking-widest mb-4 text-center">Vista Previa Factura</h3>
-            
-            <div className="bg-white rounded-xl p-5 text-slate-900 shadow-xl flex flex-col justify-between min-h-[380px]">
-              <div>
+            {/* Botón interactivo de exportación */}
+              <button
+                type="button"
+                onClick={handleDescargarPDF}
+                disabled={!facturaData.idOrdenes|| facturaData.idOrdenes.length === 0 || Exportapdf}
+                className={`text-[10px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition-all border
+                  ${facturaData.idOrdenes.length === 0 || Exportapdf
+                    ? "border-slate-800 text-slate-600 bg-slate-900 cursor-not-allowed"
+                    : "border-blue-900/50 bg-blue-950/40 text-blue-400 hover:bg-blue-900/50 hover:text-blue-300"
+                  }`}
+              >
+                {Exportapdf ? (
+                  <>
+                    <Loader2 size={12} className="animate-spin" /> PROCESANDO...
+                  </>
+                ) : (
+                  <>
+                    <Download size={12} /> PDF
+                  </>
+                )}
+              </button>
+          </div>
+          <div ref={ticketpreviwe} className="bg-white rounded-xl p-5 text-slate-900 shadow-xl flex flex-col justify-between min-h-[380px]">
+            <div>
                 <div className="text-[10px] font-black text-slate-800 text-center tracking-tight">BUFFET LA BUENA CUCHARA</div>
                 <div className="text-[8px] text-slate-400 text-center mb-4 leading-normal italic">
                   RUC: 0012308820012M <br /> Tel: 7799-1489
@@ -281,7 +349,7 @@ export default function ModalNuevaFactura({
                     <span className="font-mono text-slate-900 font-bold">{facturaData.Fecha || "AAAA-MM-DD"}</span>
                   </div>
                   
-                  <div className="border-b border-dashed border-slate-200 my-2" />
+                <div className="border-b border-dashed border-slate-200 my-2" />
                   
                   <span className="text-slate-400 uppercase font-bold text-[7px] block mb-1">Órdenes Vinculadas:</span>
                   <div className="max-h-24 overflow-y-auto pr-0.5 space-y-1 custom-scrollbar">
@@ -296,8 +364,8 @@ export default function ModalNuevaFactura({
                       <div className="text-[8px] text-slate-400 italic text-center py-2">Ninguna orden seleccionada</div>
                     )}
                   </div>
-                </div>
-                
+              </div>
+            
                 <div className="border-b border-dashed border-slate-200 my-2" />
                 
                 {/* Desglose Unitario Real */}
@@ -312,7 +380,7 @@ export default function ModalNuevaFactura({
                   </div>
                 </div>
               </div>
-
+              
               <div>
                 <div className="border-b border-dashed border-slate-200 my-2" />
                 <div className="text-center py-1">
@@ -325,7 +393,7 @@ export default function ModalNuevaFactura({
 
                 <div className="pt-3 flex justify-center">
                   <div className="text-[9px] font-black px-3 py-0.5 rounded-full bg-green-100 text-green-700 tracking-wide uppercase">
-                    {idFacturaExistente ? "EDITANDO" : "GENERADA"}
+                    {idFactura ? "EDITANDO" : "GENERADA"}
                   </div>
                 </div>
               </div>
