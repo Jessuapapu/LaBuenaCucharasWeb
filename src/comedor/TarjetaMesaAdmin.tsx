@@ -1,7 +1,6 @@
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { BotonMesa } from '../grid/botonMesa'; // Ajusta la ruta si es con minúscula
+import { BotonMesa } from '../grid/botonMesa'; 
 import { socket } from '../services/websocket';
 import { useOrdenesMesa, useDetalleOrden } from "../components/Hooks/hookOrdenes";
 import { Loader2, ArrowUpRight, UtensilsCrossed, Receipt } from 'lucide-react';
@@ -16,34 +15,60 @@ export function TarjetaMesaAdmin({ idMesa, index }: TarjetaProps) {
   const stringId = String(idMesa);
   const navigate = useNavigate();
   
-  // Solo leemos datos (NO importamos crear, actualizar, cancelar, etc. aquí)
   const { ordenActiva, cargando, refresh } = useOrdenesMesa(stringId) as any;
   const { detallesOrden, cargandoDetalles, obtenerDetalle } = useDetalleOrden();
 
   const [borrador, setBorrador] = useState<Detalles[]>([]);
 
-  // 🌐 HANDLER WEBSOCKET
+  // 🚀 EL SECRETO SENIOR: Guardamos todo en referencias mutables
+  const ordenActivaRef = useRef(ordenActiva);
+  const refreshRef = useRef(refresh);
+  const obtenerDetalleRef = useRef(obtenerDetalle);
+  
+  // Actualizamos las referencias en cada render SIN causar re-renders adicionales
+  useEffect(() => {
+      ordenActivaRef.current = ordenActiva;
+      refreshRef.current = refresh;
+      obtenerDetalleRef.current = obtenerDetalle;
+  });
+
+  // 🌐 SOCKET BINDING PERFECTO: Se conecta 1 sola vez (arreglo vacío [])
   useEffect(() => {
     const handleWS = (data: { IdMesa: number }) => {
-      if (Number(data.IdMesa) === idMesa && refresh) refresh();
+      if (Number(data.IdMesa) === idMesa) {
+        // 1. Llamamos al refresh a través de la referencia
+        if (refreshRef.current) refreshRef.current();
+        
+        // 2. Forzamos la actualización de los platillos
+        const currentOrden = ordenActivaRef.current;
+        if (currentOrden?.IdOrden && obtenerDetalleRef.current) {
+            obtenerDetalleRef.current(currentOrden.IdOrden);
+        } else if (!currentOrden) {
+            setBorrador([]);
+        }
+      }
     };
+    
     socket.on("orden_actualizada", handleWS);
+    socket.on("orden_generada", handleWS); 
+    
     return () => {
         socket.off("orden_actualizada", handleWS);
+        socket.off("orden_generada", handleWS);
     };
-  }, [idMesa, refresh]);
+  }, [idMesa]); // <-- Clave: Ya no dependemos de funciones, solo del ID.
 
-  // Sincronización Primaria
+  // Sincronización Primaria al montar o cambiar de orden
   useEffect(() => {
     if (ordenActiva?.IdOrden && obtenerDetalle) {
       obtenerDetalle(ordenActiva.IdOrden);
-    } else if (borrador.length > 0) {
+    } else if (!ordenActiva) {
       setBorrador([]);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ordenActiva?.IdOrden]);
 
-  // Deep-matching de platillos
+  // Deep-matching de platillos para evitar renderizados infinitos
   useEffect(() => {
     if (detallesOrden && ordenActiva) {
       const datosMapeados = detallesOrden.map(d => ({
@@ -54,13 +79,13 @@ export function TarjetaMesaAdmin({ idMesa, index }: TarjetaProps) {
       if (JSON.stringify(borrador) !== JSON.stringify(datosMapeados)) {
         setBorrador(datosMapeados);
       }
+    } else if (!ordenActiva) {
+        setBorrador([]);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [detallesOrden, ordenActiva?.IdOrden]);
 
   const tieneOrden = !!ordenActiva;
-  
-  // Calcular el total a pagar de la orden
   const totalParcial = borrador.reduce((acc, item) => acc + (item.cantidad * item.precio_unitario), 0);
 
   return (
@@ -76,7 +101,6 @@ export function TarjetaMesaAdmin({ idMesa, index }: TarjetaProps) {
       {/* CABECERA */}
       <div className="flex justify-between items-start mb-4">
         <div className="flex items-center gap-3">
-          {/* El contenedor original de tu BotonMesa */}
           <div className="scale-75 origin-top-left -ml-2 -mt-2">
             <BotonMesa id={idMesa} />
           </div>
@@ -93,7 +117,7 @@ export function TarjetaMesaAdmin({ idMesa, index }: TarjetaProps) {
         <ArrowUpRight size={18} className="text-slate-600 group-hover:text-blue-400 transition-colors" />
       </div>
 
-      {/* MINI RESUMEN DEL TICKET (Oscuro y Elegante) */}
+      {/* MINI RESUMEN DEL TICKET */}
       <div className="flex-1 flex flex-col justify-center min-h-[100px] mb-4">
         {cargando || cargandoDetalles ? (
           <div className="flex flex-col items-center justify-center text-blue-400/70 py-2">
@@ -108,15 +132,14 @@ export function TarjetaMesaAdmin({ idMesa, index }: TarjetaProps) {
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Resumen</span>
             </div>
             
-            {/* Lista compacta de platillos (Máximo 3 para no desbordar la tarjeta) */}
             <ul className="space-y-1.5">
                 {borrador.slice(0, 3).map((item, i) => (
                     <li key={i} className="flex justify-between items-center text-xs">
-                        <span className="text-slate-300 truncate pr-2">
+                        <span className="text-slate-300 truncate pr-2 flex-1">
                             <span className="text-blue-400 font-black mr-1">{item.cantidad}x</span>
                             {item.nombre_platillo}
                         </span>
-                        <span className="text-slate-400 font-mono">C${item.precio_unitario * item.cantidad}</span>
+                        <span className="text-slate-400 font-mono pl-2">C${item.precio_unitario * item.cantidad}</span>
                     </li>
                 ))}
                 
@@ -144,7 +167,6 @@ export function TarjetaMesaAdmin({ idMesa, index }: TarjetaProps) {
         )}
       </div>
 
-      {/* BOTÓN DE NAVEGACIÓN */}
       <button
         onClick={(e) => { e.stopPropagation(); navigate(`/mesa/${idMesa}`); }}
         className={`w-full flex items-center justify-center gap-2 text-xs font-bold py-2.5 px-3 rounded-xl transition-all border ${

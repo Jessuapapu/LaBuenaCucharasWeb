@@ -1,5 +1,4 @@
-
-import { Plus, Minus } from "lucide-react";
+import { Plus, Minus, Send, Trash2, Save, Utensils } from "lucide-react";
 import type { Detalles } from "../modals/ModalMostrarDetalles";
 
 export interface OrdenActivaTableProps {
@@ -9,7 +8,7 @@ export interface OrdenActivaTableProps {
     alModificarCantidad: (nombre: string, delta: number) => void;
     alCrearOActualizar: () => void;
     alTerminarOrden: () => void;
-    alCancelarOrden: () => void; // NUEVO
+    alCancelarOrden: () => void;
 }
 
 export function OrdenActivaTable({ 
@@ -19,71 +18,107 @@ export function OrdenActivaTable({
     
     const total = detalles.reduce((acc, item) => acc + (item.cantidad * item.precio_unitario), 0);
 
+    // --- VISTA DE MESA LIBRE (EMPTY STATE) ---
     if (detalles.length === 0 && !ordenActivaId) {
         return (
-            <div className="bg-white/50 border-2 border-dashed border-slate-300 rounded-3xl p-10 flex flex-col items-center justify-center text-center">
-                <svg className="w-12 h-12 text-slate-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
-                <p className="text-slate-500 font-semibold text-lg">La mesa está libre</p>
-                <p className="text-slate-400 text-sm mt-1">Selecciona platillos del menú para abrir una orden.</p>
+            <div className="bg-[#0A0F1D] border-2 border-dashed border-slate-700/50 rounded-[2rem] p-10 flex flex-col items-center justify-center text-center shadow-inner">
+                <div className="p-4 bg-slate-800/50 rounded-full mb-4 border border-slate-700">
+                    <Utensils className="w-10 h-10 text-slate-500" />
+                </div>
+                <p className="text-slate-300 font-black text-xl tracking-tight">La mesa está libre</p>
+                <p className="text-slate-500 text-sm mt-2 font-medium max-w-xs">
+                    Selecciona platillos del menú lateral para empezar a armar la cuenta de esta mesa.
+                </p>
             </div>
         );
     }
 
     return (
-        <div className="bg-white rounded-3xl shadow-lg border border-slate-200 overflow-hidden">
-            <div className="bg-slate-50 p-6 border-b border-slate-200 flex justify-between items-center">
+        <div className="bg-[#0A0F1D] rounded-[2rem] shadow-2xl border border-slate-800 overflow-hidden flex flex-col h-full ring-1 ring-white/5">
+            
+            {/* HEADER DEL TICKET */}
+            <div className="bg-slate-900/80 p-5 md:p-6 border-b border-slate-800 flex justify-between items-center shrink-0">
                 <div>
-                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">
-                        {ordenActivaId ? 'Ticket Actual' : 'Nueva Orden (Borrador)'}
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">
+                        {ordenActivaId ? 'Ticket de Cocina' : 'Nueva Orden (Borrador)'}
                     </span>
-                    <span className="font-black text-2xl text-slate-800">
-                        {ordenActivaId ? `#${ordenActivaId}` : '---'}
+                    <span className="font-black text-2xl text-white font-mono tracking-tight">
+                        {ordenActivaId ? `#${ordenActivaId}` : 'Pendiente'}
+                    </span>
+                </div>
+                <div className="px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+                    <span className="text-xs font-black text-blue-400 uppercase tracking-widest">
+                        {detalles.length} Ítems
                     </span>
                 </div>
             </div>
 
-            <div className="p-6 overflow-x-auto">
-                <table className="w-full text-left border-collapse min-w-[500px]">
+            {/* CUERPO DE LA TABLA */}
+            <div className="p-5 md:p-6 overflow-x-auto custom-scrollbar flex-1">
+                <table className="w-full text-left border-collapse min-w-[450px]">
                     <thead>
-                        <tr className="border-b border-slate-200 text-slate-400 text-xs uppercase tracking-wider">
-                            <th className="pb-3 font-semibold">Platillo</th>
-                            <th className="pb-3 font-semibold text-center w-32">Cant.</th>
-                            <th className="pb-3 font-semibold text-right">Precio</th>
-                            <th className="pb-3 font-semibold text-right">Subtotal</th>
+                        <tr className="border-b border-slate-800 text-slate-500 text-[10px] font-black uppercase tracking-widest">
+                            <th className="pb-3">Platillo</th>
+                            <th className="pb-3 text-center w-32">Cant.</th>
+                            <th className="pb-3 text-right">Precio</th>
+                            <th className="pb-3 text-right">Subtotal</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100">
+                    <tbody className="divide-y divide-slate-800/60">
                         {detalles.map((item, idx) => (
-                            <tr key={idx} className="text-sm hover:bg-slate-50 transition-colors">
-                                <td className="py-3 font-bold text-slate-700">{item.nombre_platillo}</td>
-                                <td className="py-3 text-center">
-                                    <div className="flex items-center justify-center bg-slate-100 rounded-lg p-1 w-max mx-auto">
-                                        <button onClick={() => alModificarCantidad(item.nombre_platillo, -1)} className="w-8 h-8 flex items-center justify-center text-slate-500 hover:text-red-500 hover:bg-white rounded-md font-black transition-all"><Minus size={14} /></button>
-                                        <span className="w-8 font-bold text-slate-800 text-base">{item.cantidad}</span>
-                                        <button onClick={() => alModificarCantidad(item.nombre_platillo, 1)} className="w-8 h-8 flex items-center justify-center text-slate-500 hover:text-blue-500 hover:bg-white rounded-md font-black transition-all"><Plus size={14} /></button>
+                            <tr key={idx} className="text-sm hover:bg-slate-800/30 transition-colors group">
+                                <td className="py-4 font-bold text-slate-300 group-hover:text-white transition-colors pr-4">
+                                    {item.nombre_platillo}
+                                </td>
+                                <td className="py-4 text-center">
+                                    <div className="flex items-center justify-center bg-slate-900 border border-slate-700 rounded-xl p-1 w-max mx-auto shadow-inner">
+                                        <button 
+                                            onClick={() => alModificarCantidad(item.nombre_platillo, -1)} 
+                                            className="w-7 h-7 flex items-center justify-center text-slate-500 hover:text-red-400 hover:bg-slate-800 rounded-lg font-black transition-all active:scale-95"
+                                        >
+                                            <Minus size={14} />
+                                        </button>
+                                        <span className="w-8 font-black text-white text-base font-mono text-center">
+                                            {item.cantidad}
+                                        </span>
+                                        <button 
+                                            onClick={() => alModificarCantidad(item.nombre_platillo, 1)} 
+                                            className="w-7 h-7 flex items-center justify-center text-slate-500 hover:text-emerald-400 hover:bg-slate-800 rounded-lg font-black transition-all active:scale-95"
+                                        >
+                                            <Plus size={14} />
+                                        </button>
                                     </div>
                                 </td>
-                                <td className="py-3 text-right text-slate-500">C${item.precio_unitario}</td>
-                                <td className="py-3 text-right font-black text-slate-800 text-base">C${(item.cantidad * item.precio_unitario).toFixed(2)}</td>
+                                <td className="py-4 text-right font-mono text-slate-500 font-medium">
+                                    C${item.precio_unitario}
+                                </td>
+                                <td className="py-4 text-right font-black text-slate-200 font-mono text-base">
+                                    C${(item.cantidad * item.precio_unitario).toFixed(2)}
+                                </td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
             </div>
 
-            <div className="bg-slate-50 p-6 border-t border-slate-200">
-                <div className="flex justify-between items-center mb-6">
-                    <span className="font-bold text-slate-400 uppercase tracking-widest text-sm">Total Parcial:</span>
-                    <span className="font-black text-3xl text-blue-600">C${total.toFixed(2)}</span>
+            {/* FOOTER DE ACCIONES */}
+            <div className="bg-slate-900/80 p-5 md:p-6 border-t border-slate-800 shrink-0 shadow-[0_-10px_30px_rgba(0,0,0,0.2)]">
+                
+                <div className="flex justify-between items-end mb-6 bg-[#0A0F1D] p-4 rounded-2xl border border-slate-800 shadow-inner">
+                    <span className="font-black text-slate-500 uppercase tracking-widest text-[10px]">Total Acumulado</span>
+                    <span className="font-black text-4xl text-emerald-400 font-mono tracking-tighter leading-none">
+                        C${total.toFixed(2)}
+                    </span>
                 </div>
                 
                 <div className="flex flex-col gap-3">
                     <button 
                         onClick={alCrearOActualizar}
                         disabled={cargandoAccion || detalles.length === 0}
-                        className="w-full bg-blue-600 text-white font-black py-4 rounded-xl shadow-[0_8px_20px_rgba(37,99,235,0.3)] hover:bg-blue-700 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white font-black uppercase tracking-widest py-4 rounded-xl shadow-[0_8px_20px_rgba(37,99,235,0.2)] hover:bg-blue-500 hover:shadow-[0_8px_25px_rgba(37,99,235,0.4)] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed border border-blue-500/50"
                     >
-                        {cargandoAccion ? 'Procesando...' : (ordenActivaId ? 'Guardar Cambios' : 'Enviar Nueva Orden')}
+                        <Save size={18} />
+                        {cargandoAccion ? 'Procesando...' : (ordenActivaId ? 'Actualizar Cocina' : 'Enviar a Cocina')}
                     </button>
 
                     {/* Acciones Secundarias (Solo si la orden ya existe en BD) */}
@@ -92,16 +127,17 @@ export function OrdenActivaTable({
                             <button 
                                 onClick={alCancelarOrden}
                                 disabled={cargandoAccion}
-                                className="flex-1 bg-white border-2 border-red-100 text-red-500 hover:bg-red-50 hover:border-red-500 font-bold py-3 rounded-xl transition-colors disabled:opacity-50"
+                                className="flex-1 flex items-center justify-center gap-2 bg-red-500/10 border border-red-500/30 text-red-500 hover:bg-red-500 hover:text-white font-bold uppercase tracking-widest text-xs py-3.5 rounded-xl transition-all disabled:opacity-50 active:scale-[0.98]"
+                                title="Cancelar toda la orden"
                             >
-                                Anular
+                                <Trash2 size={16} /> Anular
                             </button>
                             <button 
                                 onClick={alTerminarOrden}
                                 disabled={cargandoAccion}
-                                className="flex-[2] bg-white border-2 border-emerald-500 text-emerald-600 hover:bg-emerald-50 font-black py-3 rounded-xl transition-colors shadow-sm disabled:opacity-50"
+                                className="flex-[2] flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 border border-emerald-500/50 text-white font-black uppercase tracking-widest text-xs py-3.5 rounded-xl transition-all shadow-lg shadow-emerald-900/20 disabled:opacity-50 active:scale-[0.98]"
                             >
-                                Cobrar Ticket
+                                <Send size={16} /> Mandar a Caja
                             </button>
                         </div>
                     )}

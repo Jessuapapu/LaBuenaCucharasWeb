@@ -1,11 +1,11 @@
-﻿import { useState, useEffect } from "react";
+﻿import { useState, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import { useEstado, useMesas } from '../components/Hooks/hookComedor';
 import { useOrdenesMesa } from "../components/Hooks/hookOrdenes";
 import { socket } from '../services/websocket';
 import { LayoutDashboard, Clock, UtensilsCrossed } from 'lucide-react';
 
-// Imports exactos solicitados por el usuario
+// Ajusta las rutas a tu proyecto
 import { GridMetricasAdmin } from "../grid/GridMetricasAdmin";
 import { BarraHerramientasAdmin } from "../comedor/BarraHerramientaadmin";
 import { TarjetaMesaAdmin } from "../comedor/TarjetaMesaAdmin";
@@ -38,7 +38,7 @@ export function IndexMesas() {
         {/* MÉTRICAS DE OPERACIONES DE ADMINISTRACIÓN */}
         <GridMetricasAdmin cantidadMesas={totalMesas} mesas={numeroMesa || []} />
 
-        {/* SECCIÓN DEL RESUMEN DE TARJETAS (SOLO EL DETALLE) */}
+        {/* SECCIÓN DEL RESUMEN DE TARJETAS */}
         <section className="animate-[fade-in_0.4s_ease-out]">
           <h2 className="text-sm md:text-base font-black text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
             <LayoutDashboard size={18} className="md:w-5 md:h-5" /> Estado en Vivo del Salón
@@ -90,19 +90,31 @@ export function IndexMesas() {
   );
 }
 
-// Subcomponente atómico privado para mantener IndexMesas limpio y reactivo por sockets
+// Subcomponente atómico privado c/ WebSocket blindado
 function FilaTablaGlobal({ idMesa }: { idMesa: number }) {
   const stringId = String(idMesa);
   const navigate = useNavigate();
+  
+  // Extraemos refresh para forzar recargas
   const { ordenActiva, cargando, refresh } = useOrdenesMesa(stringId) as any;
 
+  // Lógica Robusta de Sockets
   useEffect(() => {
-    const handleWS = (data: { IdMesa: number }) => {
-      if (Number(data.IdMesa) === idMesa && refresh) refresh();
+    // Función que recarga los datos de esta mesa específica
+    const recargarMesa = (data: { IdMesa: number }) => {
+      // Verificamos que el evento del servidor corresponda a esta fila
+      if (Number(data.IdMesa) === idMesa && refresh) {
+          refresh(); // Pide la info HTTP fresca al backend
+      }
     };
-    socket.on("orden_actualizada", handleWS);
+
+    // Escuchamos AMBOS eventos posibles que el backend pueda emitir al modificar una mesa
+    socket.on("orden_actualizada", recargarMesa);
+    socket.on("orden_generada", recargarMesa);
+
     return () => {
-      socket.off("orden_actualizada", handleWS);
+      socket.off("orden_actualizada", recargarMesa);
+      socket.off("orden_generada", recargarMesa);
     };
   }, [idMesa, refresh]);
 
@@ -143,5 +155,3 @@ function FilaTablaGlobal({ idMesa }: { idMesa: number }) {
     </tr>
   );
 }
-
-export default IndexMesas;

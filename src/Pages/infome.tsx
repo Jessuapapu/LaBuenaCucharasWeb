@@ -7,8 +7,9 @@ import html2canvas  from "html2canvas"
 import { Download, Loader2, BarChart3 } from "lucide-react";
 import { useState, useRef } from "react";
 
+/*
 const {cargarVentasSemanales}=useOrdenes()
-
+*/
 // Datos simulados (Mock Data) para la demostración visual
 const dataVentas = [
   { id: "Ventas", color: "hsl(210, 70%, 50%)", data: [

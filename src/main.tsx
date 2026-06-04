@@ -18,7 +18,8 @@ import LoginPage from "./Pages/Login";
 import { RutaProtegida } from "./context/RutaProtegida";
 import OrdenesPage from "./Pages/Ordenes";
 import MenuMesas from "./Pages/Mesas2";
-import IndexMesas from "./Pages/Mesas";
+import { IndexMesas } from "./Pages/Mesas";
+import CajaPage from "./Pages/caja";
 
 const router = createBrowserRouter([
   {
@@ -53,7 +54,9 @@ const router = createBrowserRouter([
               { path: '/Inventario/Proveedores', element: <ProveedoresPage /> }
             ]
           },
-          { path: '/Informe', element: <InformesPage /> }]
+          {/* path: '/Informe', element: <InformesPage />*/ },
+          { path: '/caja', element: <CajaPage /> }
+        ]
       }
 
     ],

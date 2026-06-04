@@ -117,57 +117,50 @@ export function useOrdenes() {
     success
   };
 }
-
 export function useOrdenesMesa(idMesa: string | undefined) {
     const [ordenActiva, setOrdenActiva] = useState<OrdenComedor | null>(null);
     const [historial, setHistorial] = useState<OrdenComedor[]>([]);
     const [cargando, setCargando] = useState<boolean>(true);
     const [error, setError] = useState<Error | null>(null);
 
-    useEffect(() => {
+    const cargarOrdenes = async () => {
         if (!idMesa) return;
+        setCargando(true);
+        try {
+            // 🚀 AÑADIMOS HEADERS ANTI-CACHÉ Y UN TIMESTAMP PARA ENGAÑAR AL NAVEGADOR
+            const timestamp = new Date().getTime(); 
+            const [resActiva, resHistorial] = await Promise.all([
+                fetch(`${API_URL}/comedor/mesa/${idMesa}/true?t=${timestamp}`, { headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' } }),
+                fetch(`${API_URL}/comedor/mesa/${idMesa}/false?t=${timestamp}`, { headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' } })
+            ]);
 
-        const cargarOrdenes = async () => {
-            setCargando(true);
-            try {
-
-                // 3. Le pasamos 'opcionesFetch' como segundo parámetro a cada fetch
-                const [resActiva, resHistorial] = await Promise.all([
-                    fetch(`${API_URL}/comedor/mesa/${idMesa}/true`),
-                    fetch(`${API_URL}/comedor/mesa/${idMesa}/false`)
-                ]);
-
-                if (resActiva.status === 401 || resHistorial.status === 401) {
-                    const hayToken = localStorage.getItem("access_token");
-
-                    // Si hay token guardado pero dio 401, significa que expiró. Redirigimos (Comportamiento de Mesero)
-                    if (hayToken) {
-                        console.error("Token expirado o inválido");
-                        window.location.href = "/login";
-                    } else {
-                        // Si no hay token y da 401, es un cliente viendo la cuenta. 
-                        // Lanzamos error para que no cargue datos vacíos, pero NO lo expulsamos.
-                        throw new Error("Acceso de lectura para cliente (401)");
-                    }
+            if (resActiva.status === 401 || resHistorial.status === 401) {
+                const hayToken = localStorage.getItem("access_token");
+                if (hayToken) {
+                    window.location.href = "/login";
+                } else {
+                    throw new Error("Acceso de lectura para cliente (401)");
                 }
-                if (!resActiva.ok || !resHistorial.ok) throw new Error("Error en el servidor");
-
-                const dataActiva = await resActiva.json();
-                const dataHistorial: OrdenComedor[] = await resHistorial.json();
-
-                setOrdenActiva(Array.isArray(dataActiva) ? (dataActiva[0] || null) : dataActiva);
-                setHistorial(dataHistorial);
-            } catch (err) {
-                setError(err instanceof Error ? err : new Error(String(err)));
-            } finally {
-                setCargando(false);
             }
-        };
+            if (!resActiva.ok || !resHistorial.ok) throw new Error("Error en el servidor");
 
+            const dataActiva = await resActiva.json();
+            const dataHistorial: OrdenComedor[] = await resHistorial.json();
+
+            setOrdenActiva(Array.isArray(dataActiva) ? (dataActiva[0] || null) : dataActiva);
+            setHistorial(dataHistorial);
+        } catch (err) {
+            setError(err instanceof Error ? err : new Error(String(err)));
+        } finally {
+            setCargando(false);
+        }
+    };
+
+    useEffect(() => {
         cargarOrdenes();
     }, [idMesa]);
 
-    return { ordenActiva, historial, cargando, error };
+    return { ordenActiva, historial, cargando, error, refresh: cargarOrdenes };
 }
 
 export function useDetalleOrden() {
@@ -178,7 +171,11 @@ export function useDetalleOrden() {
         setCargandoDetalles(true);
         setDetallesOrden([]);
         try {
-            const res = await fetch(`${API_URL}/ordenes/detalle/?IdPedido=${idOrden}`);
+            // 🚀 AÑADIMOS EL MISMO BLINDAJE ANTI-CACHÉ AQUÍ
+            const timestamp = new Date().getTime();
+            const res = await fetch(`${API_URL}/ordenes/detalle/?IdPedido=${idOrden}&t=${timestamp}`, {
+                headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
+            });
 
             const data: Detalles[] = await res.json();
             setDetallesOrden(data);
@@ -194,8 +191,6 @@ export function useDetalleOrden() {
 
     return { detallesOrden, cargandoDetalles, obtenerDetalle, limpiarDetalles };
 }
-
-
 
 // --- 1. CREAR NUEVA ORDEN ---
 export function useCrearOrden() {
@@ -294,11 +289,11 @@ export function useCancelarOrden() {
 }
 
 // --- 4. GUARDAR ORDEN (COMPLETAR/PAGAR) ---
-export function useGuardarOrden() {
+export function useMandarACaja() {
     const [cargando, setCargando] = useState(false);
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    const guardar = (payload: any, onSuccess: () => void) => {
+    const mandarACaja = (payload: any, onSuccess: () => void) => {
         if (cargando) return;
         setCargando(true);
 
@@ -308,20 +303,37 @@ export function useGuardarOrden() {
             socket.off("error_actualizar", onError);
         };
 
-        const onExito = () => { limpiar(); setCargando(false); onSuccess(); };
-        const onError = (data: any) => { limpiar(); setCargando(false); alert(data.MENSAJE); };
+        const onExito = () => { 
+            limpiar(); 
+            setCargando(false); 
+            onSuccess(); 
+        };
+        
+        const onError = (data: any) => { 
+            limpiar(); 
+            setCargando(false); 
+            // Mostramos el mensaje exacto que configuramos en Python (ej: "LA CAJA ESTÁ CERRADA")
+            alert(`Fallo al enviar a caja: ${data.MENSAJE}`); 
+        };
 
         socket.on("orden_actualizar", onExito);
         socket.on("error_actualizar", onError);
 
+        // Timeout de seguridad
         timeoutRef.current = setTimeout(() => {
-            limpiar(); setCargando(false); alert("Timeout de guardado superado.");
-        }, 120000);
+            limpiar(); 
+            setCargando(false); 
+            alert("Timeout de red: La terminal de caja no respondió a tiempo.");
+        }, 15000); // 15 segundos es más que suficiente para una red local
 
+        // Emitimos el evento que el backend ya espera para hacer la transferencia
         socket.emit("guardar_orden", payload);
     };
 
-    useEffect(() => () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); }, []);
-    return { guardar, cargando };
+    useEffect(() => {
+        return () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); };
+    }, []);
+
+    return { mandarACaja, cargando };
 }
 
