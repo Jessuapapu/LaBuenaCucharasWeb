@@ -1,5 +1,13 @@
 import { ResponsiveLine } from "@nivo/line";
 import { ResponsiveBar } from "@nivo/bar";
+import { useVentasPlatillos } from "../components/Hooks/hookPlatillos";
+import { useOrdenes } from "../components/Hooks/hookOrdenes";
+import jsPDF from "jspdf";
+import html2canvas  from "html2canvas"
+import { Download, Loader2, BarChart3 } from "lucide-react";
+import { useState, useRef } from "react";
+
+const {cargarVentasSemanales}=useOrdenes()
 
 // Datos simulados (Mock Data) para la demostración visual
 const dataVentas = [
@@ -19,8 +27,82 @@ const dataGastos = [
 ];
 
 export default function InformesPage() {
+  const [exportando, setExportando] = useState(false);
+  const areaReporteRef = useRef<HTMLDivElement>(null);
+
+  const handleExportarPDF = async () => {
+    if (!areaReporteRef.current || exportando) return;
+
+    try {
+      setExportando(true);
+      const elemento = areaReporteRef.current;
+
+      // Captura el área de informes con escala para alta resolución
+      const canvas = await html2canvas(elemento, {
+        scale: 2, 
+        useCORS: true,
+        backgroundColor: "#030712", // Sincronizado con el fondo oscuro de Tailwind (bg-gray-950 o similar)
+        logging: false,
+        onclone: (documentoClonado) => {
+          // Asegura que los contenedores SVG mantengan visibilidad durante el renderizado estático
+          const svgElements = documentoClonado.querySelectorAll("svg");
+          svgElements.forEach((svg) => {
+            svg.setAttribute("focusable", "false");
+          });
+        }
+      });
+
+      const imgData = canvas.toDataURL("image/png");
+      
+      // Crear PDF en formato Carta (A4 u Oficio opcional)
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "letter"
+      });
+
+      const anchoPDF = pdf.internal.pageSize.getWidth();
+      const altoPDF = (canvas.height * anchoPDF) / canvas.width;
+
+      // Inyectar captura escalada
+      pdf.addImage(imgData, "PNG", 0, 0, anchoPDF, altoPDF);
+      
+      const fechaHoy = new Date().toISOString().split('T')[0];
+      pdf.save(`Reporte_Gerencial_${fechaHoy}.pdf`);
+
+    } catch (error) {
+      console.error("Error al compilar el reporte PDF:", error);
+    } finally {
+      setExportando(false);
+    }
+  };
   return (
-    <div className="space-y-8 animate-in fade-in duration-700 pb-10">
+    <div className="space-y-6 max-w-7xl mx-auto pb-10">
+      {/* Barra de Acciones Superior (Fuera del área de impresión) */}
+      <div className="flex justify-end items-center">
+        <button
+          type="button"
+          onClick={handleExportarPDF}
+          disabled={exportando}
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold tracking-wide border transition-all shadow-lg
+            ${exportando 
+              ? "bg-slate-800 border-slate-700 text-slate-500 cursor-not-allowed" 
+              : "bg-blue-600 border-blue-500 text-white hover:bg-blue-500 active:scale-95"
+            }`}
+        >
+          {exportando ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Compilando Datos...
+            </>
+          ) : (
+            <>
+              <Download className="w-4 h-4" />
+              Exportar Informe General
+            </>
+          )}
+        </button>
+      </div>
       
       {/* Header */}
       <div className="bg-gray-900 p-8 rounded-2xl border border-gray-800 shadow-2xl relative overflow-hidden">
@@ -42,7 +124,7 @@ export default function InformesPage() {
             </h3>
             <div className="h-80 w-full">
                 <ResponsiveLine
-                    data={dataVentas}
+                    data={cargarVentasSemanales}
                     margin={{ top: 20, right: 20, bottom: 50, left: 50 }}
                     xScale={{ type: "point" }}
                     yScale={{ type: "linear", min: "auto", max: "auto", stacked: true, reverse: false }}

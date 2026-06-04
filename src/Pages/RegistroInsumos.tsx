@@ -72,10 +72,9 @@ export default function RegistrosPage() {
                 <Cardstockmin
                   key={item.idRegistro}
                   nombre={item.nombre}
-                  tipo={"Ingredientes"} //Para mientras a que no de errror porque hay que mapear bien
+                  tipo={item.tipo=== "INGREDIENTE" ? "Ingredientes" : "Insumo" as "Insumo" | "Ingredientes"} 
                   stockactual={item.cantidad_actual || 0}
                   stockmin={typeof item.stock_minimo === "number" ? item.stock_minimo : 0}
-                  // Puedes pasarle 'alerta.colorClase' o 'alerta.textoEstado' si tu Cardstockmin los admite para estilizado dinámico
                 />
               );
             })}

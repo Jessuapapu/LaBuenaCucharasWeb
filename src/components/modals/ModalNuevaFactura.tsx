@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { Check, User, Search, Calendar, Trash2, Download,
-   Layers, Loader2, ShieldAlert} from "lucide-react";
+   Layers, Loader2, ShieldAlert, FileText, ArrowRight} from "lucide-react";
 import { useFactura } from "../Hooks/hookFacturas";
 //import { useClientes } from "../Hooks/hookClientes";
 import type { ModalNuevaFacturaProps } from "../../interfaces/Ordenes";
@@ -155,86 +155,86 @@ const NoFacturable = useMemo(() => {
   
 
   return (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm animate-fade-in">
-     <div className="fixed inset-0 z-20" onClick={() => setmostarselector(false)} />
-      <div className="bg-slate-900 rounded-3xl text-white max-w-4xl w-full border border-slate-700 shadow-2xl overflow-hidden flex flex-col md:flex-row z-30">
-        
-        {/* LADO IZQUIERDO: FORMULARIO */}
-        <form onSubmit={handleSubmit} className="p-6 md:p-8 flex-1 border-b md:border-b-0 md:border-r border-slate-800 flex flex-col justify-between">
-          <div className="space-y-5">
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="fixed inset-0 z-20" onClick={() => setmostarselector(false)} />
+      
+      <div className="bg-slate-900 rounded-3xl text-white max-w-5xl w-full border border-slate-700 shadow-2xl overflow-hidden flex flex-col md:flex-row z-30 transition-all duration-500">
+  
+        <form onSubmit={handleSubmit} className="p-6 md:p-8 flex-1 border-b md:border-b-0 md:border-r border-slate-800 flex flex-col justify-between max-h-[85vh] overflow-y-auto custom-scrollbar">
+          <div className="space-y-6">
             <header>
-              <h2 className="text-2xl font-black text-white uppercase tracking-tighter flex items-center gap-2">
-                {idFactura ? "Modificar Factura" : "Emisión de Factura"}
+              <span className="text-[10px] font-mono tracking-widest text-blue-400 uppercase bg-blue-900/20 px-2.5 py-1 rounded-md font-bold">
+                {idFactura ? "Modo Edición" : "Módulo de Facturación"}
+              </span>
+              <h2 className="text-2xl font-black text-white uppercase tracking-tighter mt-2 flex items-center gap-2">
+                {idFactura ? `Modificar Factura #${idFactura}` : "Emisión de Factura"}
               </h2>
-              <p className="text-slate-400 text-sm">
-                {idFactura ? `Editando registro fiscal de la Factura #${idFactura}` : "Emisión de comprobantes y órdenes de cobro corporativo"}
-              </p>
             </header>
 
             {error && (
-              <div className="p-3 bg-red-950/50 border border-red-800 text-red-400 text-xs rounded-xl text-center font-semibold animate-shake">
+              <div className="p-3 bg-red-950/50 border border-red-800 text-red-400 text-xs rounded-xl text-center font-semibold">
                 {error}
               </div>
             )}
-            {/* ALERTA DE BLOQUEO DE FACTURACIÓN */}
-            {NoFacturable && (
-              <div className="p-3 bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs rounded-xl flex items-center gap-2 font-medium animate-fade-in">
-                <ShieldAlert size={16} className="shrink-0 text-amber-500" />
-                <span>Este cliente está marcado como <strong>No Facturable</strong>. El procesamiento de cobro está restringido.</span>
-              </div>
-            )}
-              
-            {/* SELECTOR BUSCADOR PERSONALIZADO DE CLIENTE */}
-             <div className="space-y-1 relative z-40" onClick={(e) => e.stopPropagation()}>
-                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                  <User size={12} className="text-blue-500" /> Selector de Cliente Relacional
-                </label>
-                <div className="relative">
-                  <Search className="absolute left-3.5 top-3.5 text-slate-500" size={16} />
-                  <input
-                    type="text"
-                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-950 border border-slate-800 focus:border-blue-500 outline-none text-sm transition-colors text-white font-medium cursor-pointer"
-                    placeholder="Haga clic para buscar o seleccionar..."
-                    value={BusquedaCliente}
-                    onChange={(e) => {
-                      setBusquedaCliente(e.target.value);
-                      setmostarselector(true);
-                    }}
-                    onFocus={() => setmostarselector(true)}
-                  />
-                  {isFetching && (
-                    <Loader2 className="absolute right-3 top-3.5 text-blue-500 animate-spin" size={16} />
-                  )}
-                </div>
 
-                {/* Dropdown flotante */}
-                {mostarSelector && (
-                  <div className="absolute z-50 w-full mt-1 bg-slate-950 border border-slate-800 rounded-xl shadow-2xl max-h-48 overflow-y-auto divide-y divide-slate-900 custom-scrollbar">
-                    {clientesFiltrados.length > 0 ? (
-                      clientesFiltrados.map((cliente) => (
-                        <div
-                          key={cliente.IdCliente}
-                          onClick={() => handleSeleccioncliente(cliente.NombreCliente)}
-                          className="px-4 py-3 text-sm text-slate-300 hover:bg-blue-600 hover:text-white cursor-pointer font-medium transition-colors flex justify-between items-center"
-                        >
-                          <span>{cliente.NombreCliente}</span>
-                          <span className="text-[10px] bg-slate-900 text-slate-400 px-2 py-0.5 rounded-md font-mono">ID: {cliente.IdCliente}</span>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="px-4 py-3 text-xs text-slate-500 text-center italic">Ningún cliente coincide con la búsqueda</div>
-                    )}
-                  </div>
+            {/* SELECCIÓN DEL CLIENTE */}
+            <div className="space-y-2 relative z-40" onClick={(e) => e.stopPropagation()}>
+              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
+                <User size={12} className="text-blue-500" /> Seleccion de cliente
+              </label>
+              <div className="relative">
+                <Search className="absolute left-3.5 top-3.5 text-slate-500" size={16} />
+                <input
+                  type="text"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-950 border border-slate-800 focus:border-blue-500 outline-none text-sm transition-colors text-white font-medium"
+                  placeholder="Escriba o haga clic para desplegar catálogo de clientes..."
+                  value={BusquedaCliente}
+                  onChange={(e) => {
+                    setBusquedaCliente(e.target.value);
+                    setmostarselector(true);
+                  }}
+                  onFocus={() => setmostarselector(true)}
+                />
+                {isFetching && (
+                  <Loader2 className="absolute right-3 top-3.5 text-blue-500 animate-spin" size={16} />
                 )}
               </div>
-              
 
-            {/* CONTENEDOR DE DOCUMENTOS PENDIENTES */}
-            {idClienteDetectado && !NoFacturable &&(
-              <div className="bg-slate-950 border border-slate-800 rounded-2xl p-4 relative z-10 animate-fade-in">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1">
-                    <Layers size={12}/> Órdenes Activas en Sistema
+              {/* Dropdown de Clientes */}
+              {mostarSelector && (
+                <div className="absolute z-50 w-full mt-1 bg-slate-950 border border-slate-800 rounded-xl shadow-2xl max-h-48 overflow-y-auto divide-y divide-slate-900 custom-scrollbar">
+                  {clientesFiltrados.length > 0 ? (
+                    clientesFiltrados.map((cliente) => (
+                      <div
+                        key={cliente.IdCliente}
+                        onClick={() => handleSeleccioncliente(cliente.NombreCliente)}
+                        className="px-4 py-3 text-sm text-slate-300 hover:bg-blue-600 hover:text-white cursor-pointer font-medium transition-colors flex justify-between items-center"
+                      >
+                        <span>{cliente.NombreCliente}</span>
+                        <span className="text-[10px] bg-slate-900 text-slate-400 px-2 py-0.5 rounded-md font-mono">ID: {cliente.IdCliente}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="px-4 py-3 text-xs text-slate-500 text-center italic">Ningún cliente coincide con los registros</div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* ALERTA DE BLOQUEO DE FACTURACIÓN */}
+            {NoFacturable && (
+              <div className="p-4 bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs rounded-xl flex items-center gap-3 font-medium">
+                <ShieldAlert size={20} className="shrink-0 text-amber-500" />
+                <span>Este cliente está marcado como <strong>No Facturable (Comedor/Exporáneo)</strong>. Use los registros de control interno para su gestión.</span>
+              </div>
+            )}
+
+            {/*CONTENEDOR DE DOCUMENTOS PENDIENTES */}
+            {idClienteDetectado && !NoFacturable ? (
+              <div className="bg-slate-950 border border-slate-800 rounded-2xl p-4 space-y-3 animate-in fade-in duration-300">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold uppercase tracking-wider text-blue-400 flex items-center gap-1">
+                    <Layers size={12}/> 2. Seleccione la Orden a Facturar
                   </span>
                   {facturaData.idOrdenes.length > 0 && (
                     <button
@@ -242,46 +242,73 @@ const NoFacturable = useMemo(() => {
                       onClick={limpiarSeleccionDocumentos}
                       className="text-xs flex items-center gap-1 text-red-400 hover:text-red-300 font-semibold transition-colors"
                     >
-                      <Trash2 size={12} /> Limpiar Todo
+                      <Trash2 size={12} /> Limpiar Selección
                     </button>
                   )}
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-36 overflow-y-auto pr-1 custom-scrollbar">
-                  {isFetching ? (
-                    <div className="col-span-2 text-center py-4 text-xs text-slate-500 font-medium">Buscando órdenes en tiempo real...</div>
-                  ) : pedidosPendientes.length > 0 ? (
-                    pedidosPendientes.map((pedido) => {
-                      const activo = facturaData.idOrdenes.includes(pedido.idOrden);
-                      return (
-                        <button
-                          key={pedido.idOrden}
-                          type="button"
-                          onClick={() => alternarSeleccionPedido(pedido)}
-                          className={`p-3 rounded-xl border text-left transition-all flex flex-col justify-between ${
-                            activo
-                              ? "border-blue-500 bg-blue-500/10 shadow-md shadow-blue-950/40"
-                              : "border-slate-800 bg-slate-900 hover:border-slate-700"
-                          }`}
-                        >
-                          <div className="flex justify-between items-center w-full">
-                            <span className="font-mono text-xs font-black text-slate-300">N° {pedido.idOrden}</span>
-                            {activo && <Check size={14} className="text-blue-400 font-black" />}
-                          </div>
-                          <div className="text-sm mt-2 text-emerald-400 font-extrabold font-mono">
-                            C$ {Number(pedido.monto_total).toFixed(2)}
-                          </div>
-                        </button>
-                      );
-                    })
-                  ) : (
-                    <div className="col-span-2 text-center py-4 text-xs text-slate-500 italic">El cliente no registra órdenes pendientes</div>
-                  )}
+                {/* Estructura de Tabla Semántica */}
+                <div className="overflow-x-auto border border-slate-900 rounded-xl max-h-44 overflow-y-auto custom-scrollbar">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="bg-slate-900 text-slate-400 text-[10px] uppercase font-bold tracking-wider border-b border-slate-800">
+                        <th className="p-3 text-center w-12">Estado</th>
+                        <th className="p-3 font-mono">N° Orden</th>
+                        <th className="p-3 text-right">Monto Total</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-900 text-xs">
+                      {isFetching ? (
+                        <tr>
+                          <td colSpan={3} className="text-center py-6 text-slate-500 font-medium">Sincronizando flujo de cuentas...</td>
+                        </tr>
+                      ) : pedidosPendientes.length > 0 ? (
+                        pedidosPendientes.map((pedido) => {
+                          const seleccionado = facturaData.idOrdenes.includes(pedido.idOrden);
+                          return (
+                            <tr 
+                              key={pedido.idOrden}
+                              onClick={() => alternarSeleccionPedido(pedido)}
+                              className={`cursor-pointer transition-colors ${
+                                seleccionado 
+                                  ? "bg-blue-600/10 text-white font-semibold" 
+                                  : "hover:bg-slate-800/50 text-slate-300"
+                              }`}
+                            >
+                              <td className="p-3 text-center">
+                                <div className={`w-4 h-4 mx-auto rounded flex items-center justify-center border transition-all ${
+                                  seleccionado ? "bg-blue-500 border-blue-400" : "border-slate-700 bg-slate-900"
+                                }`}>
+                                  {seleccionado && <Check size={10} className="text-slate-950 font-black" />}
+                                </div>
+                              </td>
+                              <td className="p-3 font-mono text-slate-400">
+                                <span className={seleccionado ? "text-blue-400 font-bold" : ""}>Order #{pedido.idOrden}</span>
+                              </td>
+                              <td className="p-3 text-right font-mono font-bold text-emerald-400">
+                                C$ {Number(pedido.monto_total).toFixed(2)}
+                              </td>
+                            </tr>
+                          );
+                        })
+                      ) : (
+                        <tr>
+                          <td colSpan={3} className="text-center py-6 text-slate-500 italic">El cliente no registra órdenes pendientes de cobro</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
                 </div>
+              </div>
+            ) : (
+              // Estado inicial vacío amigable
+              <div className="border border-dashed border-slate-800 rounded-2xl p-6 text-center text-slate-500 text-xs space-y-2">
+                <FileText className="mx-auto text-slate-600" size={24} />
+                <p>Debe seleccionar un cliente del catálogo para cargar los contratos disponibles.</p>
               </div>
             )}
 
-            {/* FILA DE PARÁMETROS: FECHA DE EMISIÓN */}
+            {/*DOCS FISCALES (Contratos) */}
             <div className="space-y-1">
               <label className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
                 <Calendar className="text-blue-500" size={12} /> Fecha de Emisión Fiscal
@@ -300,7 +327,7 @@ const NoFacturable = useMemo(() => {
             </div>
           </div>
 
-          {/* BOTONES DE FLUJO */}
+          {/* BOTONES DE ACCIÓN */}
           <div className="flex gap-3 pt-6 border-t border-slate-800/60 mt-6">
             <button
               type="button"
@@ -317,113 +344,121 @@ const NoFacturable = useMemo(() => {
                   ? "bg-slate-800 text-slate-500 cursor-not-allowed shadow-none"
                   : "bg-blue-500 hover:bg-blue-400 shadow-blue-950/20 active:scale-[0.99]"}`}
             >
-              {loading ? "PROCESANDO..." : idFactura ? "ACTUALIZAR REGISTRO" : "CONFIRMAR FACTURA"}
+              {loading ? "PROCESANDO..." : idFactura ? "ACTUALIZAR REGISTRO" : "CONFIRMAR Y GUARDAR"}
             </button>
           </div>
         </form>
 
         {/* PREVIEW TICKET DE FACTURA */}
-        <div className="bg-slate-950 p-6 md:p-8 w-full md:w-80 flex flex-col justify-between border-t md:border-t-0 border-slate-800">
-          <div>
-            <div className="flex justify-between items-center mb-4">
-            <h3 className="text-xs font-black text-slate-600 uppercase tracking-widest mb-4 text-center">Vista Previa Factura</h3>
-            {/* Botón interactivo de exportación */}
-              <button
-                type="button"
-                onClick={handleDescargarPDF}
-                disabled={!facturaData.idOrdenes|| facturaData.idOrdenes.length === 0 || Exportapdf}
-                className={`text-[10px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition-all border
-                  ${facturaData.idOrdenes.length === 0 || Exportapdf
-                    ? "border-slate-800 text-slate-600 bg-slate-900 cursor-not-allowed"
-                    : "border-blue-900/50 bg-blue-950/40 text-blue-400 hover:bg-blue-900/50 hover:text-blue-300"
-                  }`}
-              >
-                {Exportapdf ? (
-                  <>
-                    <Loader2 size={12} className="animate-spin" /> PROCESANDO...
-                  </>
-                ) : (
-                  <>
-                    <Download size={12} /> PDF
-                  </>
-                )}
-              </button>
-          </div>
-          <div ref={ticketpreviwe} className="bg-white rounded-xl p-5 text-slate-900 shadow-xl flex flex-col justify-between min-h-[380px]">
-            <div>
-                <div className="text-[10px] font-black text-slate-800 text-center tracking-tight">BUFFET LA BUENA CUCHARA</div>
-                <div className="text-[8px] text-slate-400 text-center mb-4 leading-normal italic">
-                  RUC: 0012308820012M <br /> Tel: 7799-1489
-                </div>
-                
-                <div className="space-y-1 text-[9px] font-medium text-slate-700">
-                  <div className="flex justify-between items-start">
-                    <span className="text-slate-400 uppercase font-bold text-[7px]">Cliente:</span>
-                    <span className="font-bold text-right text-slate-900 max-w-[130px] truncate">
-                      {facturaData.nombreCliente || "---"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-400 uppercase font-bold text-[7px]">Fecha Fiscal:</span>
-                    <span className="font-mono text-slate-900 font-bold">{facturaData.Fecha || "AAAA-MM-DD"}</span>
-                  </div>
-                  
-                <div className="border-b border-dashed border-slate-200 my-2" />
-                  
-                  <span className="text-slate-400 uppercase font-bold text-[7px] block mb-1">Órdenes Vinculadas:</span>
-                  <div className="max-h-24 overflow-y-auto pr-0.5 space-y-1 custom-scrollbar">
-                    {pedidosSeleccionados.length > 0 ? (
-                      pedidosSeleccionados.map((pedido) => (
-                        <div className="flex justify-between text-[9px] text-slate-800 bg-slate-50 p-1 rounded animate-fade-in" key={pedido.idOrden}>
-                          <span className="font-bold">N° {pedido.idOrden}</span>
-                          <span className="font-mono font-semibold">C$ {Number(pedido.monto_total).toFixed(2)}</span>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="text-[8px] text-slate-400 italic text-center py-2">Ninguna orden seleccionada</div>
-                    )}
-                  </div>
-              </div>
-            
-                <div className="border-b border-dashed border-slate-200 my-2" />
-                
-                {/* Desglose Unitario Real */}
-                <div className="text-[9px] space-y-0.5 text-slate-600 bg-slate-100/70 p-2 rounded">
-                  <div className="flex justify-between">
-                    <span>Órdenes Unidas:</span>
-                    <span className="font-bold text-slate-900">{facturaData.idOrdenes.length} U</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Costo Promedio/U:</span>
-                    <span className="font-mono text-slate-950 font-bold">C$ {precioUnitario.toFixed(2)}</span>
-                  </div>
-                </div>
-              </div>
-              
+        <div className="bg-slate-950 p-6 md:p-8 w-full md:w-80 flex flex-col justify-between border-t md:border-t-0 border-slate-800 transition-all">
+          {facturaData.idOrdenes.length > 0 && idClienteDetectado && !NoFacturable ? (
+            <div className="space-y-4 h-full flex flex-col justify-between animate-in zoom-in-95 duration-200">
               <div>
-                <div className="border-b border-dashed border-slate-200 my-2" />
-                <div className="text-center py-1">
-                  <div className="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Monto Total Neto</div>
-                  <div className="text-2xl font-black text-slate-950 tracking-tight">
-                    C$ {Number(subTotalVisual).toFixed(2)}
-                  </div>
-                  <div className="text-[6px] text-slate-400 uppercase">Córdobas (NIO)</div>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest">Vista Previa</h3>
+                  <button
+                    type="button"
+                    onClick={handleDescargarPDF}
+                    disabled={Exportapdf}
+                    className="text-[10px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition-all border border-blue-900/50 bg-blue-950/40 text-blue-400 hover:bg-blue-900/50 hover:text-blue-300"
+                  >
+                    {Exportapdf ? (
+                      <>
+                        <Loader2 size={12} className="animate-spin" /> PROCESANDO...
+                      </>
+                    ) : (
+                      <>
+                        <Download size={12} /> IMPRIMIR PDF
+                      </>
+                    )}
+                  </button>
                 </div>
 
-                <div className="pt-3 flex justify-center">
-                  <div className="text-[9px] font-black px-3 py-0.5 rounded-full bg-green-100 text-green-700 tracking-wide uppercase">
-                    {idFactura ? "EDITANDO" : "GENERADA"}
+                {/* NODO DEL TICKET */}
+                <div ref={ticketpreviwe} className="bg-white rounded-xl p-5 text-slate-900 shadow-xl flex flex-col justify-between min-h-[380px]">
+                  <div>
+                    <div className="text-[10px] font-black text-slate-800 text-center tracking-tight">BUFFET LA BUENA CUCHARA</div>
+                    <div className="text-[8px] text-slate-400 text-center mb-4 leading-normal italic">
+                      RUC: 0012308820012M <br /> Tel: 8452-8941
+                    </div>
+                    <div className="text-[8px] text-slate-400 text-center mb-4 leading-normal italic">Direccion: De donde fue el cine blanco 2 1/2 c. Oeste</div>
+                    <div className="text-[8px] text-slate-400 text-center mb-4 leading-normal italic">Email: BufetteLaBuenaCuchara@hotmail.com</div>
+                    
+                    <div className="space-y-1 text-[9px] font-medium text-slate-700">
+                      <div className="flex justify-between items-start">
+                        <span className="text-slate-400 uppercase font-bold text-[7px]">Cliente:</span>
+                        <span className="font-bold text-right text-slate-900 max-w-[130px] truncate">
+                          {facturaData.nombreCliente || BusquedaCliente || "---"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-400 uppercase font-bold text-[7px]">Fecha Fiscal:</span>
+                        <span className="font-mono text-slate-900 font-bold">{facturaData.Fecha || "AAAA-MM-DD"}</span>
+                      </div>
+                      
+                      <div className="border-b border-dashed border-slate-200 my-2" />
+                      
+                      <span className="text-slate-400 uppercase font-bold text-[7px] block mb-1">Órdenes Vinculadas:</span>
+                      <div className="max-h-24 overflow-y-auto pr-0.5 space-y-1 custom-scrollbar">
+                        {pedidosSeleccionados.map((pedido) => (
+                          <div className="flex justify-between text-[9px] text-slate-800 bg-slate-50 p-1 rounded" key={pedido.idOrden}>
+                            <span className="font-bold">N° {pedido.idOrden}</span>
+                            <span className="font-mono font-semibold">C$ {Number(pedido.monto_total).toFixed(2)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                
+                    <div className="border-b border-dashed border-slate-200 my-2" />
+                    
+                    <div className="text-[9px] space-y-0.5 text-slate-600 bg-slate-100/70 p-2 rounded">
+                      <div className="flex justify-between">
+                        <span>Órdenes Unidas:</span>
+                        <span className="font-bold text-slate-900">{facturaData.idOrdenes.length} U</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Costo Promedio/U:</span>
+                        <span className="font-mono text-slate-950 font-bold">C$ {precioUnitario.toFixed(2)}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <div className="border-b border-dashed border-slate-200 my-2" />
+                    <div className="text-center py-1">
+                      <div className="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Monto Total Neto</div>
+                      <div className="text-2xl font-black text-slate-950 tracking-tight">
+                        C$ {Number(subTotalVisual).toFixed(2)}
+                      </div>
+                      <div className="text-[6px] text-slate-400 uppercase">Córdobas (NIO)</div>
+                    </div>
+
+                    <div className="pt-3 flex justify-center">
+                      <div className="text-[9px] font-black px-3 py-0.5 rounded-full bg-green-100 text-green-700 tracking-wide uppercase">
+                        {idFactura ? "MODIFICACIÓN" : "LISTO PARA COBRO"}
+                      </div>
+                    </div>
                   </div>
                 </div>
+              </div>
+
+              <p className="text-[9px] text-slate-600 text-center italic leading-tight">
+                Verifique las órdenes cargadas antes de autorizar el cobro fiscal en el sistema.
+              </p>
+            </div>
+          ) : (
+            // Estado placeholder derecho bloqueado hasta que existan datos válidos
+            <div className="h-full flex flex-col items-center justify-center text-center text-slate-700 p-4 space-y-3">
+              <div className="p-4 rounded-full bg-slate-900 text-slate-600 border border-slate-800">
+                <ArrowRight size={24} />
+              </div>
+              <div>
+                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Paso 3: Vista Previa</h4>
+                <p className="text-[11px] text-slate-600 mt-1">El ticket se generará automáticamente cuando asigne una orden al cliente.</p>
               </div>
             </div>
-          </div>
-          
-          <p className="text-[9px] text-slate-600 mt-4 text-center italic leading-tight">
-            Verifique las órdenes cargadas antes de autorizar el cobro fiscal en el sistema.
-          </p>
+          )}
         </div>
-
       </div>
     </div>
   );
