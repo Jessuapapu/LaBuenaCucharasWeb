@@ -1,5 +1,5 @@
 
-import { useCallback, useState, useEffect, useMemo } from "react";
+import { useCallback, useState, useEffect, useMemo, useRef } from "react";
 //import type { OrdenVisualizar, ClienteOrden } from "../../interfaces/Ordenes";
 import type { Contrato } from "../../interfaces/Contratos";
 import { getContratosByCliente } from "../../services/contratos";
@@ -11,84 +11,130 @@ import { useSoloClientes } from "./hookClientes";
 
 //se utiliza porque typescript necesita saber que contenia el prev xd
 interface EstadoFacturaForm {
+  IdCliente: number | null;
   nombreCliente: string;
   idOrdenes: number[];
   idContrato: number | null;
   Cantidad: number;
   Fecha: string;
-  tipoDocumentoOrigen?: "ORDEN" | "CONTRATO";
-  MetodoPago?: "Efectivo"| "Transferencia"
-  CondicionPago?:"Contado"
+  tipoDocumentoOrigen: "ORDEN" | "CONTRATO";
+  MetodoPago: string;
+  CondicionPago: string;
 }
-export function useFactura(busquedaNombre: string | "", idFactura?: number) {
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [isFetching, setIsFetching] = useState(false);
-    const [pedidosPendientes, setPedidosPendientes] = useState<any[]>([]);
-    const [contratosActivos, setContratosActivos] = useState<Contrato[]>([]);
-    const [facturaData, setFacturaData] = useState<EstadoFacturaForm>({
-    nombreCliente: busquedaNombre,
+
+/**
+ * HOOK MAESTRO: useFactura
+ * Controla la lógica de facturación de órdenes/contratos eliminando ciclos infinitos.
+ */
+export function useFactura(busquedaNombre: string, idFactura?: number) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isFetching, setIsFetching] = useState(false);
+  const [pedidosPendientes, setPedidosPendientes] = useState<any[]>([]);
+  const [contratosActivos, setContratosActivos] = useState<Contrato[]>([]);
+  
+  // Catálogo de clientes global
+  const { clientes, loading: loadingClientes, error: errorClientes } = useSoloClientes();
+
+  // Control Semáforo: Evita que efectos asíncronos concurrentes pisen el estado de forma cíclica
+  const cargandoRef = useRef<string>("");
+
+  // Estado del formulario unificado bajo la interfaz rigurosa de datos
+  const [facturaData, setFacturaData] = useState<EstadoFacturaForm>({
+    IdCliente: null,
+    nombreCliente: "",
     idOrdenes: [],
     idContrato: null,
     Cantidad: 1,
-    Fecha: "",
-    tipoDocumentoOrigen: "ORDEN"
-    });
-     // Estado derivado para el Subtotal (calculado en tiempo real en el cliente)
-    //const [subTotalVisual, setSubTotalVisual] = useState<number>(0);
-    const { clientes, loading: loadingClientes, error: errorClientes } = useSoloClientes();
-    const clienteEncontrado = useMemo(() => {
-    if (!busquedaNombre.trim()) return null;
-    return clientes.find(c => 
-      c.NombreCliente.toLowerCase() === busquedaNombre.toLowerCase()
-    );
+    Fecha: new Date().toISOString().split("T")[0], // YYYY-MM-DD estándar
+    tipoDocumentoOrigen: "ORDEN",
+    MetodoPago: "Efectivo",
+    CondicionPago: "Contado"
+  });
+
+  // 1. Localización exacta del cliente en caché local (Evita disparar peticiones por cada tecla escrita)
+  const clienteEncontrado = useMemo(() => {
+    const query = busquedaNombre?.trim().toLowerCase();
+    if (!query) return null;
+    return clientes.find(c => c.NombreCliente?.toLowerCase() === query) || null;
   }, [busquedaNombre, clientes]);
 
-    // Busca las ordenes (las carga)
-    useEffect(() => {
+  // 2. Cargador controlado de documentos financieros por Cliente
+  useEffect(() => {
+    // Si la caja de texto está vacía o el cliente no existe en catálogo, reseteamos con seguridad
     if (!clienteEncontrado) {
       setPedidosPendientes([]);
-      setContratosActivos([])
-      setFacturaData({ nombreCliente: busquedaNombre, idOrdenes: [], idContrato: null, Cantidad: 1, Fecha:"" });
+      setContratosActivos([]);
+      cargandoRef.current = "";
+      setFacturaData(prev => ({
+        ...prev,
+        IdCliente: null,
+        nombreCliente: busquedaNombre,
+        idOrdenes: [],
+        idContrato: null,
+        Cantidad: 1
+      }));
       return;
     }
 
-    const cargarDatos = async () => {
+    // [CANDADO ANTI-BUCLE]: Si ya cargamos o estamos cargando este cliente, romper el flujo de renders
+    if (cargandoRef.current === clienteEncontrado.NombreCliente) {
+      return;
+    }
+
+    const abortController = new AbortController();
+
+    const ejecutarCargaDatos = async () => {
+      const nombreClienteAProcesar = clienteEncontrado.NombreCliente;
+      cargandoRef.current = nombreClienteAProcesar;
+      
       setIsFetching(true);
       setError(null);
-      const idCliente = clienteEncontrado.IdCliente;
+
       try {
-        setFacturaData(prev => ({
-          ...prev,
-          nombreCliente: clienteEncontrado.NombreCliente//
-        }));
-        const [ordenesData, contratosData] = await Promise.all([
-          obtenerOrdenporNombre(clienteEncontrado.NombreCliente).catch(() => []), // Si falla uno, no tumba al otro
-          getContratosByCliente(idCliente).catch(() => [])
+        // Ejecución paralela tolerante a fallos
+        const [ordenesRes, contratosRes] = await Promise.all([
+          obtenerOrdenporNombre(nombreClienteAProcesar).catch(() => []),
+          getContratosByCliente(clienteEncontrado.IdCliente).catch(() => [])
         ]);
 
-        setPedidosPendientes(ordenesData);
-        setContratosActivos(contratosData);
-        setError(null);
+        if (abortController.signal.aborted) return;
+
+        setPedidosPendientes(ordenesRes || []);
+        setContratosActivos(contratosRes || []);
+
+        // Sincronizar el estado del formulario en un único lote (Single state batch update)
+        setFacturaData(prev => {
+          // Si el cliente cambió drásticamente, limpiamos las órdenes del cliente anterior
+          const elClienteEsElMismo = prev.IdCliente === clienteEncontrado.IdCliente;
+          return {
+            ...prev,
+            IdCliente: clienteEncontrado.IdCliente,
+            nombreCliente: nombreClienteAProcesar,
+            idOrdenes: elClienteEsElMismo ? prev.idOrdenes : [],
+            idContrato: elClienteEsElMismo ? prev.idContrato : null
+          };
+        });
+
       } catch (err) {
-        setError("Error al cargar las órdenes del cliente seleccionado");
+        if (!abortController.signal.aborted) {
+          setError("Ocurrió un problema al mapear los saldos del cliente seleccionado.");
+        }
       } finally {
-        setIsFetching(false);
+        if (!abortController.signal.aborted) {
+          setIsFetching(false);
+        }
       }
     };
 
-    cargarDatos();
+    ejecutarCargaDatos();
+
+    return () => {
+      abortController.abort(); // Limpieza ante desmontajes rápidos de UI
+    };
   }, [clienteEncontrado]);
 
-  //const seleccionarCliente = useCallback((cliente: ClienteOrden) => {
-   // setFacturaData(prev => ({
-    //  ...prev,
-     // nombreCliente: cliente.nombre_cliente,
-     // idOrdenes: [], // Limpiamos órdenes previas de forma segura
-     // Cantidad: 1
-    //}));
-  //}, []);
-
+  // 3. Manejadores de Estado Memorizados (No recrean referencias en renders hijos)
   const cambiarTipoDocumentoOrigen = useCallback((tipo: "ORDEN" | "CONTRATO") => {
     setFacturaData(prev => ({
       ...prev,
@@ -108,28 +154,35 @@ export function useFactura(busquedaNombre: string | "", idFactura?: number) {
   }, []);
 
   const alternarSeleccionPedido = useCallback((pedido: any) => {
+    if (!pedido || !pedido.idOrden) return;
     setFacturaData(prev => {
-      const yaExiste = prev.idOrdenes.includes(pedido.idOrden);
-      const nuevasOrdenes = yaExiste
+      const existe = prev.idOrdenes.includes(pedido.idOrden);
+      const ordenesActualizadas = existe
         ? prev.idOrdenes.filter(id => id !== pedido.idOrden)
         : [...prev.idOrdenes, pedido.idOrden];
 
-      return {...prev, idOrdenes: nuevasOrdenes,
-        // Sincronización interna directa: Protege contra bucles de renders infinitos
-        Cantidad: nuevasOrdenes.length > 0 ? nuevasOrdenes.length : 1};
+      return {
+        ...prev,
+        idOrdenes: ordenesActualizadas,
+        Cantidad: ordenesActualizadas.length > 0 ? ordenesActualizadas.length : 1
+      };
     });
   }, []);
 
   const limpiarSeleccionDocumentos = useCallback(() => {
-    setFacturaData(prev => ({...prev, idOrdenes: [], Cantidad: 1}));
+    setFacturaData(prev => ({ ...prev, idOrdenes: [], Cantidad: 1 }));
   }, []);
 
+  // 4. Cálculos Derivados con Garantía de Tipado (Sin efectos secundarios)
   const pedidosSeleccionados = useMemo(() => {
+    if (!facturaData.idOrdenes.length) return [];
     return pedidosPendientes.filter(pedido => 
-      facturaData.idOrdenes.includes(pedido.idOrden));
+      facturaData.idOrdenes.includes(pedido.idOrden)
+    );
   }, [pedidosPendientes, facturaData.idOrdenes]);
 
   const contratoSeleccionadoData = useMemo(() => {
+    if (!facturaData.idContrato) return null;
     return contratosActivos.find(c => c.idContrato === facturaData.idContrato) || null;
   }, [contratosActivos, facturaData.idContrato]);
 
@@ -137,48 +190,45 @@ export function useFactura(busquedaNombre: string | "", idFactura?: number) {
     if (facturaData.tipoDocumentoOrigen === "CONTRATO") {
       return Number(contratoSeleccionadoData?.presupuesto || 0);
     }
-    return pedidosSeleccionados.reduce((acc, pedido) => 
-      acc + Number(pedido.monto_total || 0), 0);
+    return pedidosSeleccionados.reduce((sum, item) => sum + (Number(item.monto_total) || 0), 0);
   }, [pedidosSeleccionados, facturaData.tipoDocumentoOrigen, contratoSeleccionadoData]);
 
+  // 5. Orquestador de persistencia hacia Services (Post/Put)
   const guardarFactura = useCallback(async (
     payloadListo: PayloadFactura, 
     onSuccessCallback: (data: any) => void
   ) => {
+    // Protección estricta contra múltiples envíos por doble click
+    if (loading) return; 
+
     setLoading(true);
     setError(null);
-
     try {
       let respuesta;
       if (idFactura) {
-        // Ejecuta actualización vía PUT
-        respuesta = await actualizarFactura(idFactura,payloadListo);
+        respuesta = await actualizarFactura(idFactura, payloadListo);
       } else {
-        // Ejecuta inserción vía POST
         respuesta = await crearFactura(payloadListo);
       }
-
-      // Si todo sale bien, ejecutamos el callback que refresca la UI padre y cierra el modal
       onSuccessCallback(respuesta);
     } catch (err: any) {
-      console.error("Fallo crítico al guardar comprobante:", err);
-      setError(err.message || "Ocurrió un error inesperado al procesar la factura.");
+      console.error("Error en proceso de facturación:", err);
+      setError(err.message || "No se pudo procesar la factura en el servidor de base de datos.");
     } finally {
       setLoading(false);
     }
-  }, [idFactura]);
+  }, [idFactura, loading]);
 
   return {
     facturaData,
     setFacturaData,
     subTotalVisual,
-    //seleccionarCliente,
     contratosActivos,
     cambiarTipoDocumentoOrigen,
     contratoSeleccionadoData,
     seleccionarContrato,
     pedidosPendientes,
-    setPedidosPendientes, // Permite alimentar las órdenes externas si el modal las recibe por props
+    setPedidosPendientes,
     alternarSeleccionPedido,
     limpiarSeleccionDocumentos,
     pedidosSeleccionados,
@@ -187,7 +237,7 @@ export function useFactura(busquedaNombre: string | "", idFactura?: number) {
     error: error || errorClientes,
     guardarFactura,
     clientesCatalogo: clientes,
-    idClienteDetectado: clienteEncontrado?.IdCliente
+    idClienteDetectado: facturaData.IdCliente
   };
 }
 export function useFacturasPage() {

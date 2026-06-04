@@ -124,7 +124,7 @@ export default function InformesPage() {
             </h3>
             <div className="h-80 w-full">
                 <ResponsiveLine
-                    data={cargarVentasSemanales}
+                    data={dataVentas}
                     margin={{ top: 20, right: 20, bottom: 50, left: 50 }}
                     xScale={{ type: "point" }}
                     yScale={{ type: "linear", min: "auto", max: "auto", stacked: true, reverse: false }}

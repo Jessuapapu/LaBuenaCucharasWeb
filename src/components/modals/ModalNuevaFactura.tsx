@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { Check, User, Search, Calendar, Trash2, Download,
-   Layers, Loader2, ShieldAlert, FileText, ArrowRight} from "lucide-react";
+   Layers, Loader2, ShieldAlert, FileText, ArrowRight, X} from "lucide-react";
 import { useFactura } from "../Hooks/hookFacturas";
 //import { useClientes } from "../Hooks/hookClientes";
 import type { ModalNuevaFacturaProps } from "../../interfaces/Ordenes";
@@ -60,7 +60,7 @@ const NoFacturable = useMemo(() => {
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "");
 
-    const esComedorOExporaneo = nombreNormalizado.includes("exporaneo") || nombreNormalizado.includes("comedor");
+    const esComedorOExporaneo = nombreNormalizado.includes("EXPORANEO") || nombreNormalizado.includes("comedor");
 
     return esComedorOExporaneo;
   }, [BusquedaCliente]);
@@ -68,7 +68,7 @@ const NoFacturable = useMemo(() => {
   const clientesFiltrados = useMemo(() => {
     if (!BusquedaCliente.trim()) return clientesCatalogo;
     return clientesCatalogo.filter(cliente =>
-      cliente.NombreCliente.toLowerCase().includes(BusquedaCliente.toLowerCase())
+      cliente.NombreCliente?.toLowerCase().includes(BusquedaCliente.toLowerCase())
     );
   }, [BusquedaCliente, clientesCatalogo]);
 
@@ -133,33 +133,57 @@ const NoFacturable = useMemo(() => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (loading || isFetching || facturaData.idOrdenes.length === 0|| !idClienteDetectado ) return; //si no hay id, nada
-    //el contrato
+    if (!idClienteDetectado || loading || isFetching) return;
+    
+    // Validación de documentos seleccionados según el origen
+    if (facturaData.tipoDocumentoOrigen === "ORDEN" && facturaData.idOrdenes.length === 0) {
+      alert("Debes seleccionar al menos una orden para facturar.");
+      return;
+    }
+    if (facturaData.tipoDocumentoOrigen === "CONTRATO" && !facturaData.idContrato) {
+      alert("Debes asociar un contrato activo.");
+      return;
+    }
+
     const payloadFiscal: PayloadFactura = {
       IdCliente: Number(idClienteDetectado),
-      Cantidad: Number(facturaData.Cantidad || 1),
+      Cantidad: Number(facturaData.Cantidad),
       Fecha: facturaData.Fecha,
-      MetodoPago: facturaData.MetodoPago || "EFECTIVO",
-      CondicionPago: facturaData.CondicionPago || "CONTADO",
-      tipoDocumentoOrigen: facturaData.tipoDocumentoOrigen || "ORDEN",
-      MONTOTOTAL: Number(subTotalVisual || 0),
+      MetodoPago: facturaData.MetodoPago,
+      CondicionPago: facturaData.CondicionPago,
+      tipoDocumentoOrigen: facturaData.tipoDocumentoOrigen,
+      MONTOTOTAL: Number(subTotalVisual),
       idOrdenes: facturaData.idOrdenes,
-      idContrato: facturaData.idContrato || null
+      idContrato: facturaData.idContrato
     };
 
-    guardarFactura(payloadFiscal, (data) => {
-      onSave(data); // Notifica el éxito a la tabla de Control de Facturación
-      onClose();    // Cierra el modal de forma limpia
+    guardarFactura(payloadFiscal, (respuesta) => {
+      onSave(respuesta); 
+      onClose();    
     });
   };
   
+  const botonDeshabilitado = 
+    loading || 
+    isFetching || 
+    !idClienteDetectado || 
+    facturaData.idOrdenes.length === 0 || 
+    NoFacturable;
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="fixed inset-0 z-20" onClick={() => setmostarselector(false)} />
+      {mostarSelector &&(
+        <div className="fixed inset-0 z-20" onClick={() => setmostarselector(false)} />
+      )}
       
       <div className="bg-slate-900 rounded-3xl text-white max-w-5xl w-full border border-slate-700 shadow-2xl overflow-hidden flex flex-col md:flex-row z-30 transition-all duration-500">
-  
+        <button 
+          type="button" 
+          onClick={onClose} 
+          className="absolute right-4 top-4 text-slate-400 hover:text-white p-1.5 rounded-xl hover:bg-slate-800 transition-colors z-40"
+        >
+          <X size={18} />
+        </button>
         <form onSubmit={handleSubmit} className="p-6 md:p-8 flex-1 border-b md:border-b-0 md:border-r border-slate-800 flex flex-col justify-between max-h-[85vh] overflow-y-auto custom-scrollbar">
           <div className="space-y-6">
             <header>
@@ -234,7 +258,7 @@ const NoFacturable = useMemo(() => {
               <div className="bg-slate-950 border border-slate-800 rounded-2xl p-4 space-y-3 animate-in fade-in duration-300">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold uppercase tracking-wider text-blue-400 flex items-center gap-1">
-                    <Layers size={12}/> 2. Seleccione la Orden a Facturar
+                    <Layers size={12}/>Seleccione la Orden a Facturar
                   </span>
                   {facturaData.idOrdenes.length > 0 && (
                     <button
@@ -338,7 +362,7 @@ const NoFacturable = useMemo(() => {
             </button>
             <button
               type="submit"
-              disabled={loading || isFetching || !idClienteDetectado || facturaData.idOrdenes.length === 0}
+              disabled={botonDeshabilitado}
               className={`flex-[2] py-3 rounded-xl font-black text-sm text-slate-950 tracking-wide transition-all uppercase shadow-lg
                 ${loading || isFetching || facturaData.idOrdenes.length === 0
                   ? "bg-slate-800 text-slate-500 cursor-not-allowed shadow-none"
