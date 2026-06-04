@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { Check, User, Search, Calendar, Trash2, Download,
-   Layers, Loader2, ShieldAlert, FileText, ArrowRight, X} from "lucide-react";
+   Layers, Loader2, ShieldAlert, FileText, ArrowRight, X, CreditCard} from "lucide-react";
 import { useFactura } from "../Hooks/hookFacturas";
 //import { useClientes } from "../Hooks/hookClientes";
 import type { ModalNuevaFacturaProps } from "../../interfaces/Ordenes";
@@ -162,7 +162,6 @@ const NoFacturable = useMemo(() => {
       onClose();    
     });
   };
-  
   const botonDeshabilitado = 
     loading || 
     isFetching || 
@@ -172,11 +171,14 @@ const NoFacturable = useMemo(() => {
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm animate-in fade-in duration-200">
-      {mostarSelector &&(
+      {/* Capa trasera para cerrar el selector de clientes al hacer clic fuera */}
+      {mostarSelector && (
         <div className="fixed inset-0 z-20" onClick={() => setmostarselector(false)} />
       )}
       
-      <div className="bg-slate-900 rounded-3xl text-white max-w-5xl w-full border border-slate-700 shadow-2xl overflow-hidden flex flex-col md:flex-row z-30 transition-all duration-500">
+      <div className="bg-slate-900 rounded-3xl text-white max-w-5xl w-full border border-slate-700 shadow-2xl overflow-hidden flex flex-col md:flex-row z-30 transition-all duration-500 relative">
+        
+        {/* Botón de cierre absoluto en la esquina superior derecha */}
         <button 
           type="button" 
           onClick={onClose} 
@@ -184,6 +186,7 @@ const NoFacturable = useMemo(() => {
         >
           <X size={18} />
         </button>
+  
         <form onSubmit={handleSubmit} className="p-6 md:p-8 flex-1 border-b md:border-b-0 md:border-r border-slate-800 flex flex-col justify-between max-h-[85vh] overflow-y-auto custom-scrollbar">
           <div className="space-y-6">
             <header>
@@ -202,15 +205,15 @@ const NoFacturable = useMemo(() => {
             )}
 
             {/* SELECCIÓN DEL CLIENTE */}
-            <div className="space-y-2 relative z-40" onClick={(e) => e.stopPropagation()}>
+            <div className="space-y-2 relative z-40">
               <label className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                <User size={12} className="text-blue-500" /> Seleccion de cliente
+                <User size={12} className="text-blue-500" /> Selección de cliente
               </label>
               <div className="relative">
                 <Search className="absolute left-3.5 top-3.5 text-slate-500" size={16} />
                 <input
                   type="text"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-950 border border-slate-800 focus:border-blue-500 outline-none text-sm transition-colors text-white font-medium"
+                  className="w-full pl-10 pr-10 py-3 rounded-xl bg-slate-950 border border-slate-800 focus:border-blue-500 outline-none text-sm transition-colors text-white font-medium"
                   placeholder="Escriba o haga clic para desplegar catálogo de clientes..."
                   value={BusquedaCliente}
                   onChange={(e) => {
@@ -247,18 +250,18 @@ const NoFacturable = useMemo(() => {
 
             {/* ALERTA DE BLOQUEO DE FACTURACIÓN */}
             {NoFacturable && (
-              <div className="p-4 bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs rounded-xl flex items-center gap-3 font-medium">
+              <div className="p-4 bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs rounded-xl flex items-center gap-3 font-medium animate-in fade-in">
                 <ShieldAlert size={20} className="shrink-0 text-amber-500" />
                 <span>Este cliente está marcado como <strong>No Facturable (Comedor/Exporáneo)</strong>. Use los registros de control interno para su gestión.</span>
               </div>
             )}
 
-            {/*CONTENEDOR DE DOCUMENTOS PENDIENTES */}
+            {/* CONTENEDOR DE DOCUMENTOS PENDIENTES */}
             {idClienteDetectado && !NoFacturable ? (
               <div className="bg-slate-950 border border-slate-800 rounded-2xl p-4 space-y-3 animate-in fade-in duration-300">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold uppercase tracking-wider text-blue-400 flex items-center gap-1">
-                    <Layers size={12}/>Seleccione la Orden a Facturar
+                    <Layers size={12}/> Seleccione las Órdenes a Facturar
                   </span>
                   {facturaData.idOrdenes.length > 0 && (
                     <button
@@ -271,7 +274,6 @@ const NoFacturable = useMemo(() => {
                   )}
                 </div>
 
-                {/* Estructura de Tabla Semántica */}
                 <div className="overflow-x-auto border border-slate-900 rounded-xl max-h-44 overflow-y-auto custom-scrollbar">
                   <table className="w-full text-left border-collapse">
                     <thead>
@@ -282,11 +284,7 @@ const NoFacturable = useMemo(() => {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-900 text-xs">
-                      {isFetching ? (
-                        <tr>
-                          <td colSpan={3} className="text-center py-6 text-slate-500 font-medium">Sincronizando flujo de cuentas...</td>
-                        </tr>
-                      ) : pedidosPendientes.length > 0 ? (
+                      {pedidosPendientes.length > 0 ? (
                         pedidosPendientes.map((pedido) => {
                           const seleccionado = facturaData.idOrdenes.includes(pedido.idOrden);
                           return (
@@ -307,7 +305,7 @@ const NoFacturable = useMemo(() => {
                                 </div>
                               </td>
                               <td className="p-3 font-mono text-slate-400">
-                                <span className={seleccionado ? "text-blue-400 font-bold" : ""}>Order #{pedido.idOrden}</span>
+                                <span className={seleccionado ? "text-blue-400 font-bold" : ""}>Orden #{pedido.idOrden}</span>
                               </td>
                               <td className="p-3 text-right font-mono font-bold text-emerald-400">
                                 C$ {Number(pedido.monto_total).toFixed(2)}
@@ -325,30 +323,58 @@ const NoFacturable = useMemo(() => {
                 </div>
               </div>
             ) : (
-              // Estado inicial vacío amigable
-              <div className="border border-dashed border-slate-800 rounded-2xl p-6 text-center text-slate-500 text-xs space-y-2">
-                <FileText className="mx-auto text-slate-600" size={24} />
-                <p>Debe seleccionar un cliente del catálogo para cargar los contratos disponibles.</p>
-              </div>
+              !NoFacturable && (
+                <div className="border border-dashed border-slate-800 rounded-2xl p-6 text-center text-slate-500 text-xs space-y-2">
+                  <FileText className="mx-auto text-slate-600" size={24} />
+                  <p>Debe seleccionar un cliente del catálogo para cargar sus cuentas pendientes.</p>
+                </div>
+              )
             )}
 
-            {/*DOCS FISCALES (Contratos) */}
-            <div className="space-y-1">
-              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                <Calendar className="text-blue-500" size={12} /> Fecha de Emisión Fiscal
-              </label>
-              <div className="relative flex items-center">
-                <Calendar className="absolute left-3.5 text-slate-500 pointer-events-none" size={16} />
-                <input
-                  type="date"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 focus:border-blue-500 outline-none text-sm transition-colors text-slate-200 font-mono"
-                  style={{ colorScheme: "dark" }}
-                  value={facturaData.Fecha || ""}
-                  onChange={(e) => setFacturaData(prev => ({ ...prev, Fecha: e.target.value }))}
-                  required
-                />
+            {/* DATOS COMPLEMENTARIOS FISCALES (FECHA, MÉTODO Y CONDICIÓN) */}
+            {idClienteDetectado && !NoFacturable && (
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 animate-in fade-in">
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-slate-400 uppercase flex items-center gap-1">
+                    <Calendar className="text-blue-500" size={12} /> Emisión
+                  </label>
+                  <input
+                    type="date"
+                    className="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono text-white focus:border-blue-500 outline-none"
+                    style={{ colorScheme: "dark" }}
+                    value={facturaData.Fecha || ""}
+                    onChange={(e) => setFacturaData(prev => ({ ...prev, Fecha: e.target.value }))}
+                    required
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-slate-400 uppercase flex items-center gap-1">
+                    <CreditCard className="text-blue-500" size={12} /> Método Pago
+                  </label>
+                  <select
+                    className="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:border-blue-500 outline-none"
+                    value={facturaData.MetodoPago}
+                    onChange={(e) => setFacturaData(prev => ({ ...prev, MetodoPago: e.target.value }))}
+                  >
+                    <option value="Efectivo">Efectivo</option>
+                    <option value="Transferencia">Transferencia</option>
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-slate-400 uppercase flex items-center gap-1">
+                    <FileText className="text-blue-500" size={12} /> Condición
+                  </label>
+                  <select
+                    className="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:border-blue-500 outline-none"
+                    value={facturaData.CondicionPago}
+                    onChange={(e) => setFacturaData(prev => ({ ...prev, CondicionPago: e.target.value }))}
+                  >
+                    <option value="Contado">Contado</option>
+                    <option value="Crédito">Crédito</option>
+                  </select>
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* BOTONES DE ACCIÓN */}
@@ -364,7 +390,7 @@ const NoFacturable = useMemo(() => {
               type="submit"
               disabled={botonDeshabilitado}
               className={`flex-[2] py-3 rounded-xl font-black text-sm text-slate-950 tracking-wide transition-all uppercase shadow-lg
-                ${loading || isFetching || facturaData.idOrdenes.length === 0
+                ${botonDeshabilitado
                   ? "bg-slate-800 text-slate-500 cursor-not-allowed shadow-none"
                   : "bg-blue-500 hover:bg-blue-400 shadow-blue-950/20 active:scale-[0.99]"}`}
             >
@@ -399,14 +425,14 @@ const NoFacturable = useMemo(() => {
                 </div>
 
                 {/* NODO DEL TICKET */}
-                <div ref={ticketpreviwe} className="bg-white rounded-xl p-5 text-slate-900 shadow-xl flex flex-col justify-between min-h-[380px]">
+                <div ref={ticketpreviwe} className="bg-white rounded-xl p-5 text-slate-900 shadow-xl flex flex-col justify-between min-h-[390px]">
                   <div>
                     <div className="text-[10px] font-black text-slate-800 text-center tracking-tight">BUFFET LA BUENA CUCHARA</div>
-                    <div className="text-[8px] text-slate-400 text-center mb-4 leading-normal italic">
+                    <div className="text-[8px] text-slate-400 text-center mb-2 leading-normal italic">
                       RUC: 0012308820012M <br /> Tel: 8452-8941
                     </div>
-                    <div className="text-[8px] text-slate-400 text-center mb-4 leading-normal italic">Direccion: De donde fue el cine blanco 2 1/2 c. Oeste</div>
-                    <div className="text-[8px] text-slate-400 text-center mb-4 leading-normal italic">Email: BufetteLaBuenaCuchara@hotmail.com</div>
+                    <div className="text-[7px] text-slate-400 text-center mb-1 leading-normal italic">De donde fue el cine blanco 2 1/2 c. Oeste</div>
+                    <div className="text-[7px] text-slate-400 text-center mb-4 leading-normal italic">BufetteLaBuenaCuchara@hotmail.com</div>
                     
                     <div className="space-y-1 text-[9px] font-medium text-slate-700">
                       <div className="flex justify-between items-start">
@@ -418,6 +444,10 @@ const NoFacturable = useMemo(() => {
                       <div className="flex justify-between">
                         <span className="text-slate-400 uppercase font-bold text-[7px]">Fecha Fiscal:</span>
                         <span className="font-mono text-slate-900 font-bold">{facturaData.Fecha || "AAAA-MM-DD"}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-400 uppercase font-bold text-[7px]">T. Pago:</span>
+                        <span className="text-slate-900 font-bold">{facturaData.CondicionPago} / {facturaData.MetodoPago}</span>
                       </div>
                       
                       <div className="border-b border-dashed border-slate-200 my-2" />
@@ -471,14 +501,17 @@ const NoFacturable = useMemo(() => {
               </p>
             </div>
           ) : (
-            // Estado placeholder derecho bloqueado hasta que existan datos válidos
             <div className="h-full flex flex-col items-center justify-center text-center text-slate-700 p-4 space-y-3">
               <div className="p-4 rounded-full bg-slate-900 text-slate-600 border border-slate-800">
                 <ArrowRight size={24} />
               </div>
               <div>
-                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Paso 3: Vista Previa</h4>
-                <p className="text-[11px] text-slate-600 mt-1">El ticket se generará automáticamente cuando asigne una orden al cliente.</p>
+                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Vista Previa del Ticket</h4>
+                <p className="text-[11px] text-slate-600 mt-1">
+                  {NoFacturable 
+                    ? "Bloqueado: El cliente seleccionado no permite facturación legal." 
+                    : "El ticket se generará automáticamente cuando asigne una orden al cliente."}
+                </p>
               </div>
             </div>
           )}
