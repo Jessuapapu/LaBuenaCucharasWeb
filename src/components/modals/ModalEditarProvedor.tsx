@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { Proveedor } from "../../interfaces/proveedor";
+import type { Proveedor } from "../../interfaces/Proveedor";
 import { useEditarProveedor } from "../Hooks/hookProveedor"; 
 
 interface ModalEditarProveedorProps {

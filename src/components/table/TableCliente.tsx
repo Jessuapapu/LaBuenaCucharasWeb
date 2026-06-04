@@ -164,7 +164,7 @@ export default function TablaClientes({ data }: TablaClientesProps) {
       </div>
 
       {showCreate && <ModalNuevoCliente onClose={() => setShowCreate(false)} />}
-      {selectedCliente && <ModalEditarCliente cliente={selectedCliente} onClose={() => setSelectedCliente(null)} onSave={handleUpdate} />}
+      {selectedCliente && <ModalEditarCliente cliente={selectedCliente} onClose={() => setSelectedCliente(null)} onSuccess={()=>handleUpdate} />}
     </div>
   );
 }

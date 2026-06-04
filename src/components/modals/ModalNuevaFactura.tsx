@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { Check, User, Search, Calendar, Trash2, Download,
-   Layers, Loader2} from "lucide-react";
+   Layers, Loader2, ShieldAlert} from "lucide-react";
 import { useFactura } from "../Hooks/hookFacturas";
 //import { useClientes } from "../Hooks/hookClientes";
 import type { ModalNuevaFacturaProps } from "../../interfaces/Ordenes";
@@ -52,6 +52,18 @@ export default function ModalNuevaFactura({
  // }));
 //}, [facturaData.idOrdenes.length, setFacturaData]);
 
+const NoFacturable = useMemo(() => {
+    if (!BusquedaCliente) return false;
+    
+    // revisa si hay mayusculas o minusculas
+    const nombreNormalizado = BusquedaCliente.toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+
+    const esComedorOExporaneo = nombreNormalizado.includes("exporaneo") || nombreNormalizado.includes("comedor");
+
+    return esComedorOExporaneo;
+  }, [BusquedaCliente]);
   // Filtrado predictivo de clientes en tiempo real
   const clientesFiltrados = useMemo(() => {
     if (!BusquedaCliente.trim()) return clientesCatalogo;
@@ -121,7 +133,7 @@ export default function ModalNuevaFactura({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (loading || isFetching || facturaData.idOrdenes.length === 0|| !idClienteDetectado) return; //si no hay id, nada
+    if (loading || isFetching || facturaData.idOrdenes.length === 0|| !idClienteDetectado ) return; //si no hay id, nada
     //el contrato
     const payloadFiscal: PayloadFactura = {
       IdCliente: Number(idClienteDetectado),
@@ -162,6 +174,13 @@ export default function ModalNuevaFactura({
             {error && (
               <div className="p-3 bg-red-950/50 border border-red-800 text-red-400 text-xs rounded-xl text-center font-semibold animate-shake">
                 {error}
+              </div>
+            )}
+            {/* ALERTA DE BLOQUEO DE FACTURACIÓN */}
+            {NoFacturable && (
+              <div className="p-3 bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs rounded-xl flex items-center gap-2 font-medium animate-fade-in">
+                <ShieldAlert size={16} className="shrink-0 text-amber-500" />
+                <span>Este cliente está marcado como <strong>No Facturable</strong>. El procesamiento de cobro está restringido.</span>
               </div>
             )}
               
@@ -211,7 +230,7 @@ export default function ModalNuevaFactura({
               
 
             {/* CONTENEDOR DE DOCUMENTOS PENDIENTES */}
-            {idClienteDetectado && (
+            {idClienteDetectado && !NoFacturable &&(
               <div className="bg-slate-950 border border-slate-800 rounded-2xl p-4 relative z-10 animate-fade-in">
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1">

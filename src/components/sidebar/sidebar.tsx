@@ -83,7 +83,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, logoSrc, business
                 {/* Nuevo Componente de Logo */}
                 <LogoDisplay /> 
 
-                <nav className="flex-1 px-2 py-6 space-y-2">
+                <nav className="flex-1 px-2 py-6 space-y-2 overflow-y-auto custom-scrollbar">
                     <LinkItem to="/" icon={<span role="img" aria-label="Inicio">🏠</span>} label="Inicio" />
                     <LinkItem to= "/ordenes" icon={<span role="img" aria-label="Ordenes">📝</span>} label="Ordenes" />
                     <LinkItem to="/Pedidos" icon={<span role="img" aria-label="Pedidos">📝</span>} label="Pedidos" />
