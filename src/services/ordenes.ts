@@ -44,11 +44,7 @@ export async function obtenerTodosLosPlatillos(): Promise<Platillo[]> {
 export async function getOrdenesByCliente(idCliente: number) {
     const res = await fetch(`${API_URL}/clientes/detalles/${idCliente}`, {
         method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            // Inyección de seguridad
-            ...(token ? { "Authorization": `Bearer ${token}` } : {})
-        }
+        headers: getHeaders()
     });
 
     if (!res.ok) throw new Error("Error al obtener ordenes");
@@ -128,7 +124,7 @@ export async function getVentasSemanales(signal?: AbortSignal): Promise<any[]> {
 }
 
 export async function obtenerOrdenporNombre(NombreCliente:string): Promise<any[]> {
-    //nombeCliente porque asi lo espera el backend y todo true ara que los datos no se mutilen al cargar
+    //nombeCliente porque asi lo espera el backend y todo true para que los datos no se mutilen al cargar
     const response= await fetch(`${API_URL}/ordenes/?nombeCliente=${encodeURIComponent(NombreCliente)}&todo=true`, {
         method: "GET",
         headers: getHeaders(),

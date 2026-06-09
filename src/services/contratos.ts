@@ -41,7 +41,6 @@ export async function crearContrato(datos: NuevoContrato): Promise<void> {
   await response.json();
 }
 
-
 export async function getContratos(): Promise<any[]> {
   const response = await fetch(`${API_URL}/clientes/contratos`, {
     method: "GET",

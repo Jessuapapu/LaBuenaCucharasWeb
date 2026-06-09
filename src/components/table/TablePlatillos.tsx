@@ -10,8 +10,8 @@ interface TablaComidasProps {
 }
 
 // Subcomponente para renderizar la imagen asíncronamente desde el hook
-function CeldaImagenPlatillo({ nombre }: { nombre: string }) {
-    const { Urlimagen, cargando } = useImagenesPlatillo(nombre);
+function CeldaImagenPlatillo({ IdPlatillo }: { IdPlatillo: number }) {
+    const { Urlimagen, cargando } = useImagenesPlatillo(IdPlatillo);
 
     if (cargando) {
         return <div className="w-9 h-9 rounded-xl bg-gray-800 animate-pulse border border-gray-700" />;
@@ -20,7 +20,7 @@ function CeldaImagenPlatillo({ nombre }: { nombre: string }) {
     return (
         <img
             src={Urlimagen && Urlimagen.trim() !== "" ? Urlimagen : "https://placehold.co/100x100/1f2937/ffffff?text=🍽️"}
-            alt={nombre}
+            alt={`Platillo ${IdPlatillo}`}
             className="w-9 h-9 rounded-xl object-cover border border-gray-700 bg-gray-800 shadow-md transition-transform group-hover:scale-105"
         />
     );
@@ -217,11 +217,13 @@ export default function TablaComidas({ data }: TablaComidasProps) {
                     </thead>
                     <tbody>
                         {paginatedRows.length > 0 ? (
-                            paginatedRows.map((p, i) => (
-                                <tr key={p.id_platillo ? p.id_platillo : `platillo-${Date.now()}-${i}`} className="bg-gray-900 border-b border-gray-800 hover:bg-gray-800/40 transition-colors group">
+                            paginatedRows.map((p, i) => {
+                                const RowKey = p.id_platillo ? `platillo-id-${p.id_platillo}` : `platillo-index-${i}`;
+                                return(
+                                <tr key={RowKey} className="bg-gray-900 border-b border-gray-800 hover:bg-gray-800/40 transition-colors group">
                                     <td className="px-6 py-4 font-medium text-white text-base">
                                         <div className="flex items-center gap-3">
-                                            <CeldaImagenPlatillo nombre={p.nombre_platillo || "Sin Nombre"} />
+                                            <CeldaImagenPlatillo IdPlatillo={p.id_platillo || "0"} />
                                             <span>{p.nombre_platillo}</span>
                                         </div>
                                     </td>
@@ -241,7 +243,7 @@ export default function TablaComidas({ data }: TablaComidasProps) {
                                         </button>
                                     </td>
                                 </tr>
-                            ))
+                            )})
                         ) : (
                             <tr>
                                 <td colSpan={3} className="text-center py-10 text-gray-500">

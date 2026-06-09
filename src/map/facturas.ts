@@ -1,4 +1,4 @@
-import type { PayloadFactura, RespuestaFacturasPaginada, Factura } from "../interfaces/Factura";
+import type { PayloadFactura, RespuestaFacturasPaginada, Factura, DetalleFacturaLinea } from "../interfaces/Factura";
 
 export const FacturaMapper = {
   //Transforma la búsqueda de la UI en Query Params para FastAPI
@@ -6,6 +6,7 @@ export const FacturaMapper = {
     const params = new URLSearchParams({
       pagina: pagina.toString(),
       rows: rows.toString(),
+      todo: "0"
     });
 
     if (filtros.nombre_cliente && filtros.nombre_cliente.trim() !== "") {
@@ -31,44 +32,45 @@ export const FacturaMapper = {
       id_cliente: payload.IdCliente,
       fecha: payload.Fecha,
       estado: payload.CondicionPago || "PENDIENTE", // Vinculado al estado/condición de pago inicial
-      // FastAPI espera un array de objetos: detalles: [{ IdOrden: X }, { IdOrden: Y }]
-      detalles: Array.isArray(payload.idOrdenes)
-        ? payload.idOrdenes.map((id) => ({ IdOrden: id }))
-        : []
+      MetodoPago: payload.MetodoPago,
+      CondicionPago: payload.CondicionPago, //Por si no se entiende, busca el mapper (Estado)
+      tipoDocumentoOrigen: payload.tipoDocumentoOrigen || "Orden",
+      detalle: payload.detalle.map(d=>({IdOrden: d.IdOrden}))
     };
   },
 
-  //Lista: Mapea la fila cruda de la base de datos al formato estricto de tu interfaz Factura.
+  
   toFrontendList(jsonArray: any[]): Factura[] {
-    if (!Array.isArray(jsonArray)) return [];
+    if (!Array.isArray(jsonArray)) return[];
     
     return jsonArray.map((f: any) => ({
       Id_factura: f.Id_factura,
-      monto_total: Number(f.monto_total || 0),
+      monto_total: Number(f.monto_total ?? f.MontoTotal ?? 0),
       cantidad_total: Number(f.cantidad_total || 0),
-      // Forzamos el uppercase para que calce con tu unión de tipos ("PAGADA" | "ANULADA")
       estado_factura: f.estado_factura ? f.estado_factura.toUpperCase() : "PENDIENTE",
       fecha_factura: f.fecha_factura || "",
-      cliente: {
-        nombre_cliente: f.cliente?.nombre_cliente || "Consumidor Final"
+      cliente:{
+        nombre_cliente: f.nombre_cliente || "Consumidor Final"
       }
     }));
   },
 
-  //Para paginacion, filtra en memoria para suplir la falta de filtros de texto en el backend actual
-  toFrontendResponse(jsonResponse: any, pagina: number, rows: number, filtros: Record<string, any>): RespuestaFacturasPaginada {
-    let listaFacturas = this.toFrontendList(jsonResponse);
+  toDetallesFactura(jsonArray: any[]): DetalleFacturaLinea[] {
+    if(!Array.isArray(jsonArray)) return[];
 
-    // Filtro defensivo si el buscador tiene texto (Nombre del cliente o Estado)
-    if (filtros.nombre_cliente && !/^\d+$/.test(filtros.nombre_cliente.trim())) {
-      const terminoBusqueda = filtros.nombre_cliente.toLowerCase().trim();
-      
-      listaFacturas = listaFacturas.filter((f: Factura) => {
-        const nombre = f.cliente.nombre_cliente.toLowerCase();
-        const estado = f.estado_factura.toLowerCase();
-        return nombre.includes(terminoBusqueda) || estado.includes(terminoBusqueda);
-      });
-    }
+    return jsonArray.map((d: any)=>({
+      IdFactura: d.Id_factura,
+      IdOrden: d.IdOrden,
+      MontoTotal: Number(d.monto_total ?? d.MontoTotal),
+      NombreCliente: d.NombreCliente ?? "Consumidor final",
+      Cantidad: d.Cantidad
+    }) )
+  },
+
+  //Para paginacion
+  toFrontendResponse(jsonResponse: any, pagina: number, rows: number): RespuestaFacturasPaginada {
+    const Lista= Array.isArray(jsonResponse) ? jsonResponse: (jsonResponse.data || [])//se extrae 
+    const listaFacturas= this.toFrontendList(Lista)//se transforma
 
     return {
       data: listaFacturas,

@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
-import { imagenesService } from "../../services/imagenes"; // Ajusta la ruta según tu proyecto
+import { imagenesService } from "../../services/imagenes"; 
 
 const UrlApi = import.meta.env.VITE_URL_API || "http://127.0.0.1:8001";
 
 
-export function useImagenesPlatillo(NombrePlatillo: string | null) {
+export function useImagenesPlatillo(IdPlatillo: number) {
   const [Urlimagen, setImagen] = useState<string>("");
   const [cargando, setCargando] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Si no hay nombre de platillo, terminamos la carga rápido y no hacemos la petición
-    if (!NombrePlatillo) {
+    // Si no hay id de platillo, terminamos la carga rápido y no hacemos la petición
+    if (!IdPlatillo) {
       setCargando(false);
       return;
     }
@@ -19,7 +19,7 @@ export function useImagenesPlatillo(NombrePlatillo: string | null) {
     const obtenerImagen = async () => {
       setCargando(true); // Reiniciamos el estado de carga por si el platillo cambia
       try {
-        const url = await imagenesService.obtenerUrlPorPlatillo(NombrePlatillo);
+        const url = await imagenesService.obtenerUrlPorIdPlatillo(IdPlatillo);
         setImagen(url);
         setError(null);
       } catch (err) {
@@ -33,7 +33,7 @@ export function useImagenesPlatillo(NombrePlatillo: string | null) {
     };
 
     obtenerImagen();
-  }, [NombrePlatillo]); // <-- Corregido: Ahora el efecto se vuelve a ejecutar si NombrePlatillo cambia
+  }, [IdPlatillo]); // si IdPlatillo cambia
 
   return { Urlimagen, cargando, error };
 }
