@@ -9,7 +9,7 @@ export const FoodCard = ({ platillo, onUpdate, ventas }: FoodCardProps) => {
 
   // Desestructuramos para mantener limpio el código, pero usamos los nombres de la interfaz
   const { nombre_platillo, nombre_categoria, id_platillo } = platillo;
-  const { Urlimagen, cargando }=useImagenesPlatillo(nombre_platillo);
+  const { Urlimagen }=useImagenesPlatillo(Number(id_platillo ?? 0));
 
   const handleSave = (updated: Platillo) => {
     if (onUpdate) onUpdate(updated);

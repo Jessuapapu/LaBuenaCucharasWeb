@@ -4,7 +4,7 @@ import { getClienteById, crearCliente, actualizarCliente, getClientes} from "../
 import type { cliente, NuevoCliente} from "../../interfaces/Clientes";
 import type { Contrato } from "../../interfaces/Contratos";
 import { mapClientes } from "../../map/clientes";
-import { mapContratos } from "../../map/contratos";
+//import { mapContratos } from "../../map/contratos";
 
 export function useCliente(id_cliente: number | null){
     const [loading, setloading]= useState(false);

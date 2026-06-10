@@ -223,7 +223,7 @@ export default function TablaComidas({ data }: TablaComidasProps) {
                                 <tr key={RowKey} className="bg-gray-900 border-b border-gray-800 hover:bg-gray-800/40 transition-colors group">
                                     <td className="px-6 py-4 font-medium text-white text-base">
                                         <div className="flex items-center gap-3">
-                                            <CeldaImagenPlatillo IdPlatillo={p.id_platillo || "0"} />
+                                            <CeldaImagenPlatillo IdPlatillo={Number(p.id_platillo || "0")} />
                                             <span>{p.nombre_platillo}</span>
                                         </div>
                                     </td>
