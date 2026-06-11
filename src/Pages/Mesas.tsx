@@ -46,7 +46,10 @@ export function IndexMesas() {
           
           {totalMesas > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {numeroMesa.map((mesa: any, index: number) => (
+              
+              {
+              //@ts-ignore
+              numeroMesa.map((mesa: any, index: number) => (
                 <TarjetaMesaAdmin key={index + 1} idMesa={index + 1} index={index + 1} />
               ))}
             </div>
@@ -75,7 +78,9 @@ export function IndexMesas() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-white/5">
-                    {numeroMesa.map((mesa: any, index: number) => (
+                    {
+                    //@ts-ignore
+                    numeroMesa.map((mesa: any, index: number) => (
                       <FilaTablaGlobal key={`fila-${index + 1}`} idMesa={index + 1} />
                     ))}
                   </tbody>

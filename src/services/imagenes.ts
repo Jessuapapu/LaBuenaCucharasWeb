@@ -7,7 +7,7 @@ export const imagenesService = {
    */
   obtenerUrlPorPlatillo: async (nombrePlatillo: string): Promise<string> => {
     const respuesta = await fetch(
-      `${API_URL}/imagenes/?NombrePlatillo=${nombrePlatillo}&NumeroImagen=1`
+      `${API_URL}/imagenes/?NombrePlatillo=${nombrePlatillo}&NumeroImagen=0`
     );
 
     if (!respuesta.ok) {

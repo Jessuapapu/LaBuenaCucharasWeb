@@ -87,6 +87,7 @@ export default function ModalNuevoPlatillo({ onClose, onSave }: ModalNuevoPlatil
                 if (!imgRes.ok) {
                     alert("Platillo creado, pero la imagen no se pudo subir. Podrás editarla más tarde.");
                 }
+                
             }
 
             onSave(platilloData);

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Loader2, Edit3, Trash2, Save, Utensils, Ban } from 'lucide-react';
+import { X, Loader2, Edit3, Save, Utensils, Ban } from 'lucide-react';
 import { apiCaja } from '../../services/caja';
 
 export function ModalAdministrarCaja({ orden, onClose, onSuccess }: any) {

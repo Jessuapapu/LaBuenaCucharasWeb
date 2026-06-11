@@ -47,7 +47,7 @@ export function useImagenPlatillo( NombrePlatillo: string | null = null) {
     const obtenerImagen = async () => {
       try {
        
-        const respuesta = await fetch(`${UrlApi}/imagenes/?NombrePlatillo=${NombrePlatillo}&NumeroImagen=1`);
+        const respuesta = await fetch(`${UrlApi}/imagenes/?NombrePlatillo=${NombrePlatillo}&NumeroImagen=0`);
 
         if (!respuesta.ok) {
           throw new Error(`HTTP error! status: ${respuesta.status}`);
