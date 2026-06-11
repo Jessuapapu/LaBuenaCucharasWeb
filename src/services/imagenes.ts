@@ -16,5 +16,13 @@ export const imagenesService = {
 
     const data = await respuesta.json();
     return data;
+  },
+
+  obtenerUrlPorIdPlatillo: async(IdPlatillo: number) =>{
+    const respuesta = await fetch(`${API_URL}/imagenes/?IdPlatillo=${IdPlatillo}&NumeroImagen=0`)
+    
+    if(!respuesta.ok) throw new Error(`Error HTTP! status: ${respuesta.status}`)
+      const data= await respuesta.json()
+    return data;
   }
 };

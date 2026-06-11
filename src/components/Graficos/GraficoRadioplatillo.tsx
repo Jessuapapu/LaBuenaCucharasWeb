@@ -31,13 +31,22 @@ const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
         const info = payload[0].payload;
         return (
-            <div className="bg-gray-800 text-white p-2 px-3 rounded-lg shadow-xl border border-gray-700 text-xs animate-in fade-in zoom-in duration-200">
-                <p className="font-bold text-blue-400">{info.nombre_platillo}</p>
-                <p className="flex justify-between gap-4">
-                    <span>Ventas:</span>
-                    <span className="font-mono text-green-400">{info.value} und.</span>
+            <div className="bg-gray-950 text-white p-3 px-4 rounded-xl shadow-2xl border border-gray-700 text-xs animate-in fade-in zoom-in-95 duration-100">
+                <p className="font-extrabold text-blue-400 uppercase tracking-wide text-[13px] border-b border-slate-800 pb-1.5 mb-1.5">
+                    {info.nombre_platillo}
                 </p>
-                {info.name && <p className="text-[10px] text-gray-400 mt-1 italic">{info.name}</p>}
+                {/* Cuerpo del diálogo: Datos de venta */}
+                <div className="flex flex-col gap-1">
+                    <p className="flex justify-between items-center gap-4">
+                        <span className="text-slate-400 font-medium">Total Ventas:</span>
+                        <span className="font-mono text-emerald-400 font-black text-sm">{info.value} und.</span>
+                    </p>
+                    {info.name && !info.name.includes("Dato") && (
+                        <p className="text-[10px] text-slate-500 italic mt-0.5">
+                            Corte: {info.name}
+                        </p>
+                    )}
+                </div>
             </div>
         );
     }
@@ -63,7 +72,6 @@ const Sectorpersonalizado = (props: any) => {
 };
 
 export default function GraficoRadioplatillos({data}: datosPlatillosProps){
-    
 
   const [selectedLabel, setSelectedLabel] = useState<string | undefined>(undefined);
 
@@ -93,17 +101,17 @@ export default function GraficoRadioplatillos({data}: datosPlatillosProps){
     }
   return (
     <SelectedLabelContext.Provider value={providerValue}>
-      <div className="w-full h-[200px] bg-white p-4 rounded-xl shadow-md">
+      <div className="w-full h-[200px] bg-white p-4 rounded-xl shadow-md border border-slate-100">
         <ResponsiveContainer width="100%" height="100%">
           <RadialBarChart
-            cx="30%"
+            cx="32%"
             cy="50%"
-            innerRadius="10%"
-            outerRadius="80%"
-            barSize={30}
+            innerRadius="15%"
+            outerRadius="85%"
+            barSize={14}
             data={chartData}
             startAngle={90}
-            endAngle={-280}
+            endAngle={-270}
           >
             {/* Eje invisible para que el gráfico sepa el máximo (que calcule el giro maximo) */}
             <PolarAngleAxis
@@ -114,39 +122,42 @@ export default function GraficoRadioplatillos({data}: datosPlatillosProps){
             />
 
             {/* EL TOOLTIP: Es lo que hace aparecer el nombre al pasar el mouse */}
-              <Tooltip content={<CustomTooltip />} cursor={false} />
+              <Tooltip content={<CustomTooltip />} cursor={false} wrapperStyle={{ zIndex: 50 }} />
             
             <RadialBar
               background={{ fill: '#f3f4f6' }}
               dataKey="value"
-              cornerRadius={10}
+              cornerRadius={8}
               shape={<Sectorpersonalizado />}
             />
             
             <Legend
-              iconSize={12}
+              iconSize={10}
               layout="vertical"
               verticalAlign="middle"
               align="right"
-              wrapperStyle={{ paddingLeft: '20px' }}
+              wrapperStyle={{ paddingLeft: '10px' }}
               content={({ payload }) => (
-                <ul className="text-[11px] font-semibold list-none p-0 ml-4">
+                <ul className="text-[11px] font-bold list-none p-0 m-0 max-h-[170px] overflow-y-auto custom-scrollbar">
                   {payload?.map((entry: any, index) => {
                     const isSelected = selectedLabel === entry.payload.nombre_platillo || selectedLabel == null;
                     return (
                       <li
                         key={`item-${index}`}
-                        className="flex items-center gap-2 mb-2 cursor-pointer transition-opacity duration-300"
-                        style={{ opacity: isSelected ? 1 : 0.3, transform: isSelected? 'scale(1.05)': 'scale(1)' }}
+                        className="flex items-center gap-2.5 mb-2 cursor-pointer transition-all duration-200 select-none"
+                        style={{ 
+                          opacity: isSelected ? 1 : 0.25, 
+                          transform: isSelected ? 'scale(1.02)' : 'scale(1)' 
+                        }}
                         onClick={() => setSelectedLabel(entry.payload.nombre_platillo === selectedLabel ? undefined : entry.payload.nombre_platillo)}
                       >
                         <div 
-                          className="w-2.5 h-2.5 rounded-full shadow-sm" 
+                          className="w-2.5 h-2.5 rounded-full shrink-0 shadow-sm" 
                           style={{ backgroundColor: entry.color }} 
-                         />
-                        <span className="text-gray-700 truncate max-w-[100px]"/>
-                        {entry.payload.nombre_platillo}
-
+                        />
+                        <span className="text-slate-700 truncate max-w-[120px] uppercase tracking-tight block">
+                          {entry.payload.nombre_platillo.toLowerCase()}
+                        </span>
                       </li>
                     );
                   })}

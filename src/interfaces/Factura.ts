@@ -1,16 +1,19 @@
 export interface PayloadFactura {
   IdCliente: number;
-  Cantidad: string | number;
+  //Cantidad?: string | number;
   Fecha: string;
   MetodoPago: string;
-  CondicionPago: string;
-  tipoDocumentoOrigen: string | null;
-  MONTOTOTAL: number;
-  idOrdenes: number[];
+  CondicionPago: string; //Por si no se entiende, busca el mapper (Estado)
+  tipoDocumentoOrigen?: string | null;
+  detalle: DetalleOrden[];
   idContrato: number | null;
 }
+
+export interface DetalleOrden{
+  IdOrden: number;
+}
 export interface RespuestaFacturasPaginada {
-    data: any[];
+    data: Factura[];
     total: number;
     pagina: number;
     rows: number;
@@ -21,17 +24,16 @@ export interface Factura {
   cantidad_total: number;
   estado_factura: "PENDIENTE"| "ANULADA"|"PAGADA" | string;
   fecha_factura: string; // ISO string o formato de fecha de SQL Server
-  cliente: ClienteFactura;
-}
-export interface ClienteFactura {
-  nombre_cliente: string;
+  cliente: {
+    nombre_cliente: string;
+  }
 }
 
 export interface DetalleFacturaLinea {
   IdFactura: number;
   IdOrden: number;
-  CostoTotalOrden: number;
+  MontoTotal: number;
   NombrePlatillo?: string; 
   Cantidad?: number;
-  [key: string]: any;     // Flexibilidad para campos adicionales del SP
+  NombreCliente: string;
 }
