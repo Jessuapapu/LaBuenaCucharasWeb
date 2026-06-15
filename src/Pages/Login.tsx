@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/Auth";
-import { Lock, User, Loader2 } from "lucide-react";
+import { Lock, User, Loader2, UtensilsCrossed } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -12,6 +12,16 @@ export default function LoginPage() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
+
+    const backgroundStyle = {
+        // 1. Apunta a tu archivo SVG
+        backgroundImage: `url('/src/assets/Fondo.svg')`,
+        // 2. Asegura que se repita
+        backgroundRepeat: 'repeat',
+        // 3. Define el tamaño de cada "mosaico" (AJUSTAR ESTO)
+        backgroundSize: '300px 170px', 
+         
+    };
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -53,52 +63,76 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
-            <div className="bg-gray-900 border border-gray-800 p-8 rounded-2xl max-w-md w-full shadow-2xl relative overflow-hidden">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full" />
+        <div className="min-h-screen w-full flex items-center justify-center p-4 bg-gradient-to-br from-slate-50 via-blue-50/50 to-slate-100 relative overflow-hidden">
+            
+            {/* --- FONDO REPETITIVO SVG --- */}
+            <div 
+                className="absolute inset-0 z-0 opacity-[0.14] pointer-events-none bg-blend-multiply"
+                style={backgroundStyle}
+            ></div>
 
+            {/*TARJETA DE LOGIN*/}
+            <div className="w-full max-w-md bg-white/85 backdrop-blur-lg rounded-2xl shadow-xl shadow-blue-900/5 border border-white/60 p-8 z-10 transition-all duration-300 hover:shadow-2xl hover:shadow-blue-900/10 relative">
+
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-1 rounded-b-full" />
+
+                {/* Encabezado / Branding */}
                 <div className="text-center mb-8">
-                    <h2 className="text-3xl font-extrabold text-white tracking-tight">La Buena Cuchara</h2>
-                    <p className="text-gray-400 text-sm mt-2">Ingresa tus credenciales para acceder al sistema</p>
+                    <div className="inline-flex items-center justify-center bg-blue-50 text-blue-600 p-3 rounded-xl mb-3 shadow-inner">
+                        <UtensilsCrossed size={28} className="animate-pulse" />
+                    </div>
+                    <h2 className="text-3xl font-black text-slate-800 tracking-tight">
+                        La Buena Cuchara
+                    </h2>
+                    <p className="text-slate-500 text-xs font-medium mt-1">
+                        Gestión de pedidos, inventario y facturación
+                    </p>
                 </div>
 
+                {/* Manejo de Alertas de Error */}
                 {error && (
-                    <div className="mb-5 bg-red-500/10 border border-red-500/30 text-red-400 p-3 rounded-xl text-xs font-medium text-center animate-in fade-in duration-200">
-                        {error}
+                    <div className="mb-5 bg-red-50 border border-red-200 text-red-600 p-3.5 rounded-xl text-xs font-semibold text-center animate-in fade-in zoom-in-95 duration-200">
+                        ⚠️ {error}
                     </div>
                 )}
 
                 <form onSubmit={handleLogin} className="space-y-5">
                     <div>
-                        <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Usuario</label>
-                        <div className="relative">
-                            <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-gray-500">
+                        <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+                            Usuario
+                        </label>
+                        <div className="relative group">
+                            <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
                                 <User size={18} />
                             </span>
                             <input
                                 type="text"
-                                className="w-full pl-10 pr-4 py-2.5 bg-gray-950 border border-gray-700 rounded-xl text-white text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-gray-600"
-                                placeholder="Tu nombre de usuario"
+                                className="w-full pl-10 pr-4 py-2.5 bg-slate-50/80 border border-slate-200 rounded-xl text-slate-800 text-sm outline-none focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all placeholder:text-slate-400 font-medium"
+                                placeholder="Introduce tu usuario"
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
                                 required
+                                disabled={loading}
                             />
                         </div>
                     </div>
 
                     <div>
-                        <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Contraseña</label>
-                        <div className="relative">
-                            <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-gray-500">
+                        <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+                            Contraseña
+                        </label>
+                        <div className="relative group">
+                            <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
                                 <Lock size={18} />
                             </span>
                             <input
                                 type="password"
-                                className="w-full pl-10 pr-4 py-2.5 bg-gray-950 border border-gray-700 rounded-xl text-white text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-gray-600"
+                                className="w-full pl-10 pr-4 py-2.5 bg-slate-50/80 border border-slate-200 rounded-xl text-slate-800 text-sm outline-none focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all placeholder:text-slate-400"
                                 placeholder="••••••••"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
+                                disabled={loading}
                             />
                         </div>
                     </div>
@@ -106,16 +140,18 @@ export default function LoginPage() {
                     <button
                         type="submit"
                         disabled={loading}
-                        className={`w-full py-3 rounded-xl font-bold text-white shadow-lg shadow-blue-600/20 transition-all flex justify-center items-center gap-2 mt-2
-                            ${loading ? "bg-blue-800 cursor-wait opacity-80" : "bg-blue-600 hover:bg-blue-500 active:scale-[0.98]"}`}
+                        className={`w-full py-3 rounded-xl font-bold text-white shadow-lg transition-all flex justify-center items-center gap-2 mt-2 text-sm uppercase tracking-wide
+                            ${loading 
+                                ? "bg-slate-400 cursor-wait shadow-none" 
+                                : "bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-600 active:scale-[0.98] shadow-blue-600/15"}`}
                     >
                         {loading ? (
                             <>
                                 <Loader2 size={18} className="animate-spin" />
-                                Autenticando...
+                                Verificando...
                             </>
                         ) : (
-                            "Iniciar Sesión"
+                            "Ingresar al Sistema"
                         )}
                     </button>
                 </form>

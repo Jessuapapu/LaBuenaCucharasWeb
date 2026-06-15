@@ -16,9 +16,9 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, logoSrc, business
 
     const getLinkClass = (path: string) => {
         const isActive = location.pathname === path;
-        return `flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 font-medium ${isActive
-            ? "bg-[#2179e9]/90 text-white shadow-lg shadow-blue-900/20"
-            : "text-blue-100 hover:bg-white/5 hover:text-white"
+        return `flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 font-semibold text-sm ${isActive
+            ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-md shadow-blue-500/10"
+            : "text-slate-600 hover:bg-blue-50 hover:text-blue-600"
             } ${!sidebarOpen ? "justify-center px-2" : ""}`;
     };
 
@@ -43,8 +43,8 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, logoSrc, business
 
     // --- CÓDIGO DEL LOGO ---
     const LogoDisplay = () => (
-        <div className={`flex items-center ${sidebarOpen ? "justify-between" : "justify-center"} h-20 border-b border-white/10  p-3 transition-all duration-300`}>
-            <div className="h-10 w-10 shrink-0 flex items-center justify-center overflow-hidden">
+        <div className={`flex items-center ${sidebarOpen ? "justify-start gap-3 pl-4" : "justify-center"} h-20 border-b border-slate-100  p-3 transition-all duration-300`}>
+            <div className="h-10 w-10 shrink-0 flex items-center justify-center overflow-hidden bg-slate-50 rounded-xl p-1 shadow-sm border border-slate-100 ">
               {logoSrc ? (
                 // Usamos la etiqueta <img> para mostrar el logo
                 <img 
@@ -54,12 +54,12 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, logoSrc, business
                 />
             ) : (
                 // Fallback si no hay logo
-                <h1 className="text-xl font-bold tracking-wider">{businessName}</h1>
+                <h1 className="text-base font-black text-blue-600 tracking-wider">{businessName}</h1>
             )} 
             {sidebarOpen && (
                 <motion.h1 
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                    className="text-sm font-black tracking-tighter truncate ml-2 uppercase"
+                    className="text-sm font-black tracking-tight text-slate-800 truncate ml-2 uppercase"
                 >
                     {businessName}
                 </motion.h1>
@@ -68,7 +68,6 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, logoSrc, business
             
         </div>
     );
-    // ------------------------
 
     return (
         <>
@@ -76,9 +75,9 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, logoSrc, business
             <aside
                 onMouseEnter={() => setSidebarOpen(true)}  // Abre al posicionarse encima
                 onMouseLeave={() => setSidebarOpen(false)} // Cierra al retirar el mouse
-                className={`hidden lg:flex flex-col fixed left-0 top-0 h-screen text-white shadow-2xl z-50 transition-all duration-300 ease-in-out border-r border-white/5
+                className={`hidden lg:flex flex-col fixed left-0 top-0 h-screen bg-white/90 backdrop-blur shadow-xl shadow-slate-900/5 z-50 transition-all duration-300 ease-in-out border-r border-slate-200/60
                 ${sidebarOpen ? "w-64" : "w-20"}`}
-                style={{ backgroundColor: '#0b1323' }} 
+                //style={{ backgroundColor: '#0b1323' }} 
             >
                 {/* Nuevo Componente de Logo */}
                 <LogoDisplay /> 
@@ -106,9 +105,9 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, logoSrc, business
                 </button>*/}
                 
 
-                <div className="p-4 border-t border-white/5">
-                    <div className={`flex items-center justify-center bg-white/5 rounded-xl py-2 transition-all ${!sidebarOpen ? 'px-0' : 'px-4'}`}>
-                         <span className="text-[10px] font-black text-blue-400">
+                <div className="p-4 border-t border-slate-100">
+                    <div className={`flex items-center justify-center bg-slate-50 border border-slate-100 rounded-xl py-2 transition-all ${!sidebarOpen ? 'px-0' : 'px-4'}`}>
+                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                             {sidebarOpen ? "V 1.0.4" : "1.0"}
                          </span>
                     </div>
@@ -122,24 +121,24 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, logoSrc, business
                         <motion.div
                             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                             onClick={() => setSidebarOpen(false)}
-                            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40"
+                            className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40"
                         />
 
                         <motion.aside
                             initial={{ x: -300 }} animate={{ x: 0 }} exit={{ x: -300 }}
                             transition={{ type: "spring", stiffness: 300, damping: 30 }}
                             className="fixed top-0 left-0 w-64 h-screen text-white z-50 p-4 lg:hidden shadow-2xl flex flex-col"
-                            style={{ backgroundColor: '#004aad' }} // COLOR EXACTO DEL LOGO
+                            //style={{ backgroundColor: '#004aad' }} // COLOR EXACTO DEL LOGO
                         >
-                            <div className="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
+                            <div className="flex justify-between items-center mb-4">
                                 {/* Logo en Móvil */}
                                 <LogoDisplay />
 
-                                <button onClick={() => setSidebarOpen(false)}>
-                                    <X className="w-6 h-6 text-white hover:bg-white/20 rounded" />
+                                <button onClick={() => setSidebarOpen(false)} className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors">
+                                    <X className="w-5 h-5" />
                                 </button>
                             </div>
-                            <nav className="space-y-2 flex-1">
+                            <nav className="space-y-1.5 flex-1 overflow-y-auto pr-1">
                                 {/* Navegación móvil abreviada o completa */}
                                 <Link to="/" onClick={() => setSidebarOpen(false)} className={getLinkClass("/")}>🏠 Inicio</Link>
                                 <Link to="/Pedidos" onClick={() => setSidebarOpen(false)} className={getLinkClass("/Pedidos")}>📝 Pedidos</Link>

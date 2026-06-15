@@ -44,6 +44,12 @@ export interface Ingredientes{
     nombreIngrediente: string;
 }
 
+export interface IngredientesAPI{
+    IdIngredeintes: number;
+    StockIngredientes: number;
+    NombreIngrediente: string;
+}
+
 export interface DetalleIngredientes{
     IdRegistroAbastecimiento: number;
     IdIngredientes: number;

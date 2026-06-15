@@ -24,7 +24,7 @@ export function useBodega() {
 }
 
 export function useinsumoseIngredientes(idRegistro?:number){
-  const [loading, setloading]= useState(true)
+  const [loading, setloading]= useState<boolean>(true)
   const [error, setError] = useState<string | null>(null);
 
   const [inventarioGeneral, setInventarioGeneral] = useState<ItemInventario[]>([]);
@@ -35,8 +35,7 @@ export function useinsumoseIngredientes(idRegistro?:number){
   const evaluarEstadoAlerta = useCallback((item: ItemInventario): { 
     necesitaReponer: boolean; 
     colorClase: string; 
-    textoEstado: string; 
-  } => {
+    textoEstado: string;  } => {
     if (item.tipo === "INSUMO") {
       const estado = (item.stock_minimo) || "Alta";
       if (estado === "Baja") {

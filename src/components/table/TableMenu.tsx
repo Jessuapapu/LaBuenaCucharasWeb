@@ -19,8 +19,8 @@ const IconSortDown = () => (<svg className="w-4 h-4 text-blue-400" fill="none" s
 const IconEdit = () => (<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>);
 
 // Subcomponente para renderizar la imagen asíncronamente desde el hook
-function CeldaImagenPlatillo({ nombre }: { nombre: string }) {
-    const { Urlimagen, cargando } = useImagenesPlatillo(nombre);
+function CeldaImagenPlatillo({ IdPlatillo }: { IdPlatillo: number }) {
+    const { Urlimagen, cargando } = useImagenesPlatillo(IdPlatillo);
 
     if (cargando) {
         return <div className="w-9 h-9 rounded-xl bg-gray-800 animate-pulse border border-gray-700" />;
@@ -29,7 +29,7 @@ function CeldaImagenPlatillo({ nombre }: { nombre: string }) {
     return (
         <img
             src={Urlimagen || "https://placehold.co/100x100/1f2937/ffffff?text=🍽️"}
-            alt={nombre}
+            alt={`Platillo${IdPlatillo}`}
             className="w-9 h-9 rounded-xl object-cover border border-gray-700 bg-gray-800 shadow-md transition-transform group-hover:scale-105"
         />
     );
@@ -119,7 +119,7 @@ export default function TablaMenus({ data, modalDta, setmodalDta, guardarOEditar
                                     </td>
                                     <td className="px-6 py-4 font-medium text-white text-base">
                                         <div className="flex items-center gap-3">
-                                            <CeldaImagenPlatillo nombre={m.NombrePlatillo} />
+                                            <CeldaImagenPlatillo IdPlatillo={Number(m.id)} />
                                             <span>{m.NombrePlatillo || "Sin nombre"}</span>
                                         </div>
                                     </td>

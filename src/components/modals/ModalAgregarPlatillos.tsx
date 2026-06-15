@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from "react";
 
 import type { Platillo, categoriaPlatillo } from "../../interfaces/Platillos";
 import { crearPlatillo } from "../../services/platillos";
+import { useCrearIngredientes } from "../Hooks/hookIngredientes";
+import { crearRelacionPlatilloIngrediente } from "../../services/ingredientes";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const token = localStorage.getItem("access_token");
@@ -24,6 +26,9 @@ export default function ModalNuevoPlatillo({ onClose, onSave }: ModalNuevoPlatil
 
     const [listaCategorias, setListaCategorias] = useState<categoriaPlatillo[]>([]);
     const [loading, setLoading] = useState(false);
+
+    const { ingredientes, loading: cargando }= useCrearIngredientes()
+    const [ingredientesSeleccionado, setIngredientesSeleccionado]= useState<number[]>([])
 
     useEffect(() => {
         fetch(`${API_URL}/platillos/categoria`, {
@@ -51,6 +56,12 @@ export default function ModalNuevoPlatillo({ onClose, onSave }: ModalNuevoPlatil
         }
     };
 
+    const handleToggleIngrediente = (id: number) => {
+        setIngredientesSeleccionado((prev) =>
+            prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+        );
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -58,7 +69,6 @@ export default function ModalNuevoPlatillo({ onClose, onSave }: ModalNuevoPlatil
             alert("Por favor completa todos los campos obligatorios.");
             return;
         }
-
         setLoading(true);
 
         try {
@@ -67,9 +77,9 @@ export default function ModalNuevoPlatillo({ onClose, onSave }: ModalNuevoPlatil
                 nombre_platillo: nombre,
                 nombre_categoria: categoria,
             })
+            const idNuevoPlatillo = platilloData.id_platillo;
 
             //const platilloData = await platilloRes.json();
-
             // Subir la imagen si existe
             if (imageFile) {
                 const imageFormData = new FormData();
@@ -83,16 +93,18 @@ export default function ModalNuevoPlatillo({ onClose, onSave }: ModalNuevoPlatil
                     headers: { ...(token ? { "Authorization": `Bearer ${token}` } : {}) }
 
                 });
-
                 if (!imgRes.ok) {
                     alert("Platillo creado, pero la imagen no se pudo subir. Podrás editarla más tarde.");
-                }
-                
+                } 
             }
-
+            if (ingredientesSeleccionado.length > 0 && idNuevoPlatillo) {
+                await crearRelacionPlatilloIngrediente(
+                    ingredientesSeleccionado,
+                    idNuevoPlatillo
+                );
+            }
             onSave(platilloData);
             onClose();
-
         } catch (error: any) {
             console.error(error);
             alert(error.message || "Hubo un error al procesar el registro.");
@@ -180,6 +192,37 @@ export default function ModalNuevoPlatillo({ onClose, onSave }: ModalNuevoPlatil
                         </div>
 
 
+                    </div>
+                    <div>
+                        <label className="block text-xs font-medium text-gray-300 mb-1">
+                            Ingredientes de la Receta <span className="text-gray-500 font-normal">(Opcional)</span>
+                        </label>
+                        {cargando ? (
+                            <p className="text-xs text-gray-500 italic py-2">Cargando catálogo de ingredientes...</p>
+                        ) : (
+                            <div className="max-h-32 overflow-y-auto pr-1 space-y-1.5 border border-gray-700 p-2 rounded-lg bg-gray-950/40 custom-scrollbar">
+                                {ingredientes.map((ing) => {
+                                    const isChecked = ingredientesSeleccionado.includes(ing.IdIngredeintes);
+                                    return (
+                                        <label
+                                            key={ing.IdIngredeintes}
+                                            className={`flex items-center gap-2 px-2 py-1.5 rounded border text-xs cursor-pointer transition-all
+                                                ${isChecked 
+                                                    ? "bg-blue-600/10 border-blue-500/40 text-blue-300" 
+                                                    : "bg-gray-800/50 border-gray-700/60 text-gray-400 hover:bg-gray-800"}`}
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                className="w-3.5 h-3.5 rounded text-blue-600 bg-gray-700 border-gray-600 focus:ring-blue-500 focus:ring-offset-gray-900"
+                                                checked={isChecked}
+                                                onChange={() => handleToggleIngrediente(ing.IdIngredeintes)}
+                                            />
+                                            <span className="flex-1 font-medium truncate">{ing.nombreIngrediente}</span>
+                                        </label>
+                                    );
+                                })}
+                            </div>
+                        )}
                     </div>
 
                     <div className="flex gap-3 pt-4 mt-2">
