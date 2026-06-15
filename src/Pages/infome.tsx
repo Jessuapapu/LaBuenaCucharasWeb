@@ -4,14 +4,14 @@ import { useVentasPlatillos } from "../components/Hooks/hookPlatillos";
 import { useOrdenes } from "../components/Hooks/hookOrdenes";
 import jsPDF from "jspdf";
 import html2canvas  from "html2canvas"
-import { Download, Loader2, BarChart3 } from "lucide-react";
-import { useState, useRef } from "react";
+import { Download, Loader2, BarChart3, Calendar, AlertCircle, TrendingUp, DollarSign } from "lucide-react";
+import { useState, useRef, useMemo, useEffect } from "react";
 
 /*
 const {cargarVentasSemanales}=useOrdenes()
 */
 // Datos simulados (Mock Data) para la demostración visual
-const dataVentas = [
+/*const dataVentas = [
   { id: "Ventas", color: "hsl(210, 70%, 50%)", data: [
       { x: "Lun", y: 120 }, { x: "Mar", y: 190 }, { x: "Mie", y: 150 }, { x: "Jue", y: 280 }, { x: "Vie", y: 390 }, { x: "Sab", y: 320 }, { x: "Dom", y: 250 }
   ]}
@@ -26,10 +26,54 @@ const dataGastos = [
   { mes: "May", ingresos: 1890, gastos: 4800 },
   { mes: "Jun", ingresos: 2390, gastos: 3800 },
 ];
+*/
+//Paletas de colores
+const coloresLineas = ["#38bdf8", "#6366f1"];
+const coloresBarras = ["#0284c7", "#4f46e5"];
 
 export default function InformesPage() {
   const [exportando, setExportando] = useState(false);
   const areaReporteRef = useRef<HTMLDivElement>(null);
+
+  const { ventas, loadingVentas, errorVentas }= useVentasPlatillos()
+  const { ventasSemanales, cargarVentasSemanales, loading: loadingOrdenes }= useOrdenes()
+
+  useEffect(() => {
+    const controller = new AbortController();
+    cargarVentasSemanales(controller.signal);
+
+    return () => {
+      controller.abort(); // Evita fugas de memoria si el usuario sale de la página rápido
+    };
+  }, []);
+
+  // Estado global de carga unificado
+  const estaCargando = loadingVentas || loadingOrdenes;
+
+  const fechaInforme = useMemo(() => {
+    return new Intl.DateTimeFormat('es-NI', { dateStyle: 'long' }).format(new Date());
+  }, []);
+
+  //Formatear las ventas semanales para Nivo Line
+  //sacado del hook de ordenes
+  const dataVentasLinea = useMemo(() => {
+    if (!ventasSemanales || ventasSemanales.length === 0) return [];
+    return ventasSemanales;
+  }, [ventasSemanales]);
+
+  //Agrupación analítica de los platillos más vendidos para la gráfica de barras, es una prueba, si funciona, me corto los ovarios
+  const dataTopPlatillos = useMemo(() => {
+    if (!ventas || ventas.length === 0) return [];
+    
+    // Mapeamos los datos directamente de la API ordenados por cantidad o ingresos totales
+    return ventas
+      .map((item: any) => ({
+        platillo: item.nombre || item.platillo || "Desconocido",
+        Ingresos: Number(item.total_ingresos) || Number(item.subtotal) || 0,
+        Cantidad: Number(item.cantidad_vendida) || Number(item.cantidad) || 0
+      }))
+      .slice(0, 7); // Limitamos a los mejores 7 para mantener la gráfica legible
+  }, [ventas]);
 
   const handleExportarPDF = async () => {
     if (!areaReporteRef.current || exportando) return;
@@ -77,133 +121,165 @@ export default function InformesPage() {
       setExportando(false);
     }
   };
+
+  const nivoTheme = {
+    axis: {
+      ticks: { text: { fill: "#94a3b8", fontSize: 10, fontFamily: "sans-serif" } },
+      legend: { text: { fill: "#f1f5f9", fontSize: 11, fontWeight: 600 } }
+    },
+    grid: { line: { stroke: "#1e293b", strokeWidth: 1 } },
+    legends: { text: { fill: "#cbd5e1", fontSize: 11 } },
+    tooltip: {
+      container: {
+        background: "#0f172a",
+        color: "#f8fafc",
+        fontSize: 12,
+        borderRadius: "8px",
+        border: "1px solid #334155"
+      }
+    }
+  };
+
   return (
-    <div className="space-y-6 max-w-7xl mx-auto pb-10">
+    <div className="space-y-6 max-w-7xl mx-auto pb-10 px-4 sm:px-6">
       {/* Barra de Acciones Superior (Fuera del área de impresión) */}
-      <div className="flex justify-end items-center">
+      <div className="flex justify-between items-center bg-slate-900/10 p-2 rounded-xl border border-slate-800/30">
+        <span className="text-xs text-slate-400 font-medium pl-2 flex items-center gap-2">
+          <Calendar className="w-3.5 h-3.5 text-sky-400" /> Datos operativos actualizados al {fechaInforme}
+        </span>
         <button
           type="button"
           onClick={handleExportarPDF}
-          disabled={exportando}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold tracking-wide border transition-all shadow-lg
-            ${exportando 
-              ? "bg-slate-800 border-slate-700 text-slate-500 cursor-not-allowed" 
-              : "bg-blue-600 border-blue-500 text-white hover:bg-blue-500 active:scale-95"
+          disabled={exportando || estaCargando}
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold tracking-wider uppercase border transition-all shadow-md
+            ${exportando || estaCargando
+              ? "bg-slate-800/50 border-slate-700/60 text-slate-500 cursor-not-allowed" 
+              : "bg-gradient-to-r from-blue-600 to-sky-600 border-blue-500/50 text-white hover:from-blue-500 hover:to-sky-500 active:scale-95 shadow-blue-500/10"
             }`}
         >
           {exportando ? (
             <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              Compilando Datos...
+              <Loader2 className="w-4 h-4 animate-spin text-sky-400" />
+              Compilando Reporte Real...
             </>
           ) : (
             <>
               <Download className="w-4 h-4" />
-              Exportar Informe General
+              Exportar Balance de Ventas
             </>
           )}
         </button>
       </div>
       
-      {/* Header */}
-      <div className="bg-gray-900 p-8 rounded-2xl border border-gray-800 shadow-2xl relative overflow-hidden">
-        <div className="relative z-10">
-            <h1 className="text-4xl font-extrabold text-white tracking-tight mb-2">Centro de Inteligencia</h1>
-            <p className="text-blue-300 text-lg">Análisis financiero y operativo en tiempo real.</p>
-        </div>
-        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 rounded-full blur-3xl -mr-16 -mt-16"></div>
-      </div>
 
-      {/* Primera Fila: Gráficas Principales */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        {/* Gráfica de Ventas (Line) */}
-        <div className="lg:col-span-2 bg-gray-900 p-6 rounded-2xl border border-gray-800 shadow-lg flex flex-col">
-            <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                <span className="w-1 h-6 bg-blue-500 rounded"></span>
-                Flujo de Ventas Semanal
-            </h3>
-            <div className="h-80 w-full">
-                <ResponsiveLine
-                    data={dataVentas}
-                    margin={{ top: 20, right: 20, bottom: 50, left: 50 }}
-                    xScale={{ type: "point" }}
-                    yScale={{ type: "linear", min: "auto", max: "auto", stacked: true, reverse: false }}
+      <div ref={areaReporteRef} className="space-y-6 bg-[#070a13] p-6 rounded-3xl">
+        {/* Header */}
+        <div className="bg-slate-900/30 backdrop-blur-md p-8 rounded-2xl border border-slate-800/60 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 text-sky-400 font-bold text-xs uppercase tracking-widest mb-1">
+              <BarChart3 className="w-4 h-4" /> Servidor Local e Integración de Órdenes
+            </div>
+              <h1 className="text-3xl font-black text-white tracking-tight">Centro de Inteligencia</h1>
+              <p className="text-slate-400 text-sm mt-0.5">Análisis financiero y operativo en tiempo real.</p>
+          </div>
+          <div className="bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-2.5">
+            <span className="block text-[9px] font-bold text-slate-500 uppercase tracking-wider">Divisa de Ajuste</span>
+            <span className="text-sm font-black text-white tracking-wide">Córdoba Nicaragüense (NIO)</span>
+         </div>
+        </div>
+
+          {estaCargando ? (
+          <div className="h-96 flex flex-col items-center justify-center text-sky-500 gap-3 bg-slate-900/10 rounded-2xl border border-slate-800/40">
+            <Loader2 className="w-8 h-8 animate-spin text-sky-500" />
+            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest animate-pulse">Sincronizando flujos de caja y comandas...</span>
+          </div>
+        ) : (
+        <div className="grid grid-cols-1 gap-6">
+          <div className="bg-slate-900/40 backdrop-blur-md p-6 rounded-2xl border border-slate-800/60 shadow-lg">
+              <div className="mb-4">
+                <h3 className="text-base font-bold text-white flex items-center gap-2 mb-1">
+                  <TrendingUp className="w-4 h-4 text-sky-400" /> Ingresos por Ciclo Semanal Diario
+                </h3>
+                <p className="text-xs text-slate-400">Total de caja liquidado por los meseros según los pedidos del día.</p>
+              </div>
+              
+              <div className="h-80 w-full bg-slate-950/20 rounded-xl border border-slate-900/40 p-2">
+              {dataVentasLinea.length > 0 ? (
+                  <ResponsiveLine
+                      data={dataVentasLinea}
+                      margin={{ top: 25, right: 35, bottom: 45, left: 60 }}
+                      xScale={{ type: "point" }}
+                      yScale={{ type: "linear", min: "auto", max: "auto", stacked: false, reverse: false }}
+                      axisTop={null}
+                      axisRight={null}
+                      axisBottom={{ tickSize: 5, tickPadding: 5, tickRotation: 0, legend: 'Eje Temporal', legendOffset: 36, legendPosition: 'middle' }}
+                      axisLeft={{ tickSize: 5, tickPadding: 6, tickRotation: 0, legend: 'Facturación (NIO)', legendOffset: -50, legendPosition: 'middle' }}
+                      colors={coloresLineas}
+                      pointSize={8}
+                      pointColor="#070a13"
+                      pointBorderWidth={3}
+                      pointBorderColor={{ from: 'serieColor' }}
+                      enableGridY={true}
+                      enableGridX={false}
+                      curve="monotoneX"
+                      enableArea={true}
+                      areaOpacity={0.06}
+                      useMesh={true}
+                      theme={nivoTheme}
+                  />
+                    ) : (
+                      <div className="h-full flex items-center justify-center gap-2 text-slate-500 text-xs">
+                        <AlertCircle className="w-4 h-4 text-amber-500" /> No hay datos de cierres semanales registrados en el hook.
+                      </div>
+                )}
+            </div>
+         </div>
+
+        <div className="bg-slate-900/40 backdrop-blur-md p-6 rounded-2xl border border-slate-800/60 shadow-lg">
+              <div className="mb-4">
+                <h3 className="text-base font-bold text-white flex items-center gap-2 mb-1">
+                  <DollarSign className="w-4 h-4 text-indigo-400" /> Top de Ventas por Producto
+                </h3>
+                <p className="text-xs text-slate-400">Recaudación real bruta estructurada según la demanda del menú.</p>
+              </div>
+          <div className="h-96 w-full bg-slate-950/20 rounded-xl border border-slate-900/40 p-2">
+             {dataTopPlatillos.length > 0 ? (
+                  <ResponsiveBar
+                    data={dataTopPlatillos}
+                    keys={['Ingresos']}
+                    indexBy="platillo"
+                    margin={{ top: 30, right: 30, bottom: 60, left: 65 }}
+                    padding={0.4}
+                    valueScale={{ type: 'linear' }}
+                    colors={coloresBarras}
+                    borderRadius={4}
                     axisTop={null}
                     axisRight={null}
-                    axisBottom={{ tickSize: 5, tickPadding: 5, tickRotation: 0, legend: 'Días', legendOffset: 36, legendPosition: 'middle' }}
-                    axisLeft={{ tickSize: 5, tickPadding: 5, tickRotation: 0, legend: 'Ventas ($)', legendOffset: -40, legendPosition: 'middle' }}
-                    colors={{ scheme: 'nivo' }}
-                    pointSize={10}
-                    pointColor={{ theme: 'background' }}
-                    pointBorderWidth={2}
-                    pointBorderColor={{ from: 'serieColor' }}
-                    enableGridX={false}
-                    theme={{
-                        axis: { ticks: { text: { fill: "#9ca3af" } }, legend: { text: { fill: "#cbd5e1" } } },
-                        grid: { line: { stroke: "#374151", strokeWidth: 1 } },
-                        tooltip: { container: { background: "#1f2937", color: "#fff" } }
+                    axisBottom={{ 
+                      tickSize: 5, 
+                      tickPadding: 5, 
+                      tickRotation: -15, // Ligera rotación por si el nombre del platillo es largo
+                      legend: 'Platillos / Productos', 
+                      legendPosition: 'middle', 
+                      legendOffset: 45 
                     }}
-                />
+                    axisLeft={{ tickSize: 5, tickPadding: 6, tickRotation: 0, legend: 'Total Recaudado (NIO)', legendPosition: 'middle', legendOffset: -55 }}
+                    labelSkipWidth={12}
+                    labelSkipHeight={12}
+                    labelTextColor="#ffffff"
+                    enableLabel={false}
+                    theme={nivoTheme}
+                  />
+                  ) : (
+                  <div className="h-full flex items-center justify-center gap-2 text-slate-500 text-xs">
+                    <AlertCircle className="w-4 h-4 text-amber-500" /> Sin registros de volumen de platillos vendidos en el sistema.
+                  </div>
+                )}
             </div>
-        </div>
-
-        {/* Gráfica de Categorías (Pie) */}
-        <div className="bg-gray-900 p-6 rounded-2xl border border-gray-800 shadow-lg flex flex-col">
-           
-        </div>
+          </div>
       </div>
-
-      {/* Segunda Fila: Análisis Financiero (Bar) */}
-      <div className="bg-gray-900 p-6 rounded-2xl border border-gray-800 shadow-lg">
-        <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-            <span className="w-1 h-6 bg-purple-500 rounded"></span>
-            Ingresos vs Gastos (Semestral)
-        </h3>
-        <div className="h-96 w-full">
-             <ResponsiveBar
-                data={dataGastos}
-                keys={[ 'ingresos', 'gastos' ]}
-                indexBy="mes"
-                margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
-                padding={0.3}
-                valueScale={{ type: 'linear' }}
-                indexScale={{ type: 'band', round: true }}
-                colors={{ scheme: 'nivo' }}
-                borderColor={{ from: 'color', modifiers: [ [ 'darker', 1.6 ] ] }}
-                axisTop={null}
-                axisRight={null}
-                axisBottom={{ tickSize: 5, tickPadding: 5, tickRotation: 0, legend: 'Mes', legendPosition: 'middle', legendOffset: 32 }}
-                axisLeft={{ tickSize: 5, tickPadding: 5, tickRotation: 0, legend: 'Monto ($)', legendPosition: 'middle', legendOffset: -40 }}
-                labelSkipWidth={12}
-                labelSkipHeight={12}
-                labelTextColor={{ from: 'color', modifiers: [ [ 'darker', 1.6 ] ] }}
-                legends={[
-                    {
-                        dataFrom: 'keys',
-                        anchor: 'bottom-right',
-                        direction: 'column',
-                        justify: false,
-                        translateX: 120,
-                        translateY: 0,
-                        itemsSpacing: 2,
-                        itemWidth: 100,
-                        itemHeight: 20,
-                        itemDirection: 'left-to-right',
-                        itemOpacity: 0.85,
-                        symbolSize: 20,
-                        effects: [ { on: 'hover', style: { itemOpacity: 1 } } ],
-                        itemTextColor: "#9ca3af"
-                    }
-                ]}
-                theme={{
-                    axis: { ticks: { text: { fill: "#9ca3af" } }, legend: { text: { fill: "#cbd5e1" } } },
-                    tooltip: { container: { background: "#1f2937", color: "#fff" } }
-                }}
-            />
-        </div>
-      </div>
-
+    )}
+      </div>      
     </div>
   );
 }
