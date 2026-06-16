@@ -32,10 +32,11 @@ export async function crearFactura(payload: PayloadFactura): Promise<{ message: 
 }
 
 
-export async function getFacturas(): Promise<Factura[]> {
+export async function getFacturas(signal?: AbortSignal): Promise<Factura[]> {
     const response = await fetch(`${API_URL}/facturas/`, {
         method: "GET",
-        headers: getHeaders()
+        headers: getHeaders(),
+        signal
     });
 
     if (!response.ok) {

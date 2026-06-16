@@ -68,11 +68,16 @@ export function useFacturaModal(BusquedaNombre: string, idFactura?: number){
     setError(null);
     try{
       const datos= await obtenerOrdenporNombre(BusquedaNombre)
-      setpedidosPendientes(datos)
-      if (datos.length > 0) {
-          const primeraOrden = datos[0];
-          const idDetectado = primeraOrden.IdCliente ?? primeraOrden.id_cliente ?? 0;
-          setFormulario(prev => ({ ...prev, idCliente: idDetectado }));
+      const datosNormalizados = datos.map((orden: any) => ({
+    IdOrden: orden.IdOrdenes ?? orden.IdOrden ?? orden.id_orden ?? 0,
+    MontoTotal: Number(orden.CostoTotal ?? orden.MontoTotal ?? orden.monto_total ?? 0),
+    IdCliente: orden.IdCliente ?? orden.id_cliente ?? 0
+  }));
+      setpedidosPendientes(datosNormalizados)
+      if (datosNormalizados.length > 0) {
+          const primeraOrden = datosNormalizados[0];
+          //const idDetectado = primeraOrden.IdCliente ?? primeraOrden.id_cliente ?? 0;
+          setFormulario(prev => ({ ...prev, idCliente: primeraOrden.IdCliente }));
         }
     } catch (err: any){
       setError("No hay ordenes activas para este cliente")
@@ -98,7 +103,7 @@ export function useFacturaModal(BusquedaNombre: string, idFactura?: number){
   const subTotalVisual = useMemo(() => {
     return pedidosPendientes
       .filter(p => formulario.OrdenesSeleccion.includes(p.IdOrden ?? p.id_orden))
-      .reduce((acc, curr) => acc + Number(curr.MontoTotal ?? curr.monto_total ?? 0), 0);
+      .reduce((acc, curr) => acc +curr.MontoTotal, 0);
   }, [pedidosPendientes, formulario.OrdenesSeleccion]);
 
   const enviarFactura = useCallback(async (onSuccess: (res: any) => void) => {
@@ -107,11 +112,12 @@ export function useFacturaModal(BusquedaNombre: string, idFactura?: number){
       return;
     }
 
+    const estadoFacturaReal = formulario.CondicionPago === "CONTADO" ? "PAGADA" : "PENDIENTE";
     const payloadListo: PayloadFactura = {
       IdCliente: formulario.idCliente,
       Fecha: new Date().toISOString().split("T")[0], // Formato YYYY-MM-DD estándar
       MetodoPago: formulario.MetodoPago,
-      CondicionPago: formulario.CondicionPago,
+      CondicionPago: estadoFacturaReal,
       tipoDocumentoOrigen: formulario.tipoDocumentoOrigen,
       idContrato: formulario.idContrato,
       detalle: formulario.OrdenesSeleccion.map(id => ({ IdOrden: id }))
@@ -138,24 +144,26 @@ export function useFacturasPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchFacturas = useCallback(async () => {
+  const fetchFacturas = useCallback(async (signal?: AbortSignal) => {
     setLoading(true);
     setError(null);
     try {
       const facturas = await getFacturas();
       setData(facturas);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Error desconocido al cargar facturas";
-      console.error(errorMessage);
-      setError(errorMessage);
+    } catch (err: any) {
+      if (err.name !== 'AbortError') {
+        setError(err.message || "Error al cargar facturas");
       setData([]);
+      }
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchFacturas();
+    const controller = new AbortController();
+    fetchFacturas(controller.signal);
+    return()=> controller.abort()
   }, [fetchFacturas]);
 
   // Sincronizado estricto con las propiedades mapeadas por tu backend corporativo

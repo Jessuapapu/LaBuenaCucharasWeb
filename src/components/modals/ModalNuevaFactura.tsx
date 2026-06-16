@@ -96,7 +96,8 @@ const NoFacturable = useMemo(() => {
       pdf.addImage(imgData, "PNG", 0, 0, widthPDF, heightPDF);
       
       // Generación de nombre descriptivo dinámico
-      const nombreArchivo = `Ticket_${BusquedaCliente.replace(/\s+/g, "_") || "Consumidor_Final" || "emision"}.pdf`;
+      const clienteLimpio = BusquedaCliente.trim().replace(/\s+/g, "_");
+      const nombreArchivo = `Ticket_${clienteLimpio || "Consumidor_Final" || "emision"}.pdf`;
       pdf.save(nombreArchivo);
 
     } catch (err) {
