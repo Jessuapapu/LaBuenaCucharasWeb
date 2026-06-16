@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
-import { getPlatillos } from "../../services/platillos"; 
+import { getPlatillos, getPlatillosDestacados } from "../../services/platillos"; 
 import { getVentasPlatillos } from "../../services/ordenes";
 import type { categoriaPlatillo } from "../../interfaces/Platillos";
 
 export function usePlatillos() {
   const [platillos, setPlatillos] = useState<any[]>([]);
+  const [platillosDetacados, setPlatillosDetacados] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -15,6 +16,8 @@ export function usePlatillos() {
     try {
       const data = await getPlatillos();
       setPlatillos(data);
+      const dataDestacatados = await getPlatillosDestacados();
+      setPlatillosDetacados(dataDestacatados);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Error al cargar el catálogo de platillos";
       console.error(errorMessage);
@@ -30,7 +33,9 @@ export function usePlatillos() {
   }, [fetchPlatillos]);
 
   // Calculamos los destacados aquí mismo
-  const destacados = platillos.slice(0, 4);
+  console.log(platillos)
+  console.log(platillosDetacados)
+  const destacados = platillosDetacados.slice(0, 4);
 
   return { 
     platillos, 
@@ -93,5 +98,4 @@ export function usePlatillosForm() {
 
   return { listaCategorias, loadingCategorias };
 }
-
 

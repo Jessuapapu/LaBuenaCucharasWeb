@@ -10,6 +10,7 @@ export default function ComidasPage() {
   // Consumimos los estados independientes
   const { platillos, destacados, loadingPlatillos, errorPlatillos } = usePlatillos();
   const { ventas, loadingVentas, errorVentas } = useVentasPlatillos(); 
+ 
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
