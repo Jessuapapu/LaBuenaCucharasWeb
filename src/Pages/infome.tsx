@@ -2,9 +2,10 @@ import { ResponsiveLine } from "@nivo/line";
 import { ResponsiveBar } from "@nivo/bar";
 import { useVentasPlatillos } from "../components/Hooks/hookPlatillos";
 import { useOrdenes } from "../components/Hooks/hookOrdenes";
+import { useRankingComedor } from "../components/Hooks/hookAnalytics";
 import jsPDF from "jspdf";
 import html2canvas  from "html2canvas"
-import { Download, Loader2, BarChart3, Calendar, AlertCircle, TrendingUp, DollarSign } from "lucide-react";
+import { Download, Loader2, BarChart3, Calendar, AlertCircle, TrendingUp, DollarSign, UtensilsCrossed } from "lucide-react";
 import { useState, useRef, useMemo, useEffect } from "react";
 
 /*
@@ -30,6 +31,7 @@ const dataGastos = [
 //Paletas de colores
 const coloresLineas = ["#38bdf8", "#6366f1"];
 const coloresBarras = ["#0284c7", "#4f46e5"];
+const coloresRanking = ["#10b981"];
 
 export default function InformesPage() {
   const [exportando, setExportando] = useState(false);
@@ -37,6 +39,7 @@ export default function InformesPage() {
 
   const { ventas, loadingVentas, errorVentas }= useVentasPlatillos()
   const { ventasSemanales, cargarVentasSemanales, loading: loadingOrdenes }= useOrdenes()
+  const { data: rankingComedor, loading: loadingRanking } = useRankingComedor();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -45,10 +48,10 @@ export default function InformesPage() {
     return () => {
       controller.abort(); // Evita fugas de memoria si el usuario sale de la página rápido
     };
-  }, []);
+  }, [cargarVentasSemanales]);
 
   // Estado global de carga unificado
-  const estaCargando = loadingVentas || loadingOrdenes;
+  const estaCargando = loadingVentas || loadingOrdenes || loadingRanking;
 
   const fechaInforme = useMemo(() => {
     return new Intl.DateTimeFormat('es-NI', { dateStyle: 'long' }).format(new Date());
@@ -143,7 +146,7 @@ export default function InformesPage() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-10 px-4 sm:px-6">
       {/* Barra de Acciones Superior (Fuera del área de impresión) */}
-      <div className="flex justify-between items-center bg-slate-900/10 p-2 rounded-xl border border-slate-800/30">
+      <div className="flex flex-col sm:flex-row justify-between items-center bg-slate-900/10 p-3 rounded-xl border border-slate-800/30 gap-3">
         <span className="text-xs text-slate-400 font-medium pl-2 flex items-center gap-2">
           <Calendar className="w-3.5 h-3.5 text-sky-400" /> Datos operativos actualizados al {fechaInforme}
         </span>
@@ -235,6 +238,7 @@ export default function InformesPage() {
             </div>
          </div>
 
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-slate-900/40 backdrop-blur-md p-6 rounded-2xl border border-slate-800/60 shadow-lg">
               <div className="mb-4">
                 <h3 className="text-base font-bold text-white flex items-center gap-2 mb-1">
@@ -276,6 +280,46 @@ export default function InformesPage() {
                   </div>
                 )}
             </div>
+          </div>
+          <div className="bg-slate-900/40 backdrop-blur-md p-6 rounded-2xl border border-slate-800/60 shadow-lg">
+                <div className="mb-4">
+                  <h3 className="text-base font-bold text-white flex items-center gap-2 mb-1">
+                    <UtensilsCrossed className="w-4 h-4 text-emerald-400" /> Ranking Específico del Comedor
+                  </h3>
+                  <p className="text-xs text-slate-400">Unidades reales despachadas en sala obtenidas de los Stored Procedures.</p>
+                </div>
+                <div className="h-80 w-full bg-slate-950/20 rounded-xl border border-slate-900/40 p-2">
+                  {rankingComedor.length > 0 ? (
+                    <ResponsiveBar
+                      data={rankingComedor}
+                      keys={['unidadesVendidas']} // Vinculado a la interfaz limpia del Mapper
+                      indexBy="nombrePlatillo" // Vinculado al contrato sanitizado del Frontend
+                      margin={{ top: 20, right: 20, bottom: 50, left: 60 }}
+                      padding={0.4}
+                      valueScale={{ type: 'linear' }}
+                      colors={coloresRanking}
+                      borderRadius={4}
+                      axisTop={null}
+                      axisRight={null}
+                      axisBottom={{ 
+                        tickSize: 5, 
+                        tickPadding: 5, 
+                        tickRotation: -15,
+                        legend: 'Menú Comedor', 
+                        legendPosition: 'middle', 
+                        legendOffset: 40 
+                      }}
+                      axisLeft={{ tickSize: 5, tickPadding: 6, tickRotation: 0, legend: 'Unidades', legendPosition: 'middle', legendOffset: -50 }}
+                      enableLabel={false}
+                      theme={nivoTheme}
+                    />
+                  ) : (
+                    <div className="h-full flex items-center justify-center gap-2 text-slate-500 text-xs">
+                      <AlertCircle className="w-4 h-4 text-amber-500" /> No hay datos del ranking del comedor para el periodo actual.
+                    </div>
+                  )}
+                  </div>
+                  </div>
           </div>
       </div>
     )}

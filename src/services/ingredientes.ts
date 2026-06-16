@@ -15,7 +15,7 @@ const getHeaders = () => {
 }
 
 export async function obtenerIngredientes(): Promise<Ingredientes[]> {
-    const response= await fetch(`${API_URL}/ingredientes`, { method: "GET", headers: getHeaders() })
+    const response= await fetch(`${API_URL}/ingrediente/`, { method: "GET", headers: getHeaders() })
     if (!response.ok) {
             throw new Error(`Error al obtener las facturas. Estado: ${response.status}`);
         }
@@ -30,7 +30,7 @@ export async function crearIngrediente(nombre: string): Promise<boolean> {
     if (!nombre.trim()) return false;
   }
 
-  const response = await fetch(`${API_URL}/ingredientes`, {
+  const response = await fetch(`${API_URL}/ingrediente/`, {
     method: "POST",
     headers: getHeaders(),
     body: JSON.stringify({ Nombre: nombre.trim() }) // Se envía en el formato esperado por el backend
@@ -47,7 +47,7 @@ export async function crearIngrediente(nombre: string): Promise<boolean> {
 export async function actualizarIngrediente(id: number, nombreNuevo: string, stock: number): Promise<boolean> {
   if (!id || !nombreNuevo.trim()) return false;
 
-  const response = await fetch(`${API_URL}/ingredientes/${id}`, {
+  const response = await fetch(`${API_URL}/ingrediente/${id}`, {
     method: "PUT",
     headers: getHeaders(),
     body: JSON.stringify({
@@ -68,7 +68,7 @@ export async function crearRelacionPlatilloIngrediente(listaIngredientesIds: num
   
   if (!idPlatillo && !nombrePlatillo) return false;
 
-  const response = await fetch(`${API_URL}/platillos/ingredientes/relacion`, {
+  const response = await fetch(`${API_URL}/ingrediente/relacion`, {
     method: "POST",
     headers: getHeaders(),
     body: JSON.stringify({

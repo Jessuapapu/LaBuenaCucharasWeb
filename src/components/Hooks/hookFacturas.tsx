@@ -148,7 +148,7 @@ export function useFacturasPage() {
     setLoading(true);
     setError(null);
     try {
-      const facturas = await getFacturas();
+      const facturas = await getFacturas(signal);
       setData(facturas);
     } catch (err: any) {
       if (err.name !== 'AbortError') {
