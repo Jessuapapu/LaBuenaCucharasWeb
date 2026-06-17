@@ -14,14 +14,14 @@ function CeldaImagenPlatillo({ IdPlatillo }: { IdPlatillo: number }) {
     const { Urlimagen, cargando } = useImagenesPlatillo(IdPlatillo);
 
     if (cargando) {
-        return <div className="w-9 h-9 rounded-xl bg-gray-800 animate-pulse border border-gray-700" />;
+        return <div className="w-9 h-9 rounded-xl bg-white/5 animate-pulse border border-white/10" />;
     }
 
     return (
         <img
             src={Urlimagen && Urlimagen.trim() !== "" ? Urlimagen : "https://placehold.co/100x100/1f2937/ffffff?text=🍽️"}
             alt={`Platillo ${IdPlatillo}`}
-            className="w-9 h-9 rounded-xl object-cover border border-gray-700 bg-gray-800 shadow-md transition-transform group-hover:scale-105"
+            className="w-9 h-9 rounded-xl object-cover border border-white/10 bg-white/5 shadow-md transition-transform group-hover:scale-105"
         />
     );
 }
@@ -29,7 +29,7 @@ function CeldaImagenPlatillo({ IdPlatillo }: { IdPlatillo: number }) {
 type SortKey = "nombre_platillo" | "nombre_categoria" | "precio" | "";
 
 // --- Iconos SVG ---
-const IconSort = () => (<svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" /></svg>);
+const IconSort = () => (<svg className="w-4 h-4 text-white-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" /></svg>);
 const IconSortUp = () => (<svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" /></svg>);
 const IconSortDown = () => (<svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h5m4 0v12m0 0l-4-4m4 4l4-4" /></svg>);
 const IconEdit = () => (<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>);
@@ -136,8 +136,8 @@ export default function TablaComidas({ data }: TablaComidasProps) {
   };
 
   const HeaderCell = ({ label, sKey }: { label: string, sKey: SortKey }) => (
-    <th className="px-6 py-4 cursor-pointer hover:bg-gray-800 transition-colors" onClick={() => handleSort(sKey)}>
-      <div className="flex items-center gap-2 text-gray-300 font-semibold text-xs uppercase">
+    <th className="px-6 py-4 cursor-pointer hover:bg-white/5 transition-colors" onClick={() => handleSort(sKey)}>
+      <div className="flex items-center gap-2 text-white/70 font-semibold text-xs uppercase tracking-wider">
         {label}
         {sKey && sortKey === sKey ? (sortOrder === "asc" ? <IconSortUp /> : <IconSortDown />) : <IconSort />}
       </div>
@@ -148,13 +148,13 @@ export default function TablaComidas({ data }: TablaComidasProps) {
     <div className="w-full space-y-4 animate-in fade-in duration-500">
             
             {/* --- BARRA DE HERRAMIENTAS --- */}
-            <div className="bg-gray-900 p-4 rounded-xl shadow-lg border border-gray-800">
+            <div className="bg-white/80 backdrop-blur-md p-4 rounded-xl shadow-md border border-[#9ab7e2]/30">
                 <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                     <div className="flex items-center gap-3 w-full md:w-auto flex-1">
                         <input
                             type="text"
                             placeholder="🔍 Buscar platillo..."
-                            className="w-full md:w-64 bg-gray-800 border border-gray-700 text-white text-sm rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full md:w-64 bg-white border border-[#9ab7e2]/40 text-slate-800 placeholder-slate-400 text-sm rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#9ab7e2] outline-none transition-all"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
@@ -206,9 +206,9 @@ export default function TablaComidas({ data }: TablaComidasProps) {
             </div>
 
             {/* --- TABLA --- */}
-            <div className="relative overflow-x-auto shadow-xl rounded-xl border border-gray-800 bg-gray-900">
-                <table className="w-full text-sm text-left text-gray-400">
-                    <thead className="bg-gray-900 border-b border-gray-800">
+            <div className="relative overflow-x-auto shadow-xl rounded-xl border border-[#9ab7e2]/30 bg-white/70 backdrop-blur-md">
+                <table className="w-full text-sm text-left text-slate-600">
+                    <thead className="bg-[#9ab7e2]/15 border-b border-[#9ab7e2]/30 text-slate-700">
                         <tr>
                             <HeaderCell label="Platillo" sKey="nombre_platillo" />
                             <HeaderCell label="Categoría" sKey="nombre_categoria" />
@@ -220,15 +220,15 @@ export default function TablaComidas({ data }: TablaComidasProps) {
                             paginatedRows.map((p, i) => {
                                 const RowKey = p.id_platillo ? `platillo-id-${p.id_platillo}` : `platillo-index-${i}`;
                                 return(
-                                <tr key={RowKey} className="bg-gray-900 border-b border-gray-800 hover:bg-gray-800/40 transition-colors group">
-                                    <td className="px-6 py-4 font-medium text-white text-base">
+                                <tr key={RowKey} className="bg-[#9ab7e2]/10 hover:bg-[#9ab7e2]/10 transition-colors group">
+                                    <td className="px-6 py-4 font-semibold text-slate-800 text-base">
                                         <div className="flex items-center gap-3">
                                             <CeldaImagenPlatillo IdPlatillo={Number(p.id_platillo || "0")} />
                                             <span>{p.nombre_platillo}</span>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <span className="text-blue-300 bg-blue-900/20 px-2 py-1 rounded text-xs border border-blue-800/50">
+                                        <span className="text-blue-700 bg-[#9ab7e2]/20 px-2 py-1 rounded text-xs font-medium border border-[#9ab7e2]/40">
                                             {p.nombre_categoria}
                                         </span>
                                     </td>
