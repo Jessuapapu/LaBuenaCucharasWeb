@@ -4,19 +4,19 @@ import { Check, User, Search, Calendar, Trash2, Download,
 import { useFacturaModal} from "../Hooks/hookFacturas";
 //import { useClientes } from "../Hooks/hookClientes";
 import type { ModalNuevaFacturaProps } from "../../interfaces/Ordenes";
-import type { PayloadFactura } from "../../interfaces/Factura";
+//import type { PayloadFactura } from "../../interfaces/Factura";
 import jsPDF from "jspdf";
 import html2canvas  from "html2canvas"
 
 interface ModalFacturaExtendidoProps extends ModalNuevaFacturaProps {
-  idFactura?: number; // Opcional, para activar el modo edición automáticamente
+  id_factura?: number; // Opcional, para activar el modo edición automáticamente
 }
 
 export default function ModalNuevaFactura({ 
   //Ordenes = [], 
   onClose, 
   onSave,
-  idFactura 
+  id_factura 
 }: ModalFacturaExtendidoProps) {
   
   const [BusquedaCliente, setBusquedaCliente] = useState(""); 
@@ -34,7 +34,7 @@ export default function ModalNuevaFactura({
     enviarFactura,
     loading,
     error
-  } = useFacturaModal(BusquedaCliente, idFactura);
+  } = useFacturaModal(BusquedaCliente, id_factura);
 
 const NoFacturable = useMemo(() => {
     if (!BusquedaCliente) return false;
@@ -141,10 +141,10 @@ const NoFacturable = useMemo(() => {
           <div className="space-y-6">
             <header>
               <span className="text-[10px] font-mono tracking-widest text-blue-400 uppercase bg-blue-900/20 px-2.5 py-1 rounded-md font-bold">
-                {idFactura ? "Modo Edición" : "Módulo de Facturación"}
+                {id_factura ? "Modo Edición" : "Módulo de Facturación"}
               </span>
               <h2 className="text-2xl font-black text-white uppercase tracking-tighter mt-2 flex items-center gap-2">
-                {idFactura ? `Modificar Factura #${idFactura}` : "Emisión de Factura"}
+                {id_factura ? `Modificar Factura #${id_factura}` : "Emisión de Factura"}
               </h2>
             </header>
 
@@ -313,7 +313,7 @@ const NoFacturable = useMemo(() => {
                   ? "bg-slate-800 text-slate-500 cursor-not-allowed shadow-none"
                   : "bg-blue-500 hover:bg-blue-400 active:scale-[0.99]"}`}
             >
-              {loading ? "PROCESANDO..." : idFactura ? "ACTUALIZAR REGISTRO" : "CONFIRMAR Y GUARDAR"}
+              {loading ? "PROCESANDO..." : id_factura ? "ACTUALIZAR REGISTRO" : "CONFIRMAR Y GUARDAR"}
             </button>
           </div>
         </form>

@@ -43,11 +43,11 @@ export function useFactura( idFactura?: number) {
   return {guardarFactura, loading, error};
 }
 
-export function useFacturaModal(BusquedaNombre: string, idFactura?: number) {
+export function useFacturaModal(BusquedaNombre: string, id_factura?: number) {
   const [fetching, setFetching] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pedidosPendientes, setPedidosPendientes] = useState<any[]>([]);
-  const { guardarFactura, loading: loadingApi, error: errorApi } = useFactura(idFactura);
+  const { guardarFactura, loading: loadingApi, error: errorApi } = useFactura(id_factura);
 
   const [formulario, setFormulario] = useState({
     idCliente: 0,

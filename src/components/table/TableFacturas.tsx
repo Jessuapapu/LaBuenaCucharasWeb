@@ -242,7 +242,7 @@ export default function TablaFacturas() {
       {/* Modal Unificado */}
       {(showCreate || selectedFactura) && (
         <ModalNuevaFactura 
-          idFactura={selectedFactura?.Id_factura} 
+          id_factura={selectedFactura?.Id_factura} 
           onClose={() => {
             setShowCreate(false);
             setSelectedFactura(null);
