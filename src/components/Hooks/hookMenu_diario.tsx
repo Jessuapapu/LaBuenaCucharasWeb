@@ -132,7 +132,8 @@ export function useMenu_diario(dataInicial: any[] = []) {
                     body: JSON.stringify({
                         day: platilloData.Fecha,                  // Traduce 'Fecha' a 'day'
                         nombre_platillo: platilloData.NombrePlatillo, // Traduce 'NombrePlatillo' a 'nombre_platillo'
-                        monto: Number(platilloData.Monto)             // Traduce 'Monto' a 'monto'
+                        monto: Number(platilloData.Monto),           // Traduce 'Monto' a 'monto'
+                        hora: platilloData.Hora
                     })
                 });
                 if (!response.ok) throw new Error("Error al crear lote");

@@ -11,39 +11,40 @@ import ModalEditarContratoProps from "../modals/ModalEditarContratito";
 import type { Contrato } from "../../interfaces/Contratos";
 
 interface TablaContratosProps {
-  data: any[]; // Usamos any[] temporalmente por si el PA retorna llaves con mayúsculas
-  refetch?: () => void; // Recibir la función refetch para actualizar la tabla sin recargar la página
+    data: any[]; // Usamos any[] temporalmente por si el PA retorna llaves con mayúsculas
+    refetch?: () => void; // Recibir la función refetch para actualizar la tabla sin recargar la página
 }
 
 type SortKey = "NumeroContrato" | "Estado" | "Presupuesto" | "FechaVencimiento" | "";
 
 export default function TablaContratos({ data, refetch }: TablaContratosProps) {
-  const [contratos, setContratos] = useState<any[]>([]);
-  const [search, setSearch] = useState("");
-  
-  // Estados para modales
-  const [modalNuevoAbierto, setModalNuevoAbierto] = useState(false);
-  const [contratoAEditar, setContratoAEditar] = useState<any | null>(null);
+    console.log(data)
+    const [contratos, setContratos] = useState<any[]>([]);
+    const [search, setSearch] = useState("");
 
-  // Estados para Paginación y Ordenamiento
-  const [sortKey, setSortKey] = useState<SortKey>("NumeroContrato");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+    // Estados para modales
+    const [modalNuevoAbierto, setModalNuevoAbierto] = useState(false);
+    const [contratoAEditar, setContratoAEditar] = useState<any | null>(null);
 
-  useEffect(() => { setContratos(data || []); }, [data]);
-  useEffect(() => { setCurrentPage(1); }, [search]);
+    // Estados para Paginación y Ordenamiento
+    const [sortKey, setSortKey] = useState<SortKey>("NumeroContrato");
+    const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  // --- FORMATEADORES ---
-  const formatMoney = (amount: number) => {
-    if (amount === undefined || amount === null) return "N/A";
-    return new Intl.NumberFormat('es-NI', { style: 'currency', currency: 'NIO', maximumFractionDigits: 0 }).format(amount);
-  };
-  
-  const formatDate = (dateString: string) => {
-    if (!dateString) return "S/F";
-    return new Date(dateString).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
-  };
+    useEffect(() => { setContratos(data || []); }, [data]);
+    useEffect(() => { setCurrentPage(1); }, [search]);
+
+    // --- FORMATEADORES ---
+    const formatMoney = (amount: number) => {
+        if (amount === undefined || amount === null) return "N/A";
+        return new Intl.NumberFormat('es-NI', { style: 'currency', currency: 'NIO', maximumFractionDigits: 0 }).format(amount);
+    };
+
+    const formatDate = (dateString: string) => {
+        if (!dateString) return "S/F";
+        return new Date(dateString).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+    };
 
   const getStatusColor = (est: string) => {
     switch (est?.toUpperCase()) {
@@ -54,61 +55,61 @@ export default function TablaContratos({ data, refetch }: TablaContratosProps) {
     }
   };
 
-  // --- PROCESAMIENTO DE DATOS ---
-  const processedData = useMemo(() => {
-    if (!contratos) return [];
-    
-    let rows = contratos.filter((c) => {
-      const term = search.toLowerCase();
-      
-      // Adaptación a mayúsculas/minúsculas según retorne la base de datos
-      const numContrato = String(c.NumeroContrato || c.numeroContrato || "");
-      const estado = String(c.Estado || c.estado || "").toLowerCase();
-      const presupuesto = String(c.Presupuesto || c.presupuesto || "");
-      const cliente = String(c.NombreCliente || c.nombre_cliente || "");
+    // --- PROCESAMIENTO DE DATOS ---
+    const processedData = useMemo(() => {
+        if (!contratos) return [];
 
-      return (
-        numContrato.includes(term) ||
-        estado.includes(term) ||
-        presupuesto.includes(term) ||
-        cliente.toLowerCase().includes(term)
-      );
-    });
+        let rows = contratos.filter((c) => {
+            const term = search.toLowerCase();
 
-    if (sortKey) {
-      rows.sort((a, b) => {
-        // Obtenemos las llaves independientemente del casing
-        const getVal = (obj: any, key: string) => {
-          if (key === 'NumeroContrato') return obj.NumeroContrato || obj.numeroContrato || 0;
-          if (key === 'Estado') return obj.Estado || obj.estado || "";
-          if (key === 'Presupuesto') return obj.Presupuesto || obj.presupuesto || 0;
-          if (key === 'FechaVencimiento') return new Date(obj.FechaVencimiento || obj.fechaVencimiento || 0).getTime();
-          return obj[key] ?? "";
-        };
+            // Adaptación a mayúsculas/minúsculas según retorne la base de datos
+            const numContrato = String(c.NumeroContrato || c.numeroContrato || "");
+            const estado = String(c.Estado || c.estado || "").toLowerCase();
+            const presupuesto = String(c.Presupuesto || c.presupuesto || "");
+            const cliente = String(c.NombreCliente || c.nombre_cliente || "");
 
-        const valA = getVal(a, sortKey);
-        const valB = getVal(b, sortKey);
-        
-        if (valA < valB) return sortOrder === "asc" ? -1 : 1;
-        if (valA > valB) return sortOrder === "asc" ? 1 : -1;
-        return 0;
-      });
-    }
-    return rows;
-  }, [contratos, search, sortKey, sortOrder]);
+            return (
+                numContrato.includes(term) ||
+                estado.includes(term) ||
+                presupuesto.includes(term) ||
+                cliente.toLowerCase().includes(term)
+            );
+        });
 
-  const totalPages = Math.ceil(processedData.length / itemsPerPage);
+        if (sortKey) {
+            rows.sort((a, b) => {
+                // Obtenemos las llaves independientemente del casing
+                const getVal = (obj: any, key: string) => {
+                    if (key === 'NumeroContrato') return obj.NumeroContrato || obj.numeroContrato || 0;
+                    if (key === 'Estado') return obj.Estado || obj.estado || "";
+                    if (key === 'Presupuesto') return obj.Presupuesto || obj.presupuesto || 0;
+                    if (key === 'FechaVencimiento') return new Date(obj.FechaVencimiento || obj.fechaVencimiento || 0).getTime();
+                    return obj[key] ?? "";
+                };
 
-  const paginatedRows = useMemo(() => {
-    if (itemsPerPage === -1) return processedData;
-    const start = (currentPage - 1) * itemsPerPage;
-    return processedData.slice(start, start + itemsPerPage);
-  }, [processedData, currentPage, itemsPerPage]);
+                const valA = getVal(a, sortKey);
+                const valB = getVal(b, sortKey);
 
-  const handleSort = (key: SortKey) => {
-    if (sortKey === key) setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    else { setSortKey(key); setSortOrder("asc"); }
-  };
+                if (valA < valB) return sortOrder === "asc" ? -1 : 1;
+                if (valA > valB) return sortOrder === "asc" ? 1 : -1;
+                return 0;
+            });
+        }
+        return rows;
+    }, [contratos, search, sortKey, sortOrder]);
+
+    const totalPages = Math.ceil(processedData.length / itemsPerPage);
+
+    const paginatedRows = useMemo(() => {
+        if (itemsPerPage === -1) return processedData;
+        const start = (currentPage - 1) * itemsPerPage;
+        return processedData.slice(start, start + itemsPerPage);
+    }, [processedData, currentPage, itemsPerPage]);
+
+    const handleSort = (key: SortKey) => {
+        if (sortKey === key) setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+        else { setSortKey(key); setSortOrder("asc"); }
+    };
 
   const HeaderCell = ({ label, sKey }: { label: string, sKey: SortKey }) => (
     <th className="px-6 py-4 cursor-pointer hover:bg-sky-50/50 transition-colors select-none" onClick={() => handleSort(sKey)}>
@@ -245,27 +246,27 @@ export default function TablaContratos({ data, refetch }: TablaContratosProps) {
         )}
       </div>
 
-      {/* MODALES */}
-      {modalNuevoAbierto && (
-        <ModalNuevoContratos 
-            onClose={() => setModalNuevoAbierto(false)} 
-            onCompletar={() => {
-                setModalNuevoAbierto(false);
-                if (refetch) refetch(); else window.location.reload();
-            }}
-        />
-      )}
+            {/* MODALES */}
+            {modalNuevoAbierto && (
+                <ModalNuevoContratos
+                    onClose={() => setModalNuevoAbierto(false)}
+                    onCompletar={() => {
+                        setModalNuevoAbierto(false);
+                        if (refetch) refetch(); else window.location.reload();
+                    }}
+                />
+            )}
 
-      {contratoAEditar && (
-        <ModalEditarContratoProps 
-            contrato={contratoAEditar}
-            onClose={() => setContratoAEditar(null)}
-            onCompletar={() => {
-                setContratoAEditar(null);
-                if (refetch) refetch(); else window.location.reload();
-            }}
-        />
-      )}
-    </div>
-  );
+            {contratoAEditar && (
+                <ModalEditarContratoProps
+                    contrato={contratoAEditar}
+                    onClose={() => setContratoAEditar(null)}
+                    onCompletar={() => {
+                        setContratoAEditar(null);
+                        if (refetch) refetch(); else window.location.reload();
+                    }}
+                />
+            )}
+        </div>
+    );
 }

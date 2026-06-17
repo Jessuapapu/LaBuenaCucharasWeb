@@ -20,7 +20,7 @@ const IconEdit = () => (<svg className="w-4 h-4" fill="none" stroke="currentColo
 export default function TablaClientes({ data }: TablaClientesProps) {
   const [clientes, setClientes] = useState<cliente[]>([]);
   const [search, setSearch] = useState("");
-  
+
   // Modales
   const [showCreate, setShowCreate] = useState(false);
   const [selectedCliente, setSelectedCliente] = useState<cliente | null>(null);
@@ -76,25 +76,25 @@ export default function TablaClientes({ data }: TablaClientesProps) {
 
 
   const handleUpdate = (updated: cliente) => {
-    setClientes(prev => prev.map(c => 
-        // Compara por ID si existe, sino por nombre (fallback)
-        (c.IdCliente && c.IdCliente === updated.IdCliente) || c.NombreCliente === updated.NombreCliente ? updated : c
+    setClientes(prev => prev.map(c =>
+      // Compara por ID si existe, sino por nombre (fallback)
+      (c.IdCliente && c.IdCliente === updated.IdCliente) || c.NombreCliente === updated.NombreCliente ? updated : c
     ));
     setSelectedCliente(null);
   };
 
   const HeaderCell = ({ label, sKey }: { label: string, sKey: SortKey }) => (
     <th className="px-6 py-4 cursor-pointer select-none hover:bg-sky-50/50 transition-colors" onClick={() => handleSort(sKey)}>
-        <div className="flex items-center gap-2 text-slate-600 font-bold text-xs uppercase tracking-wider">
-            {label}
-            {sKey && sortKey === sKey ? (sortOrder === "asc" ? <IconSortUp /> : <IconSortDown />) : <IconSort />}
-        </div>
+      <div className="flex items-center gap-2 text-slate-600 font-bold text-xs uppercase tracking-wider">
+        {label}
+        {sKey && sortKey === sKey ? (sortOrder === "asc" ? <IconSortUp /> : <IconSortDown />) : <IconSort />}
+      </div>
     </th>
   );
 
   return (
     <div className="w-full space-y-4 animate-in fade-in duration-500">
-      
+
       {/* Barra de Control */}
       <div className="bg-white/80 backdrop-blur-md p-4 rounded-2xl shadow-sm border border-sky-100/80 flex flex-col md:flex-row justify-between items-center gap-4">
         <input
@@ -147,24 +147,24 @@ export default function TablaClientes({ data }: TablaClientesProps) {
 
         {/* Paginación */}
         <div className="flex flex-col md:flex-row justify-between items-center p-4 border-t border-sky-100 bg-slate-50/50 gap-4 text-xs font-medium text-slate-500">
-            <div className="flex items-center gap-2">
-                <span>Mostrar</span>
-                <select className="bg-white border border-slate-200 text-slate-700 rounded-lg px-2 py-1 outline-none font-bold" value={itemsPerPage} onChange={(e) => setItemsPerPage(Number(e.target.value))}>
-                    <option value={10}>10</option><option value={20}>20</option><option value={-1}>Todos</option>
-                </select>
+          <div className="flex items-center gap-2">
+            <span>Mostrar</span>
+            <select className="bg-white border border-slate-200 text-slate-700 rounded-lg px-2 py-1 outline-none font-bold" value={itemsPerPage} onChange={(e) => setItemsPerPage(Number(e.target.value))}>
+              <option value={10}>10</option><option value={20}>20</option><option value={-1}>Todos</option>
+            </select>
+          </div>
+          <span className="font-semibold">{paginatedRows.length} de {processedData.length} registros</span>
+          {itemsPerPage !== -1 && (
+            <div className="flex gap-2 w-full sm:w-auto justify-end">
+              <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold disabled:opacity-40 transition-colors shadow-sm">Anterior</button>
+              <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="px-3 py-1.5 rounded bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold disabled:opacity-40 transition-colors shadow-sm">Siguiente</button>
             </div>
-            <span className="font-semibold">{paginatedRows.length} de {processedData.length} registros</span>
-            {itemsPerPage !== -1 && (
-                <div className="flex gap-2 w-full sm:w-auto justify-end">
-                    <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold disabled:opacity-40 transition-colors shadow-sm">Anterior</button>
-                    <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="px-3 py-1.5 rounded bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold disabled:opacity-40 transition-colors shadow-sm">Siguiente</button>
-                </div>
-            )}
+          )}
         </div>
       </div>
 
       {showCreate && <ModalNuevoCliente onClose={() => setShowCreate(false)} />}
-      {selectedCliente && <ModalEditarCliente cliente={selectedCliente} onClose={() => setSelectedCliente(null)} onSuccess={()=>handleUpdate} />}
+      {selectedCliente && <ModalEditarCliente cliente={selectedCliente} onClose={() => setSelectedCliente(null)} onSuccess={() => handleUpdate} />}
     </div>
   );
 }

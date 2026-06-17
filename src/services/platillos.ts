@@ -58,7 +58,6 @@ export async function getPlatillosDestacados(): Promise<any[]> {
     const fecha: Date = new Date();
     const finalmes: number = new Date(fecha.getFullYear(),fecha.getMonth()+1,0).getDate()
 
-    console.log(`${API_URL}/informe/ranking/comedor?FechaInicio=${fecha.getFullYear()}-${fecha.getMonth()+1}-00&fechaFinal=${fecha.getFullYear()}-${fecha.getMonth()}-${finalmes}`)
     const response = await fetch(`${API_URL}/informe/ranking/comedor?FechaInicio=${fecha.getFullYear()}-${fecha.getMonth()+1}-01&fechaFinal=${fecha.getFullYear()}-${fecha.getMonth()+1}-${finalmes}`, {
         method: "GET",
         headers: {

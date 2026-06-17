@@ -13,6 +13,7 @@ export interface Menu_dario{
     Fecha: string;
     Monto: number;
     //detalle: DetalleMenu[];
+    Hora: string
 }
 export interface DetallePlatillo {
   nombre_platillo: string;
