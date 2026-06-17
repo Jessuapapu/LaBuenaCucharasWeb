@@ -41,7 +41,7 @@ export default function IndexPage() {
         cargarVentasSemanales(controller.signal);
         
         return () => controller.abort(); // Limpieza al desmontar
-    }, []); 
+    }, [cargarVentasSemanales]); 
 
     // --- CALCULOS DERIVADOS ---
     // Como ventasSemanales ya viene formateado [{x: 'Lunes', y: 10}] desde el servicio,
@@ -81,7 +81,7 @@ export default function IndexPage() {
                     <h1 className="text-4xl font-extrabold text-white tracking-tight">
                         Panel de Control
                     </h1>
-                    <p className="text-slate-500 mt-1 text-sm font-medium">
+                    <p className="text-slate-700 mt-1 text-sm font-semibold">
                         Bienvenido al sistema de gestión <span className="text-blue-600 font-extrabold">La Buena Cuchara</span>.
                     </p>
                 </div>
@@ -127,13 +127,13 @@ export default function IndexPage() {
                  colorPrincipal="#5db8c3"
                  colorSecundario="#3b5bc6" />
 
-                 <div className="w-full h-full ">
+                 {/*<div className="w-full h-full ">
                         {isDashboardLoading ? (
                             <span className="text-blue-400 animate-pulse">Cargando gráfica...</span>
                         ) : (
                             <GraficoRadioplatillos data={radialData} />
                         )}
-                    </div>
+                    </div>*/}
             </div>
 
             {/* 3. SECCIÓN DE ANÁLISIS Y GRÁFICAS */}
@@ -158,11 +158,11 @@ export default function IndexPage() {
                 </div>
 
                 {/* --- ACCIONES RÁPIDAS (Funcionales) --- */}
-                <AccionesRapidas 
+                {/*<AccionesRapidas 
                     setShowModalPedido={setShowModalPedido}
                     setShowModalCliente={setShowModalCliente}
                     setShowModalContrato={setShowModalContrato}
-                />
+                />*/}
             </div>
 
             {/* --- RENDERIZADO CONDICIONAL DE MODALES --- */}

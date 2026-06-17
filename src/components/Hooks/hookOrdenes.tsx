@@ -87,7 +87,7 @@ export function useOrdenes() {
   };
 
   // Cargar estadísticas
-  const cargarVentasSemanales = async (signal?: AbortSignal) => {
+ const cargarVentasSemanales = useCallback(async (signal?: AbortSignal) => {
     setLoading(true);
     setError(null);
     try {
@@ -102,7 +102,7 @@ export function useOrdenes() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   return {
     ordenes,
@@ -195,33 +195,39 @@ export function useDetalleOrden() {
 // --- 1. CREAR NUEVA ORDEN ---
 export function useCrearOrden() {
     const [cargando, setCargando] = useState(false);
-    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    const crear = (payload: any, onSuccess: () => void) => {
-        if (cargando) return;
-        setCargando(true);
+  const crear = useCallback((payload: any, onSuccess: () => void) => {
+    if (cargando) return;
+    setCargando(true);
 
-        const limpiar = () => {
-            if (timeoutRef.current) clearTimeout(timeoutRef.current);
-            socket.off("orden_generada", onExito);
-            socket.off("error_generar", onError);
-        };
-
-        const onExito = () => { limpiar(); setCargando(false); onSuccess(); };
-        const onError = (data: any) => { limpiar(); setCargando(false); alert(data.MENSAJE); };
-
-        socket.on("orden_generada", onExito);
-        socket.on("error_generar", onError);
-
-        timeoutRef.current = setTimeout(() => {
-            limpiar(); setCargando(false); alert("Timeout: El servidor tardó más de 2 minutos.");
-        }, 120000);
-
-        socket.emit("crear_orden", payload);
+    const limpiarListeners = () => {
+      if (timeoutRef.current) { clearTimeout(timeoutRef.current); timeoutRef.current = null; }
+      socket.off("orden_generada", onExito);
+      socket.off("error_generar", onError);
     };
 
-    useEffect(() => () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); }, []);
-    return { crear, cargando };
+    const onExito = () => { limpiarListeners(); setCargando(false); onSuccess(); };
+    const onError = (data: any) => { limpiarListeners(); setCargando(false); alert(data.MENSAJE || "Error al generar orden."); };
+
+    // Limpieza preventiva
+    socket.off("orden_generada");
+    socket.off("error_generar");
+
+    socket.on("orden_generada", onExito);
+    socket.on("error_generar", onError);
+
+    timeoutRef.current = setTimeout(() => {
+      limpiarListeners();
+      setCargando(false);
+      alert("Timeout: El servidor de comandas tardó más de 2 minutos.");
+    }, 120000);
+
+    socket.emit("crear_orden", payload);
+  }, [cargando]);
+
+  useEffect(() => () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); }, []);
+  return { crear, cargando };
 }
 
 // --- 2. ACTUALIZAR ORDEN EXISTENTE ---

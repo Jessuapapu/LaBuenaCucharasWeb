@@ -23,8 +23,8 @@ export default function ClientesPage() {
       {/* 1. Encabezado */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white-70 backdrop-blur-md p-6 rounded-2xl border border-slate-200/60 shadow-sm shadow-slate-900/5">
         <div>
-          <h1 className="text-2xl font-black text-slate-600 tracking-tight">Directorio de Clientes</h1>
-          <p className="text-slate-500 mt-1 text-xs font-medium">Gestiona la información de contacto y direcciones.</p>
+          <h1 className="text-2xl font-black text-slate-800 tracking-tight">Directorio de Clientes</h1>
+          <p className="text-slate-800 mt-1 text-xs font-medium">Gestiona la información de contacto y direcciones.</p>
         </div>
       </div>
 
@@ -34,7 +34,7 @@ export default function ClientesPage() {
         {/* Card 1: Métrica de Clientes */}
         <div className="bg-white-800 backdrop-blur-md p-6 rounded-xl border border-slate-200/60 shadow-sm shadow-slate-900/5 flex items-center justify-between transition-all hover:shadow-md hover:shadow-slate-900/5">
             <div>
-                <p className="text-slate-400 text-sm font-medium uppercase tracking-wider">Total Clientes</p>
+                <p className="text-slate-600 text-sm font-medium uppercase tracking-wider">Total Clientes</p>
                 <h3 className="text-3xl font-black text-slate-800 mt-1.5 tracking-tigth">
                     {loading ?(
                       <span className="inline-block w-8 h-7 bg-slate-100 animate-pulse rounded-lg" />
