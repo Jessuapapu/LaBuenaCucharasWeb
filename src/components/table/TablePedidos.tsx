@@ -3,9 +3,9 @@ import FormularioNuevoPedido from "../forms/PedidosForms";
 import type { DetallePlatillo } from "../../interfaces/Platillos";
 
 // --- Iconos SVG ---
-const IconSort = () => (<svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" /></svg>);
-const IconSortUp = () => (<svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" /></svg>);
-const IconSortDown = () => (<svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h5m4 0v12m0 0l-4-4m4 4l4-4" /></svg>);
+const IconSort = () => (<svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" /></svg>);
+const IconSortUp = () => (<svg className="w-4 h-4 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" /></svg>);
+const IconSortDown = () => (<svg className="w-4 h-4 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h5m4 0v12m0 0l-4-4m4 4l4-4" /></svg>);
 const IconFilter = () => (<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" /></svg>);
 
 
@@ -61,6 +61,16 @@ export default function TablaPedidos({ data, externalStatus }: TablaPedidosProps
         setStatusFilter(externalStatus);
     }
   }, [externalStatus]);
+
+  // Formateador de Moneda Local
+  const formatMoney = (amount: number) => {
+    return new Intl.NumberFormat('es-NI', { style: 'currency', currency: 'NIO' }).format(amount);
+  };
+
+  // Formateador de Fechas
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+  };
 
   // Agrupación de datos
   const rows: Row[] = useMemo(() => {
@@ -159,16 +169,16 @@ export default function TablaPedidos({ data, externalStatus }: TablaPedidosProps
 
   const getStatusColor = (status: string) => {
       switch(status.toUpperCase()) {
-          case 'ENTREGADO': return 'bg-purple-900/50 text-purple-300 border-purple-700';
+          case 'ENTREGADO': return 'bg-purple-50 text-purple-700 border-purple-200';
           case 'ANULADO': return 'bg-red-900/50 text-red-300 border-red-700';
-          case 'PENDIENTE': return 'bg-yellow-900/50 text-yellow-300 border-yellow-700';
-          default: return 'bg-gray-700 text-gray-300';
+          case 'PENDIENTE': return 'bg-amber-50 text-amber-700 border-amber-200';
+          default: return 'bg-slate-50 text-slate-600 border-slate-200';
       }
   };
 
   const HeaderCell = ({ label, sKey }: { label: string, sKey?: SortKey }) => (
-    <th className="px-6 py-4 cursor-pointer hover:bg-gray-800 transition-colors" onClick={() => sKey && handleSort(sKey)}>
-        <div className="flex items-center gap-2 text-gray-300 font-semibold text-xs uppercase">
+    <th className="px-6 py-4 cursor-pointer hover:bg-sky-50/50 transition-colors" onClick={() => sKey && handleSort(sKey)}>
+        <div className="flex items-center gap-2 text-slate-600 font-bold text-xs uppercase tracking wider">
             {label}
             {sKey && sortKey === sKey ? (sortOrder === "asc" ? <IconSortUp /> : <IconSortDown />) : (sKey && <IconSort />)}
         </div>
@@ -179,23 +189,23 @@ export default function TablaPedidos({ data, externalStatus }: TablaPedidosProps
     <div className="w-full space-y-4 animate-in fade-in duration-500">
       
       {/* --- BARRA DE CONTROL --- */}
-      <div className="bg-gray-900 p-4 rounded-xl shadow-lg border border-gray-800">
+      <div className="bg-white/80 backdrop-blur-md p-4 rounded-2xl shadow-sm border border-sky-100/80">
         
         {/* Fila 1: Búsqueda y Botones */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="flex items-center gap-3 w-full md:w-auto flex-1">
+            <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto flex-1">
                 {/* Buscador de Texto */}
                 <input 
                     type="text" 
                     placeholder="🔍 Buscar pedido, cliente..." 
-                    className="w-full md:w-64 bg-gray-800 border border-gray-700 text-white text-sm rounded-lg px-4 py-2 outline-none focus:border-blue-500 transition-all" 
+                    className="w-full sm:w-72 bg-slate-50/80 border border-slate-200 text-slate-800 text-sm font-medium rounded-xl px-4 py-2.5 outline-none focus:border-sky-500 focus:bg-white transition-all placeholder-slate-400" 
                     value={search} 
                     onChange={(e) => setSearch(e.target.value)} 
                 />
                 
                 {/* Select de Estado */}
                 <select 
-                    className="bg-gray-800 border border-gray-700 text-white text-sm rounded-lg px-4 py-2 outline-none focus:border-blue-500 cursor-pointer"
+                    className="w-full sm:w-auto bg-slate-50/80 border border-slate-200 text-slate-700 text-sm font-bold rounded-xl px-4 py-2.5 outline-none focus:border-sky-500 focus:bg-white cursor-pointer transition-all"
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
                 >
@@ -209,8 +219,8 @@ export default function TablaPedidos({ data, externalStatus }: TablaPedidosProps
             {/* Botón Filtros Avanzados */}
             <button 
                 onClick={() => setShowAdvanced(!showAdvanced)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium border flex items-center gap-2 transition-colors ${
-                    showAdvanced ? "bg-blue-900/30 border-blue-500 text-blue-400" : "bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700"
+                className={`w-full md:w-auto px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider border flex items-center justify-center gap-2 transition-all active:scale-95 ${
+                    showAdvanced ? "bg-sky-50 border-sky-300 text-sky-700 shadow-sm" : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-800"
                 }`}
             >
                 <IconFilter /> Filtros Avanzados
@@ -219,15 +229,15 @@ export default function TablaPedidos({ data, externalStatus }: TablaPedidosProps
 
         {/* Fila 2: Panel de Filtros Avanzados */}
         {showAdvanced && (
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-4 pt-4 border-t border-gray-800 animate-in slide-in-from-top-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-4 pt-4 border-t border-sky-100 animate-in slide-in-from-top-2 duration-300">
                 
                 {/* Filtro Platillo (NUEVO) */}
                 <div className="lg:col-span-1">
-                    <label className="block text-xs text-gray-400 mb-1 font-bold">Contiene Platillo</label>
+                    <label className="block text-[11px] uppercase tracking-wider text-slate-400 mb-1 font-extrabold">Contiene Platillo</label>
                     <input 
                         type="text" 
                         placeholder="Ej: Lomo Saltado" 
-                        className="w-full bg-gray-800 border border-gray-700 text-white rounded px-3 py-2 text-sm outline-none focus:border-blue-500" 
+                        className="w-full bg-slate-50/80 border border-slate-200 text-slate-800 rounded-xl px-3 py-2 text-sm font-medium outline-none focus:border-sky-500 focus:bg-white transition-all" 
                         value={platilloFilter} 
                         onChange={e => setPlatilloFilter(e.target.value)} 
                     />
@@ -235,66 +245,75 @@ export default function TablaPedidos({ data, externalStatus }: TablaPedidosProps
 
                 {/* Fecha Inicio */}
                 <div>
-                    <label className="block text-xs text-gray-400 mb-1 font-bold">Fecha Desde</label>
-                    <input type="date" className="w-full bg-gray-800 border border-gray-700 text-white rounded px-3 py-2 text-sm" value={fechaInicio} onChange={e => setFechaInicio(e.target.value)} />
+                    <label className="block text-[11px] uppercase tracking-wider text-slate-400 mb-1 font-extrabold">Fecha Desde</label>
+                    <input type="date" className="w-full bg-slate-50/80 border border-slate-200 text-slate-700 rounded-xl px-3 py-2 text-sm outline-none focus:border-sky-500 focus:bg-white transition-all" value={fechaInicio} onChange={e => setFechaInicio(e.target.value)} />
                 </div>
                 {/* Fecha Fin */}
                 <div>
-                    <label className="block text-xs text-gray-400 mb-1 font-bold">Fecha Hasta</label>
-                    <input type="date" className="w-full bg-gray-800 border border-gray-700 text-white rounded px-3 py-2 text-sm" value={fechaFin} onChange={e => setFechaFin(e.target.value)} />
+                    <label className="block text-[11px] uppercase tracking-wider text-slate-400 mb-1 font-extrabold">Fecha Hasta</label>
+                    <input type="date" className="w-full bg-slate-50/80 border border-slate-200 text-slate-800 rounded-xl px-3 py-2 text-sm outline-none focus:border-sky-500 focus:bg-white transition-all" value={fechaFin} onChange={e => setFechaFin(e.target.value)} />
                 </div>
                 {/* Precio Min */}
                 <div>
-                    <label className="block text-xs text-gray-400 mb-1 font-bold">Monto Mín ($)</label>
-                    <input type="number" placeholder="0" className="w-full bg-gray-800 border border-gray-700 text-white rounded px-3 py-2 text-sm" value={minMonto} onChange={e => setMinMonto(e.target.value ? Number(e.target.value) : "")} />
+                    <label className="block text-[11px] uppercase tracking-wider text-slate-400 mb-1 font-extrabold">Monto Mín ($)</label>
+                    <input type="number" placeholder=" C$ 0" className="w-full bg-slate-50/80 border border-slate-200 text-slate-800 rounded-xl px-3 py-2 text-sm outline-none focus:border-sky-500 focus:bg-white transition-all" value={minMonto} onChange={e => setMinMonto(e.target.value ? Number(e.target.value) : "")} />
                 </div>
                 {/* Precio Max */}
                 <div>
-                    <label className="block text-xs text-gray-400 mb-1 font-bold">Monto Máx ($)</label>
-                    <input type="number" placeholder="Max" className="w-full bg-gray-800 border border-gray-700 text-white rounded px-3 py-2 text-sm" value={maxMonto} onChange={e => setMaxMonto(e.target.value ? Number(e.target.value) : "")} />
+                    <label className="block text-[11px] uppercase tracking-wider text-slate-400 mb-1 font-extrabold">Monto Máx ($)</label>
+                    <input type="number" placeholder="C$ Max" className="w-full bg-slate-50/80 border border-slate-200 text-slate-800 rounded-xl px-3 py-2 text-sm outline-none focus:border-sky-500 focus:bg-white transition-all" value={maxMonto} onChange={e => setMaxMonto(e.target.value ? Number(e.target.value) : "")} />
                 </div>
             </div>
         )}
       </div>
 
       {/* --- TABLA --- */}
-      <div className="relative overflow-x-auto shadow-xl rounded-xl border border-gray-800 bg-gray-900">
-        <table className="w-full text-sm text-left text-gray-400">
-          <thead className="bg-gray-900 border-b border-gray-800">
-            <tr>
-                <HeaderCell label="Nº Pedido" sKey="numero_pedido" />
-                <HeaderCell label="Fecha" sKey="fecha" />
-                <HeaderCell label="Total" sKey="monto_total" />
-                <HeaderCell label="Estado" sKey="estado_pedido" />
-                <HeaderCell label="Cliente" />
-                <th className="px-6 py-4 text-center text-gray-300">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {processedRows.length > 0 ? (
-                processedRows.map((row) => (
-                <tr key={row.id_unico} className="bg-gray-900 border-b border-gray-800 hover:bg-gray-800/60 transition-colors">
-                    <td className="px-6 py-4 font-bold text-white">#{row.numero_pedido}</td>
-                    <td className="px-6 py-4">{new Date(row.resumen.fecha).toLocaleDateString()}</td>
-                    <td className="px-6 py-4 font-medium text-white">${row.montoCalculado.toFixed(2)}</td>
-                    <td className="px-6 py-4">
-                        <span className={`px-2 py-1 rounded text-xs font-bold border ${getStatusColor(row.resumen.estado_pedido)}`}>
-                            {row.resumen.estado_pedido}
-                        </span>
-                    </td>
-                    <td className="px-6 py-4 text-white">{row.resumen.cliente?.nombre_cliente}</td>
-                    <td className="px-6 py-4 text-center">
-                        <button className="text-blue-400 hover:text-white border border-blue-900 hover:bg-blue-600 px-3 py-1 rounded transition-all text-xs font-medium" onClick={() => setSelected(row.resumen)}>
-                            Ver Detalles
-                        </button>
-                    </td>
+      <div className="relative overflow-hidden shadow-md rounded-2xl border border-sky-100 bg-white">
+        <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left">
+              <thead className="bg-slate-50/70 border-b border-sky-100">
+                <tr>
+                    <HeaderCell label="Nº Pedido" sKey="numero_pedido" />
+                    <HeaderCell label="Fecha" sKey="fecha" />
+                    <HeaderCell label="Total" sKey="monto_total" />
+                    <HeaderCell label="Estado" sKey="estado_pedido" />
+                    <HeaderCell label="Cliente" />
+                    <th className="px-6 py-4 text-center text-slate-500 font-bold text-xs uppercase tracking-wider">Acciones</th>
                 </tr>
-                ))
-            ) : (
-                <tr><td colSpan={6} className="text-center py-10 text-gray-500">No hay pedidos con este filtro.</td></tr>
-            )}
-          </tbody>
-        </table>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-slate-600">
+                {processedRows.length > 0 ? (
+                    processedRows.map((row) => (
+                    <tr key={row.id_unico} className="hover:bg-sky-50/30 transition-colors group">
+                        <td className="px-6 py-4 font-black font-mono text-slate-400 text-xs">#{row.numero_pedido}</td>
+                        <td className="px-6 py-4 font-mono text-xs">{formatDate(row.resumen.fecha)}</td>
+                        <td className="px-6 py-4 font-mono font-extrabold text-blue-600 text-sm">{formatMoney(row.montoCalculado)}</td>
+                        <td className="px-6 py-4">
+                            <span className={`px-2.5 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-wider border ${getStatusColor(row.resumen.estado_pedido)}`}>
+                                {row.resumen.estado_pedido}
+                            </span>
+                        </td>
+                        <td className="px-6 py-4 font-black text-slate-800 text-sm">{row.resumen.cliente?.nombre_cliente || "Cliente General"}</td>
+                        <td className="px-6 py-4 text-center">
+                            <button 
+                                className="text-sky-600 hover:text-white border border-sky-100 hover:border-sky-600 bg-sky-50/50 hover:bg-sky-600 px-4 py-1.5 rounded-xl transition-all text-xs font-bold active:scale-95 shadow-sm" 
+                                onClick={() => setSelected(row.resumen)}
+                            >
+                                Ver Detalles
+                            </button>
+                        </td>
+                    </tr>
+                    ))
+                ) : (
+                    <tr>
+                        <td colSpan={6} className="text-center py-16 text-slate-400 font-medium italic">
+                            No se encontraron pedidos con los filtros seleccionados.
+                        </td>
+                    </tr>
+                )}
+              </tbody>
+            </table>
+        </div>
       </div>
 
       {selected && <FormularioNuevoPedido onClose={() => setSelected(null)} onSave={handleSave} />}
