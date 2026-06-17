@@ -1,6 +1,6 @@
 import TablaPlatillos from "../components/table/TablePlatillos";
 import GraficoPlatillosVendidos from "../components/Graficos/GraficoPlatillosVendidos"; 
-import { Utensils, TrendingUp } from "lucide-react";
+import { Utensils, TrendingUp, Layers, Sparkles, RefreshCw } from "lucide-react";
 import { FoodCard } from "../components/cards/FoodCard";
 
 
@@ -23,64 +23,73 @@ export default function ComidasPage() {
       )}
 
       {/* 1. Encabezado */}
-      <div className="bg-gray-900 p-6 rounded-xl border border-gray-800 shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-slate-900/30 backdrop-blur-md p-6 rounded-2xl border border-slate-800/50 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex items-center gap-4">
-             <div className="p-3 bg-orange-900/20 rounded-xl text-orange-400 border border-orange-900/30">
-                <Utensils className="w-8 h-8" />
+             <div className="p-3 bg-gradient-to-br from-blue-500 to-sky-600 rounded-xl text-orange-400 shadow-lg shadow-blue-500/20">
+                <Utensils className="w-6 h-6" />
             </div>
             <div>
-                <h1 className="text-3xl font-bold text-white tracking-tight">Gestión de Comidas</h1>
-                <p className="text-gray-400 mt-1 text-sm">Administra el catálogo, categorías y popularidad.</p>
+                <h1 className="text-2xl font-black text-white tracking-tight">Gestión de Comidas</h1>
+                <p className="text-slate-400 mt-0.5 text-xs font-medium">Administra el catálogo, categorías y popularidad.</p>
             </div>
         </div>
         
         {/* Mini KPI - Atado a la carga de platillos */}
         {!loadingPlatillos && (
-            <div className="bg-gray-800 px-8 py-4 rounded-xl border border-gray-700 text-center shadow-md">
-                <span className="text-xs text-gray-400 uppercase font-bold tracking-wider">Total en Menú</span>
-                <p className="text-3xl font-extrabold text-white mt-1">{platillos.length}</p>
+            <div className="bg-slate-950/40 px-8 py-4 rounded-xl border border-slate-800 flex items-center gap-4 self-start md:self-auto group transition-all hover:border-sky-500/30">
+                <div className="p-2 bg-slate-900 border border-slate-800 text-sky-400 rounded-lg">
+              <Layers className="w-4 h-4" />
+            </div>
+            <div>
+              <span className="block text-[10px] text-slate-500 uppercase font-bold tracking-wider">Total en Menú</span>
+              <p className="text-xl font-black text-white tracking-tight mt-0.5">{platillos.length}</p>
+            </div>
             </div>
         )}
       </div>
 
       {/* 1.5 Destacados */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-2 p-2 text-white rounded-2xl h-16">
-          <h2 className="text-xl font-bold text-blue-500">Platillos Destacados</h2>
+      <div className="space-y-3">
+        <div className="flex items-center gap-2 border-b border-slate-800/60 pb-2">
+          <Sparkles className="w-4 h-4 text-sky-400" />
+          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-300">Platillos Destacados</h2>
         </div>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {/* Evaluamos solo loadingPlatillos */}
           {loadingPlatillos ? (
             [1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-64 bg-gray-900 animate-pulse rounded-2xl border border-gray-800" />
+              <div key={i} className="h-64 bg-slate-900/30 animate-pulse rounded-2xl border border-slate-800/60 shadow-inner" />
             ))
           ) : (
             destacados.map((item) => (
+              <div key={item.id} className="transition-transform duration-200 hover:scale-[1.01]">
               <FoodCard 
                 key={item.id}
                 platillo={item}
                 ventas={true}
               />
+              </div>
             ))
           )}
         </div>
       </div> 
 
       {/* 2. Sección de Análisis (Gráfica Completa) */}
-      <div className="bg-gray-900 p-6 rounded-2xl border border-gray-800 shadow-lg flex flex-col">
-          <div className="flex justify-between items-center mb-6">
-              <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5 text-green-400" />
+      <div className="bg-slate-900/40 backdrop-blur-md p-6 rounded-2xl border border-slate-800/60 shadow-xl flex flex-col justify-between">
+          <div className="mb-4">
+              <h3 className="text-base font-bold text-white flex items-center gap-2 mb-1">
+                  <TrendingUp className="w-5 h-5 text-sky-400" />
                   Ranking de Ventas Global
               </h3>
+              <p className="text-xs text-slate-400">Distribución porcentual e impacto económico del menú en el flujo de caja diario.</p>
           </div>
               
-          <div className="flex-1 w-full min-h-[400px] bg-gray-950/30 rounded-xl border border-gray-800/50 p-4 relative">
+          <div className="w-full min-h-[400px] bg-slate-950/20 rounded-xl border border-slate-900/40 p-4 relative flex items-center justify-center">
               {/* Evaluamos solo loadingVentas */}
               {loadingVentas ? (
-                  <div className="absolute inset-0 flex items-center justify-center gap-2">
-                      <div className="w-6 h-6 border-2 border-gray-500 border-t-transparent rounded-full animate-spin"></div>
+                  <div className="flex flex-col items-center gap-2">
+                      <RefreshCw className="w-5 h-5 animate-spin text-sky-500" />
                       <span className="text-gray-500 text-sm">Cargando gráfica...</span>
                   </div>
               ) : (
@@ -90,22 +99,22 @@ export default function ComidasPage() {
       </div>
 
       {/* 3. Tabla de Datos */}
-      <div className="bg-gray-900/50 rounded-2xl border border-gray-800/50 p-1">
-          <div className="p-4 border-b border-gray-800 mb-2">
-              <h3 className="text-lg font-bold text-white">Inventario de Platillos</h3>
+      <div className="bg-slate-900/20 backdrop-blur-md rounded-2xl border border-slate-800/50 overflow-hidden shadow-2xl">
+          <div className="p-5 border-b border-slate-800/50 bg-slate-900/40">
+              <h3 className="text-base font-bold text-white">Inventario de Platillos</h3>
           </div>
           
           {/* Evaluamos solo loadingPlatillos */}
-          {loadingPlatillos ? (
-            <div className="flex justify-center items-center h-64">
-               <div className="flex flex-col items-center gap-3">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-                  <span className="text-gray-500 text-sm animate-pulse">Sincronizando catálogo...</span>
-               </div>
-            </div>
-          ) : (
-            <TablaPlatillos data={platillos}/>
-          )}
+          <div className="p-2 bg-slate-950/20">
+            {loadingPlatillos ? (
+              <div className="h-64 flex flex-col items-center justify-center text-sky-500 gap-3">
+                    <RefreshCw className="w-6 h-6 animate-spin text-sky-500" />
+                    <span className="text-slate-500 font-bold text-xs uppercase tracking-widest animate-pulse">Sincronizando catálogo...</span>
+              </div>
+            ) : (
+              <TablaPlatillos data={platillos}/>
+            )}
+          </div>
       </div>
 
     </div>

@@ -201,6 +201,7 @@ export function useFacturaPaginacion(initialPage = 1, initialRows = 10) {
     const [error, setError] = useState<string | null>(null);
     const [filtros, setFiltros] = useState<Record<string, any>>({});
 
+    const stringificadoFilter = JSON.stringify(filtros);
     const fetchFacturas = useCallback(async (signal?: AbortSignal) => {
         setLoading(true);
         setError(null);
@@ -215,7 +216,7 @@ export function useFacturaPaginacion(initialPage = 1, initialRows = 10) {
         } finally {
             setLoading(false);
         }
-    }, [pagina, rows, filtros]);
+    }, [pagina, rows, stringificadoFilter]);
 
     useEffect(() => {
         const controller = new AbortController();
@@ -226,6 +227,10 @@ export function useFacturaPaginacion(initialPage = 1, initialRows = 10) {
     const cambiarPagina = (nuevaPagina: number) => setPagina(nuevaPagina);
     const cambiarRows = (nuevasRows: number) => { setRows(nuevasRows); setPagina(1); };
     const aplicarFiltros = (nuevosFiltros: Record<string, any>) => { setFiltros(nuevosFiltros); setPagina(1); };
+
+    const refetch = useCallback(() => {
+    fetchFacturas();
+  }, [fetchFacturas]);
 
     // Sincronización de KPIs en base al set paginado visible o filtrado
     const stats = useMemo(() => {
@@ -253,6 +258,6 @@ export function useFacturaPaginacion(initialPage = 1, initialRows = 10) {
         cambiarPagina,
         cambiarRows,
         aplicarFiltros,
-        refetch: fetchFacturas
+        refetch
     };
 }
