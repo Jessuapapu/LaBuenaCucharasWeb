@@ -33,8 +33,6 @@ export function usePlatillos() {
   }, [fetchPlatillos]);
 
   // Calculamos los destacados aquí mismo
-  console.log(platillos)
-  console.log(platillosDetacados)
   const destacados = platillosDetacados.slice(0, 4);
 
   return { 

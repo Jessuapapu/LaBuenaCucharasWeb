@@ -55,16 +55,8 @@ export async function getContratos(): Promise<any[]> {
   }
 
   const rawData = await response.json();
-  const dataArray = Array.isArray(rawData) ? rawData : [];
+  
 
   // MAPEO DEFENSIVO: Convertimos las propiedades del backend al formato que espera la tabla
-  return dataArray.map((c: any) => ({
-    idContrato: c.idContrato ?? c.IdContrato ?? c.id_contrato,
-    numeroContrato: c.numeroContrato ?? c.NumeroContrato ?? c.numero_contrato,
-    idCliente: c.idCliente ?? c.IdCliente ?? c.id_cliente,
-    fechaInicio: c.fechaInicio ?? c.FechaInicio ?? c.fecha_inicio,
-    fechaVencimiento: c.fechaVencimiento ?? c.FechaVencimiento ?? c.fecha_vencimiento,
-    presupuesto: c.presupuesto ?? c.Presupuesto ?? 0,
-    estado: c.estado ?? c.Estado ?? "Desconocido"
-  }));
+  return rawData;
 }

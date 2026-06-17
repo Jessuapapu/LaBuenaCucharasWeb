@@ -10,33 +10,34 @@ interface PlatilloOption {
 interface ModalNuevoMenuProps {
     MenuData?: Menu_dario | null; //si existe, se edita
     listaPlatillos: PlatilloOption[];
-    onSave: (data: any)=> void;
+    onSave: (data: any) => void;
     onClose: () => void;
 }
 
 export default function ModalNuevoMenu({ MenuData, listaPlatillos, onClose, onSave }: ModalNuevoMenuProps) {
-    const isEditing= !!MenuData?.id;
+    const isEditing = !!MenuData?.id;
     // Estado del formulario
     // Inicializamos la fecha con el día de hoy
-    const [fechadia, setFecha] = useState( new Date().toISOString().split("T")[0]);
-    const [nombrePlatillo, setNombrePlatillo] = useState("") 
-    const [precioUnitario, setPrecioUnitario]= useState<number>(0)// se queda asi me da paja cambiar nombre deestados
-    
+    const [fechadia, setFecha] = useState(new Date().toISOString().split("T")[0]);
+    const [nombrePlatillo, setNombrePlatillo] = useState("")
+    const [precioUnitario, setPrecioUnitario] = useState<number>(0)// se queda asi me da paja cambiar nombre deestados
+    const [horaMenu, sethoraMenu] = useState("")
+
     // Estado para datos auxiliares
     const [loading, setLoading] = useState(false);
 
     // Cargar la lista de Platillos disponibles para el Select
     //useEffect(() => {
-      //  fetch(`${API_URL}/platillos/`)
-        //    .then((res) => res.json())
-          //  .then((data) => setListaPlatillos(Array.isArray(data) ? data : []))
-            //.catch((err) => console.error("Error cargando platillos:", err));
+    //  fetch(`${API_URL}/platillos/`)
+    //    .then((res) => res.json())
+    //  .then((data) => setListaPlatillos(Array.isArray(data) ? data : []))
+    //.catch((err) => console.error("Error cargando platillos:", err));
     //}, []);
     useEffect(() => {
-        if(MenuData){
-          setFecha(MenuData.Fecha || new Date().toISOString().split("T")[0]);
-          setNombrePlatillo(MenuData.NombrePlatillo || "");
-          setPrecioUnitario(MenuData.Monto);
+        if (MenuData) {
+            setFecha(MenuData.Fecha || new Date().toISOString().split("T")[0]);
+            setNombrePlatillo(MenuData.NombrePlatillo || "");
+            setPrecioUnitario(MenuData.Monto);
         }
     }, [MenuData]);
 
@@ -56,12 +57,12 @@ export default function ModalNuevoMenu({ MenuData, listaPlatillos, onClose, onSa
             Fecha: fechadia,
             NombrePlatillo: nombrePlatillo,
             Monto: Number(precioUnitario),
-    
+            Hora: horaMenu
         };
 
         try {
             // Ahora el hook se encarga del resto
-            await onSave(payload); 
+            await onSave(payload);
             // refrescar desde el padre
             onClose();
         } catch (error) {
@@ -74,7 +75,7 @@ export default function ModalNuevoMenu({ MenuData, listaPlatillos, onClose, onSa
     return (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 animate-in fade-in duration-300">
             <div className="bg-gray-900 p-6 rounded-xl text-white max-w-md w-full shadow-2xl border border-gray-700 relative">
-                
+
                 <button type="button" onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-white">
                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
@@ -113,6 +114,7 @@ export default function ModalNuevoMenu({ MenuData, listaPlatillos, onClose, onSa
                             </select>
                         </div>
 
+                        {/* INPUT DEL PRECIO CORREGIDO */}
                         <div>
                             <label className="block text-xs text-gray-400 mb-1">Precio (C$)</label>
                             <input
@@ -120,9 +122,22 @@ export default function ModalNuevoMenu({ MenuData, listaPlatillos, onClose, onSa
                                 step="0.01"
                                 min="0"
                                 className="w-full px-3 py-2 rounded bg-gray-800 border border-gray-600 text-white text-sm disabled:opacity-40"
-                                value={precioUnitario} 
-                                onChange={(e) => setPrecioUnitario(Number(e.target.value))}
+                                value={precioUnitario} // <-- Corregido: Antes era horaMenu
+                                onChange={(e) => setPrecioUnitario(Number(e.target.value))} // <-- Corregido
                                 disabled={isEditing}
+                                required
+                            />
+                        </div>
+
+                        {/* INPUT DE LA HORA CORREGIDO */}
+                        <div>
+                            <label className="block text-xs text-gray-400 mb-1">Hora del Menú</label> {/* <-- Corregido el Label */}
+                            <input
+                                type="time"
+                                id="hora_menu"
+                                className="w-full px-3 py-2 rounded bg-gray-800 border border-gray-600 text-white text-sm disabled:opacity-40"
+                                value={horaMenu} // <-- Corregido: Antes era precioUnitario
+                                onChange={(e) => sethoraMenu(e.target.value)} // <-- Corregido: El input time devuelve un string "HH:mm"~
                                 required
                             />
                         </div>
