@@ -43,53 +43,57 @@ export function useFactura( idFactura?: number) {
   return {guardarFactura, loading, error};
 }
 
-export function useFacturaModal(BusquedaNombre: string, idFactura?: number){
-  const [Fecth, setFecth]= useState(false)
-  const [error, setError]= useState<string | null>(null)
-  const [pedidosPendientes, setpedidosPendientes]= useState<any []>([])
-  const { guardarFactura, loading, error: errorApi }= useFactura(idFactura)
+export function useFacturaModal(BusquedaNombre: string, idFactura?: number) {
+  const [fetching, setFetching] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [pedidosPendientes, setPedidosPendientes] = useState<any[]>([]);
+  const { guardarFactura, loading: loadingApi, error: errorApi } = useFactura(idFactura);
 
-  const [formulario, setFormulario]= useState({
+  const [formulario, setFormulario] = useState({
     idCliente: 0,
     MetodoPago: "EFECTIVO",
     CondicionPago: "CONTADO",
-    OrdenesSeleccion: [] as number [],
+    OrdenesSeleccion: [] as number[],
     tipoDocumentoOrigen: "Orden",
     idContrato: null as number | null,
-    Fecha: ""
-  })
+    Fecha: new Date().toISOString().split("T")[0]
+  });
 
-  useEffect(()=>{
-    if(!BusquedaNombre.trim()){ 
-      setpedidosPendientes([]); return;
+  useEffect(() => {
+    if (!BusquedaNombre.trim()) { 
+      setPedidosPendientes([]); 
+      return;
     }
-    const cargarOrdenes= async()=> {
-    setFecth(true);
-    setError(null);
-    try{
-      const datos= await obtenerOrdenporNombre(BusquedaNombre)
-      const datosNormalizados = datos.map((orden: any) => ({
-    IdOrden: orden.IdOrdenes ?? orden.IdOrden ?? orden.id_orden ?? 0,
-    MontoTotal: Number(orden.CostoTotal ?? orden.MontoTotal ?? orden.monto_total ?? 0),
-    IdCliente: orden.IdCliente ?? orden.id_cliente ?? 0
-  }));
-      setpedidosPendientes(datosNormalizados)
-      if (datosNormalizados.length > 0) {
-          const primeraOrden = datosNormalizados[0];
-          //const idDetectado = primeraOrden.IdCliente ?? primeraOrden.id_cliente ?? 0;
-          setFormulario(prev => ({ ...prev, idCliente: primeraOrden.IdCliente }));
+
+    const cargarOrdenes = async () => {
+      setFetching(true);
+      setError(null);
+      try {
+        const datos = await obtenerOrdenporNombre(BusquedaNombre);
+        const datosNormalizados = datos.map((orden: any) => ({
+          IdOrden: orden.IdOrdenes ?? orden.IdOrden ?? orden.id_orden ?? 0,
+          MontoTotal: Number(orden.CostoTotal ?? orden.MontoTotal ?? orden.monto_total ?? 0),
+          IdCliente: orden.IdCliente ?? orden.id_cliente ?? 0
+        }));
+
+        setPedidosPendientes(datosNormalizados);
+        if (datosNormalizados.length > 0) {
+          setFormulario(prev => ({ ...prev, idCliente: datosNormalizados[0].IdCliente }));
         }
-    } catch (err: any){
-      setError("No hay ordenes activas para este cliente")
-      setpedidosPendientes([])
-    }
-    finally{ setFecth(false) }
-  }
-  const delayDebounce = setTimeout(() => {
+      } catch (err) {
+        setError("No hay órdenes activas para este cliente");
+        setPedidosPendientes([]);
+      } finally {
+        setFetching(false);
+      }
+    };
+
+    const delayDebounce = setTimeout(() => {
       cargarOrdenes();
-    }, 400); //Espera 400ms
-    return ()=> clearTimeout(delayDebounce)
-  }, [BusquedaNombre])
+    }, 400);
+
+    return () => clearTimeout(delayDebounce);
+  }, [BusquedaNombre]);
 
   const alternarSeleccionOrden = useCallback((idOrden: number) => {
     setFormulario(prev => {
@@ -100,10 +104,11 @@ export function useFacturaModal(BusquedaNombre: string, idFactura?: number){
       return { ...prev, OrdenesSeleccion: nuevas };
     });
   }, []);
+
   const subTotalVisual = useMemo(() => {
     return pedidosPendientes
-      .filter(p => formulario.OrdenesSeleccion.includes(p.IdOrden ?? p.id_orden))
-      .reduce((acc, curr) => acc +curr.MontoTotal, 0);
+      .filter(p => formulario.OrdenesSeleccion.includes(p.IdOrden))
+      .reduce((acc, curr) => acc + curr.MontoTotal, 0);
   }, [pedidosPendientes, formulario.OrdenesSeleccion]);
 
   const enviarFactura = useCallback(async (onSuccess: (res: any) => void) => {
@@ -115,7 +120,7 @@ export function useFacturaModal(BusquedaNombre: string, idFactura?: number){
     const estadoFacturaReal = formulario.CondicionPago === "CONTADO" ? "PAGADA" : "PENDIENTE";
     const payloadListo: PayloadFactura = {
       IdCliente: formulario.idCliente,
-      fecha: new Date().toISOString().split("T")[0], // Formato YYYY-MM-DD estándar
+      fecha: formulario.Fecha || new Date().toISOString().split("T")[0],
       MetodoPago: formulario.MetodoPago,
       Estado: estadoFacturaReal,
       tipoDocumentoOrigen: formulario.tipoDocumentoOrigen,
@@ -134,7 +139,7 @@ export function useFacturaModal(BusquedaNombre: string, idFactura?: number){
     alternarSeleccionOrden,
     subTotalVisual,
     enviarFactura,
-    loading: Fecth || loading,
+    loading: fetching || loadingApi,
     error: errorApi || error
   }; 
 }

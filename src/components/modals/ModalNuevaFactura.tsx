@@ -211,7 +211,7 @@ const NoFacturable = useMemo(() => {
                     </thead>
                     <tbody className="divide-y divide-slate-900 text-xs">
                       {pedidosPendientes.map((pedido) => {
-                        const idActual = pedido.idOrden ?? pedido.IdOrden;
+                        const idActual = pedido.IdOrden; // Usar propiedad normalizada estrictamente
                         const seleccionado = ordenesSeleccionadas.includes(idActual);
                         return (
                           <tr 
@@ -232,7 +232,7 @@ const NoFacturable = useMemo(() => {
                               <span className={seleccionado ? "text-blue-400 font-bold" : ""}>Orden #{idActual}</span>
                             </td>
                             <td className="p-3 text-right font-mono font-bold text-emerald-400">
-                              C$ {Number(pedido.monto_total ?? pedido.MontoTotal ?? 0).toFixed(2)}
+                              C$ {pedido.MontoTotal.toFixed(2)} {/* Mapeo directo y seguro de moneda local (NIO) */}
                             </td>
                           </tr>
                         );
