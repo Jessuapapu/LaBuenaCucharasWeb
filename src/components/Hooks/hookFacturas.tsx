@@ -115,12 +115,12 @@ export function useFacturaModal(BusquedaNombre: string, idFactura?: number){
     const estadoFacturaReal = formulario.CondicionPago === "CONTADO" ? "PAGADA" : "PENDIENTE";
     const payloadListo: PayloadFactura = {
       IdCliente: formulario.idCliente,
-      Fecha: new Date().toISOString().split("T")[0], // Formato YYYY-MM-DD estándar
+      fecha: new Date().toISOString().split("T")[0], // Formato YYYY-MM-DD estándar
       MetodoPago: formulario.MetodoPago,
-      CondicionPago: estadoFacturaReal,
+      Estado: estadoFacturaReal,
       tipoDocumentoOrigen: formulario.tipoDocumentoOrigen,
       idContrato: formulario.idContrato,
-      detalle: formulario.OrdenesSeleccion.map(id => ({ IdOrden: id }))
+      detalles: formulario.OrdenesSeleccion.map(id => ({ IdOrden: id }))
     };
 
     await guardarFactura(payloadListo, onSuccess);

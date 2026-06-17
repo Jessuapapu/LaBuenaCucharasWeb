@@ -14,7 +14,6 @@ const getHeaders = () => {
 import type { PayloadFactura, RespuestaFacturasPaginada, Factura, DetalleFacturaLinea } from "../interfaces/Factura";
 import { FacturaMapper } from "../map/facturas";
 
-
 export async function crearFactura(payload: PayloadFactura): Promise<{ message: string; id: number }> {
     //El mapper traduce
     const bodyBackend = FacturaMapper.toApiPayload(payload);

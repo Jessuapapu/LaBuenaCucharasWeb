@@ -30,12 +30,12 @@ export const FacturaMapper = {
   toApiPayload(payload: PayloadFactura): any {
     return {
       id_cliente: payload.IdCliente,
-      fecha: payload.Fecha,
-      estado: payload.CondicionPago || "PENDIENTE", // Vinculado al estado/condición de pago inicial
+      fecha: payload.fecha,
+      Estado: payload.Estado || "PENDIENTE", // Vinculado al estado/condición de pago inicial
       MetodoPago: payload.MetodoPago,
-      CondicionPago: payload.CondicionPago, //Por si no se entiende, busca el mapper (Estado)
+      //CondicionPago: payload.CondicionPago, //Por si no se entiende, busca el mapper (Estado)
       tipoDocumentoOrigen: payload.tipoDocumentoOrigen || "Orden",
-      detalle: payload.detalle.map(d=>({IdOrden: d.IdOrden}))
+      detalle: payload.detalles.map(d=>({IdOrden: d.IdOrden}))
     };
   },
 

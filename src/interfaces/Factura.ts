@@ -1,11 +1,11 @@
 export interface PayloadFactura {
   IdCliente: number;
   //Cantidad?: string | number;
-  Fecha: string;
+  fecha: string;
   MetodoPago: string;
-  CondicionPago: string; //Por si no se entiende, busca el mapper (Estado)
+  Estado: string; 
   tipoDocumentoOrigen?: string | null;
-  detalle: DetalleOrden[];
+  detalles: DetalleOrden[];
   idContrato: number | null;
 }
 
