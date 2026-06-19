@@ -1,4 +1,4 @@
-import TablaFacturas from "../components/table/TableFacturas";
+import TablaFacturas from "../Facturas/tables/TableFacturas";
 import { FileText, DollarSign, CreditCard, AlertCircle, RefreshCw } from "lucide-react";
 import { useFacturasPage } from "../components/Hooks/hookFacturas";
 

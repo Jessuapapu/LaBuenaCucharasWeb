@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import ModalNuevoMenu from "../modals/ModalNuevoMenu";
-import { useImagenesPlatillo } from "../Hooks/hookImagenes";
+import { useImagenesPlatillo } from "../../components/Hooks/hookImagenes";
 import type { Menu_dario } from "../../interfaces/Platillos";
 
 interface TablaMenusProps {

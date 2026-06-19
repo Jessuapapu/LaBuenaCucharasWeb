@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
-import ModalNuevoPlatillo from "../modals/ModalAgregarPlatillos";
-import ModalEditPlatillo from "../modals/ModalEditPlatillos";
+import ModalNuevoPlatillo from "../Modals/ModalAgregarPlatillos";
+import ModalEditPlatillo from "../Modals/ModalEditPlatillos";
 import type { Platillo } from "../../interfaces/Platillos";
-import { useImagenesPlatillo } from "../Hooks/hookImagenes";
+import { useImagenesPlatillo } from "../../components/Hooks/hookImagenes";
 //import { useMenu_diario } from "../Hooks/hookMenu_diario";
 
 interface TablaComidasProps {

@@ -1,7 +1,7 @@
 //import { useState, useEffect } from "react";
 import { Calendar as CalendarIcon, UtensilsCrossed, Edit2, Plus } from "lucide-react";
 //import ModalEditarMenu from "../modals/ModalEditarMenu"; ya mo se utiliza
-import ModalNuevoMenu from "../modals/ModalNuevoMenu";
+import ModalNuevoMenu from "../../Menu/modals/ModalNuevoMenu";
 import type { Menu_dario } from "../../interfaces/Platillos";
 import { useMenu_diario } from "../Hooks/hookMenu_diario";
 

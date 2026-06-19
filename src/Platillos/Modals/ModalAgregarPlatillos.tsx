@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 
 import type { Platillo, categoriaPlatillo } from "../../interfaces/Platillos";
 import { crearPlatillo } from "../../services/platillos";
-import { useCrearIngredientes } from "../Hooks/hookIngredientes";
+import { useCrearIngredientes } from "../../components/Hooks/hookIngredientes";
 import { crearRelacionPlatilloIngrediente } from "../../services/ingredientes";
 
 const API_URL = import.meta.env.VITE_API_URL;

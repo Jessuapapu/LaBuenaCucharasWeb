@@ -1,7 +1,7 @@
 import React from "react";
 //import { useState, useMemo } from "react";
 //import ModalEditarMenu from "../modals/ModalEditarMenu";
-import ModalNuevoMenu from "../modals/ModalNuevoMenu";
+import ModalNuevoMenu from "../../Menu/modals/ModalNuevoMenu";
 import { Utensils, Edit2, ChevronLeft, ChevronRight} from "lucide-react";
 import type { Menu_dario } from "../../interfaces/Platillos";
 //import type { DetalleOrdenLista } from "../../interfaces/Ordenes";

@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { X, User,FileText, Loader2, Briefcase, Activity, ShieldAlert } from "lucide-react";
-import { useEditarCliente } from "../Hooks/hookClientes";
+import { useEditarCliente } from "../../components/Hooks/hookClientes";
 
 interface ModalEditarContratoProps {
     cliente: any; // Usamos any o tu interfaz extendida para soportar las llaves del SP

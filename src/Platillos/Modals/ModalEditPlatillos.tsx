@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import type { Platillo, categoriaPlatillo } from "../../interfaces/Platillos";
-import { useImagenesPlatillo } from "../Hooks/hookImagenes";
+import { useImagenesPlatillo, useImagenPlatillo } from "../../components/Hooks/hookImagenes";
 
 interface ModalEditPlatilloProps {
     platillo: Platillo; // El objeto original a editar
@@ -17,7 +17,7 @@ export default function ModalEditPlatillo({ platillo, onClose, onSave }: ModalEd
 
     // Estados para la imagen
     const [imageFile, setImageFile] = useState<File | null>(null);
-    const { Urlimagen } = useImagenesPlatillo(platillo.nombre_platillo);
+    const { Urlimagen } = useImagenPlatillo(platillo.nombre_platillo);
     const [imagePreview, setImagePreview] = useState<string | null>(Urlimagen || null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [fueEliminada, setFueEliminada] = useState(false); // Flag para avisar si se borró la imagen original

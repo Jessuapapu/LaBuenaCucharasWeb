@@ -4,7 +4,7 @@ import CardGraficoLinealSemanal from "../components/cards/CardsLineales/CardGrap
 import GraficoRadioplatillos from "../components/Graficos/GraficoRadioplatillo";
 
 // Importamos los modales necesarios
-import ModalNuevoCliente from "../components/modals/ModalNuevoCliente";
+import ModalNuevoCliente from "../Clientes/Modals/ModalNuevoCliente";
 import ModalNuevoContrato from "../components/modals/ModalNuevoContrato";
 import FormularioNuevoPedido from "../components/forms/PedidosForms"; 
 import { ShoppingCart, Users, FileText, TrendingUp } from "lucide-react";
@@ -78,7 +78,7 @@ export default function IndexPage() {
             {/* 1. ENCABEZADO */}
             <header className="flex flex-col md:flex-row md:items-center justify-between bg-white/70 backdrop-blur-md p-6 rounded-2xl border border-slate-200/60 shadow-sm shadow-slate-900/5">
                 <div>
-                    <h1 className="text-4xl font-extrabold text-white tracking-tight">
+                    <h1 className="text-4xl font-extrabold text-slate-700 tracking-tight">
                         Panel de Control
                     </h1>
                     <p className="text-slate-700 mt-1 text-sm font-semibold">
@@ -103,22 +103,13 @@ export default function IndexPage() {
             {/* 2. GRID DE NAVEGACIÓN */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
                 <AnimatedKpiCard
-                titulo="Total Pedidos"
+                titulo="Total Ordenes"
                 value={isDashboardLoading ? "Cargando..." : totalPedidosSemana}
                     icon={<ShoppingCart size={24} />}
-                    to="/pedidos"
+                    to="/ordenes"
                     colorPrincipal="#5db8c3"
                     colorSecundario="#3b5bc6"
                 />
-
-                <AnimatedKpiCard
-                titulo="Total clientes"
-                value={isDashboardLoading ? 'Cargando': totalClientes}
-                icon= {<Users size={24}/>}
-                to="/Clientes"
-                colorPrincipal="#3b5bc6"
-                colorSecundario="#5db8c3"
-                 />
 
                  <AnimatedKpiCard
                  titulo="Facturas"
@@ -126,6 +117,15 @@ export default function IndexPage() {
                  icon={<FileText size={24}/>} to="/Facturas"
                  colorPrincipal="#5db8c3"
                  colorSecundario="#3b5bc6" />
+                 
+                 <AnimatedKpiCard
+                    titulo="Total clientes"
+                    value={isDashboardLoading ? 'Cargando': totalClientes}
+                    icon= {<Users size={24}/>}
+                    to="/Clientes"
+                    colorPrincipal="#3b5bc6"
+                    colorSecundario="#5db8c3"
+                 />
 
                  {/*<div className="w-full h-full ">
                         {isDashboardLoading ? (

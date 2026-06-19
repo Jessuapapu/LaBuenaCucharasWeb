@@ -2,8 +2,8 @@ import { useState, useEffect, useMemo } from "react";
 import { Search, Plus, Edit, ChevronLeft, ChevronRight } from "lucide-react";
 
 // Modales
-import ModalNuevoContratos from "../modals/ModalNuevoContratito";
-import ModalEditarContratoProps from "../modals/ModalEditarContratito";
+import ModalNuevoContratos from "../../Contratos/modals/ModalNuevoContratito";
+import ModalEditarContratoProps from "../../Contratos/modals/ModalEditarContratito";
 
 
 // Interfaces (Asegúrate de que la ruta sea correcta)
