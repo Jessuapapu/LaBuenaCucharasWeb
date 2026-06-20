@@ -18,7 +18,6 @@ interface TablaContratosProps {
 type SortKey = "NumeroContrato" | "Estado" | "Presupuesto" | "FechaVencimiento" | "";
 
 export default function TablaContratos({ data, refetch }: TablaContratosProps) {
-    console.log(data)
     const [contratos, setContratos] = useState<any[]>([]);
     const [search, setSearch] = useState("");
 
@@ -65,7 +64,7 @@ export default function TablaContratos({ data, refetch }: TablaContratosProps) {
             // Adaptación a mayúsculas/minúsculas según retorne la base de datos
             const numContrato = String(c.NumeroContrato || c.numeroContrato || "");
             const estado = String(c.Estado || c.estado || "").toLowerCase();
-            const presupuesto = String(c.Presupuesto || c.presupuesto || "");
+            const presupuesto = String(c.presupuesto || c.presupuesto || "");
             const cliente = String(c.NombreCliente || c.nombre_cliente || "");
 
             return (

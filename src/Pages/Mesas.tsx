@@ -7,10 +7,10 @@ import { LayoutDashboard, Clock, UtensilsCrossed } from 'lucide-react';
 
 // Ajusta las rutas a tu proyecto
 import { GridMetricasAdmin } from "../grid/GridMetricasAdmin";
-import { BarraHerramientasAdmin } from "../comedor/BarraHerramientaadmin";
-import { TarjetaMesaAdmin } from "../comedor/TarjetaMesaAdmin";
-import { PantallaCerradoAdmin } from "../comedor/PantallaCerrado";
-import { EstadoVacioMesas } from "../comedor/EstadoVacioMesa";
+import { BarraHerramientasAdmin } from "../Comedor/BarraHerramientaadmin";
+import { TarjetaMesaAdmin } from "../Comedor/TarjetaMesaAdmin";
+import { PantallaCerradoAdmin } from "../Comedor/PantallaCerrado";
+import { EstadoVacioMesas } from "../Comedor/EstadoVacioMesa";
 
 export function IndexMesas() {
   const { estado, error, abrirComedor, cerrarComedor, cargandoAccion: procesandoEstado } = useEstado();
