@@ -78,7 +78,7 @@ const Calendario: React.FC= ()=>{
                             key={idx}
                             onClick={(e) => {if (dia && e.target === e.currentTarget) manejarClickDia(dia)}} 
                             //el group relative respone al hover, asi se edita o se anade
-                            className={`min-h-[100px] rounded-xl border p-2 transition-all flex flex-col justify-between group relative
+                            className={`min-h-[140px] rounded-xl border p-3 transition-all flex flex-col justify-between group relative lg:h-40
                                 ${!dia ? 'bg-transparent border-transparent' : 'bg-gray-800/40 border-gray-800 hover:border-gray-600'}
                                 ${esHoy ? 'ring-2 ring-blue-500/50 border-blue-500/50' : ''}
                             `}

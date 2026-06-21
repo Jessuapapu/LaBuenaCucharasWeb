@@ -50,7 +50,26 @@ export default function GraficoPlatillosVendidos({ data }: GraficoPlatillosVendi
         layout="horizontal" // Barras horizontales para leer mejor los nombres
         valueScale={{ type: 'linear' }}
         indexScale={{ type: 'band', round: true }}
-        colors={{ scheme: 'nivo' }} // O puedes usar un color fijo como '#3b82f6'
+        defs={[
+          {
+            id: 'skyToGreen',
+            type: 'linearGradient',
+            colors: [
+              { offset: 0, color: '#0ea5e9' },   // Celeste / Sky (Tailwind sky-500)
+              { offset: 100, color: '#22c55e' }  // Verde (Tailwind green-500)
+            ]
+          }
+        ]}
+
+        // 2. Vinculamos el gradiente 'skyToGreen' al key 'total_vendido'
+        fill={[
+          {
+            match: {
+              id: 'total_vendido'
+            },
+            id: 'skyToGreen'
+          }
+        ]}
         
         // Estilo de ejes y grid
         theme={{
