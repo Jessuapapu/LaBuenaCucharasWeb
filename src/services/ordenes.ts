@@ -123,9 +123,10 @@ export async function getVentasSemanales(signal?: AbortSignal): Promise<any[]> {
     return formattedData;
 }
 
-export async function obtenerOrdenporNombre(NombreCliente:string): Promise<any[]> {
+export async function obtenerOrdenporNombre(NombreCliente:string, todo: boolean= true): Promise<any[]> {
+    const todoParam= todo ? 1:0
     //nombeCliente porque asi lo espera el backend y todo true para que los datos no se mutilen al cargar
-    const response= await fetch(`${API_URL}/ordenes/?nombeCliente=${encodeURIComponent(NombreCliente)}&todo=true`, {
+    const response= await fetch(`${API_URL}/ordenes/?nombeCliente=${encodeURIComponent(NombreCliente)}&todo=${todoParam}`, {
         method: "GET",
         headers: getHeaders(),
     })

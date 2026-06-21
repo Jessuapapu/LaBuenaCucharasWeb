@@ -127,14 +127,15 @@ export default function IndexPage() {
                     colorSecundario="#5db8c3"
                  />
 
-                 {/*<div className="w-full h-full ">
+            </div>
+                <div className="w-full h-full ">
                         {isDashboardLoading ? (
                             <span className="text-blue-400 animate-pulse">Cargando gráfica...</span>
                         ) : (
-                            <GraficoRadioplatillos data={radialData} />
+                            //ya no es un radial, es de barrras
+                            <GraficoRadioplatillos />
                         )}
-                    </div>*/}
-            </div>
+                </div>
 
             {/* 3. SECCIÓN DE ANÁLISIS Y GRÁFICAS */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">

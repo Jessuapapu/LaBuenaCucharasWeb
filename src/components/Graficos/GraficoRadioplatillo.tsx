@@ -1,17 +1,17 @@
 import { useMemo, createContext, useContext, useState } from "react";
 import {RadialBar, RadialBarChart, ResponsiveContainer, Legend, Sector, PolarAngleAxis, Tooltip } from 'recharts';
+import { useVentasPlatillos } from "../Hooks/hookPlatillos";
+import { Loader2 } from "lucide-react";
 
-interface datosPlatillos {
-  nombre_platillo: string;
-  total_vendido: number;
-  dia?: string;
-}
-
-interface datosPlatillosProps {
-  data: datosPlatillos[];
-}
-
-const color = ['#a2ea25', '#68f3ad', '#25a2ea', '#f36868', '#d068f3', '#18bd72', '#ef0e62'];
+// Paleta de degradados relacionales de Celestes a Verdes
+const gradientesConfig = [
+  { id: "gradCelesteVerde1", from: "#06b6d4", to: "#10b981" }, // Cyan a Esmeralda
+  { id: "gradCelesteVerde2", from: "#3b82f6", to: "#10b981" }, // Azul a Esmeralda
+  { id: "gradCelesteVerde3", from: "#0ea5e9", to: "#22c55e" }, // Sky a Verde
+  { id: "gradCelesteVerde4", from: "#22d3ee", to: "#4ade80" }, // Cyan Claro a Verde Claro
+  { id: "gradCelesteVerde5", from: "#2563eb", to: "#059669" }, // Azul Rey a Esmeralda Oscuro
+  { id: "gradCelesteVerde6", from: "#0284c7", to: "#16a34a" }, // Sky Oscuro a Verde Menta
+];
 
 // Contexto extendido para capturar tanto clics fijados como pre-selecciones por hover
 const InteractionContext = createContext<{
@@ -27,7 +27,7 @@ const CustomTooltip = ({ active, payload }: any) => {
     const info = payload[0].payload;
     return (
       <div className="bg-slate-950/95 backdrop-blur-md text-white p-3 px-4 rounded-xl shadow-2xl border border-slate-800 text-xs animate-in fade-in zoom-in-95 duration-200 z-50">
-        <p className="font-black text-blue-400 uppercase tracking-wide text-[13px] border-b border-slate-800/80 pb-1.5 mb-1.5">
+        <p className="font-black text-cyan-400 uppercase tracking-wide text-[13px] border-b border-slate-800/80 pb-1.5 mb-1.5">
           {info.nombre_platillo}
         </p>
         <div className="flex flex-col gap-1">
@@ -35,11 +35,6 @@ const CustomTooltip = ({ active, payload }: any) => {
             <span className="text-slate-400 font-medium">Total Ventas:</span>
             <span className="font-mono text-emerald-400 font-black text-sm">{info.value} und.</span>
           </p>
-          {info.name && !info.name.includes("Dato") && (
-            <p className="text-[10px] text-slate-500 italic mt-0.5">
-              Corte Temporal: {info.name}
-            </p>
-          )}
         </div>
       </div>
     );
@@ -54,6 +49,7 @@ const SectorPersonalizado = (props: any) => {
   
   // Resalta si no hay nada seleccionado, o si este es el elemento seleccionado/hovered
   const isSelected = activeLabel === payload.nombre_platillo || activeLabel == null;
+  const gradienteAsignado = gradientesConfig[index % gradientesConfig.length];
 
   return (
     <g
@@ -70,43 +66,58 @@ const SectorPersonalizado = (props: any) => {
         startAngle={startAngle}
         endAngle={endAngle}
         className="cursor-pointer transition-all duration-300 ease-out"
-        fill={color[index % color.length]}
+        fill={`url(#${gradienteAsignado.id})`}
         opacity={isSelected ? 1 : 0.15}
       />
     </g>
   );
 };
 
-export default function GraficoRadioplatillos({ data }: datosPlatillosProps) {
+export default function GraficoRadioplatillos() {
   // Maneja el enfoque visual actual (ya sea por click o por hover)
   const [activeLabel, setActiveLabel] = useState<string | undefined>(undefined);
+  const { ventas, errorVentas, loadingVentas }= useVentasPlatillos()
 
   const chartData = useMemo(() => {
-    if (!Array.isArray(data)) return [];
-    return data.map((item, index) => ({
-      name: item.dia || `Dato ${index + 1}`,
-      value: item.total_vendido,
-      fill: color[index % color.length],
-      nombre_platillo: item.nombre_platillo
-    }));
-  }, [data]);
+    if (!Array.isArray(ventas)) return [];
+    return ventas.map((item, index) => {
+      const grad = gradientesConfig[index % gradientesConfig.length];
+      return {
+        name: item.dia || `Dato ${index + 1}`,
+        value: Number(item.total_vendido ?? item.UnidadesVendidas ?? 0),
+        nombre_platillo: item.nombre_platillo ?? item.NombrePlatillo ?? "Platillo",
+        // Guardamos el gradiente para que la leyenda use el color de salida
+        colorLeyenda: grad.from 
+      };
+    });
+  }, [ventas]);
 
   const providerValue = useMemo(() => ({
     activeLabel,
     setActiveLabel,
   }), [activeLabel]);
 
-  if (!data || data.length === 0) {
+  if (loadingVentas) {
     return (
-      <div className="h-[230px] w-full flex items-center justify-center text-slate-400 text-xs font-medium italic bg-white rounded-2xl border border-slate-200/60 shadow-sm animate-pulse">
-        No hay datos de ventas disponibles.
+      <div className="h-[230px] w-full flex flex-col items-center justify-center bg-white rounded-2xl border border-slate-200/60 shadow-sm gap-2">
+        <Loader2 className="w-6 h-6 text-cyan-500 animate-spin" />
+        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest animate-pulse">Consultando Métricas...</span>
+      </div>
+    );
+  }
+
+  // Controlador de error visual
+  if (errorVentas || !ventas || ventas.length === 0) {
+    return (
+      <div className="h-[230px] w-full flex items-center justify-center text-slate-400 text-xs font-medium italic bg-white rounded-2xl border border-slate-200/60 shadow-sm">
+        No hay datos analíticos de ventas disponibles.
       </div>
     );
   }
 
   return (
     <InteractionContext.Provider value={providerValue}>
-      <div className="w-full h-[230px] bg-white p-5 rounded-2xl border border-slate-200/60 shadow-sm hover:shadow-md transition-all duration-300 group/container">
+      <div className="w-full h-[230px] bg-white p-5 rounded-2xl border border-slate-200/60 shadow-sm hover:shadow-md transition-all duration-300">
         <ResponsiveContainer width="100%" height="100%">
           <RadialBarChart
             cx="35%"
@@ -118,6 +129,16 @@ export default function GraficoRadioplatillos({ data }: datosPlatillosProps) {
             startAngle={90}
             endAngle={-270}
           >
+            {/* INYECCIÓN DE DEGRADADOS VECTORIALES (Defs) */}
+            <defs>
+              {gradientesConfig.map((grad) => (
+                <linearGradient key={grad.id} id={grad.id} x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor={grad.from} />
+                  <stop offset="100%" stopColor={grad.to} />
+                </linearGradient>
+              ))}
+            </defs>
+
             <PolarAngleAxis
               type="number"
               domain={[0, 'dataMax']}
@@ -135,7 +156,6 @@ export default function GraficoRadioplatillos({ data }: datosPlatillosProps) {
               dataKey="value"
               cornerRadius={8}
               shape={<SectorPersonalizado />}
-              // Habilitamos animaciones nativas de Recharts al renderizar
               isAnimationActive={true}
               animationDuration={900}
               animationEasing="ease-out"
@@ -166,21 +186,22 @@ export default function GraficoRadioplatillos({ data }: datosPlatillosProps) {
                         onClick={() => setActiveLabel(curr => curr === platilloNombre ? undefined : platilloNombre)}
                       >
                         <div className="flex items-center gap-2 truncate max-w-[140px]">
+                          {/* Bullet dinámico que cambia de escala y usa el color del degradado celeste */}
                           <div 
                             className="w-2.5 h-2.5 rounded-full shrink-0 shadow-sm transition-all duration-300" 
                             style={{ 
-                              backgroundColor: entry.color,
+                              backgroundColor: entry.payload.colorLeyenda,
                               transform: isSelected && activeLabel != null ? 'scale(1.25)' : 'scale(1)'
                             }} 
                           />
-                          <span className={`truncate tracking-tight block transition-colors duration-200 ${isSelected && activeLabel != null ? 'text-blue-600 font-black' : 'text-slate-600 font-semibold'}`}>
+                          <span className={`truncate tracking-tight block transition-colors duration-200 ${isSelected && activeLabel != null ? 'text-cyan-600 font-black' : 'text-slate-600 font-semibold'}`}>
                             {platilloNombre}
                           </span>
                         </div>
                         
                         <span className={`font-mono text-[10px] px-2 py-0.5 rounded-md border transition-all duration-300 ${
                           isSelected && activeLabel != null 
-                            ? 'text-blue-600 bg-blue-50 border-blue-200 shadow-sm scale-105' 
+                            ? 'text-cyan-600 bg-cyan-50 border-cyan-200 shadow-sm scale-105' 
                             : 'text-slate-400 bg-slate-50 border-slate-100/70'
                         }`}>
                           {entry.payload.value} u.
