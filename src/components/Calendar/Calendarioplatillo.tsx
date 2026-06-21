@@ -50,7 +50,9 @@ export default function CalendarioPlatillo({ dataInicial }: CalendarioProps) {
                         onClick={() => setmodalDta({
                             Fecha: new Date().toISOString().split("T")[0],
                             NombrePlatillo: "",
-                            Monto: 0
+                            Monto: 0,
+                            Hora: "" //Por mientras
+                            
                         })} 
                         className="bg-blue-600 text-white px-4 py-2.5 rounded-xl font-bold hover:bg-blue-500 transition-all flex items-center gap-2"
                     >

@@ -127,14 +127,24 @@ export default function IndexPage() {
                     colorSecundario="#5db8c3"
                  />
 
+<<<<<<< HEAD
                  {<div className="w-full h-full ">
+=======
+            </div>
+                <div className="w-full h-full ">
+>>>>>>> c80276f6b2609c270d51c368df54b91e4cbf9556
                         {isDashboardLoading ? (
                             <span className="text-blue-400 animate-pulse">Cargando gráfica...</span>
                         ) : (
-                            <GraficoRadioplatillos data={radialData} />
+                            //ya no es un radial, es de barrras
+                            <GraficoRadioplatillos />
                         )}
+<<<<<<< HEAD
                     </div>}
             </div>
+=======
+                </div>
+>>>>>>> c80276f6b2609c270d51c368df54b91e4cbf9556
 
             {/* 3. SECCIÓN DE ANÁLISIS Y GRÁFICAS */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">

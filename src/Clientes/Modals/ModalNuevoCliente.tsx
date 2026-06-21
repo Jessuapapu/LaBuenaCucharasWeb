@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useCrearCliente } from "../Hooks/hookClientes"; // Tu hook actualizado
+import { useCrearCliente } from "../../components/Hooks/hookClientes"; // Tu hook actualizado
 
 interface ModalNuevoClienteProps {
     onClose: () => void;

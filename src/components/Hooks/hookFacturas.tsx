@@ -78,7 +78,9 @@ export function useFacturaModal(BusquedaNombre: string, id_factura?: number) {
 
         setPedidosPendientes(datosNormalizados);
         if (datosNormalizados.length > 0) {
-          setFormulario(prev => ({ ...prev, idCliente: datosNormalizados[0].IdCliente }));
+          setFormulario(prev => { 
+            if (prev.idCliente === datosNormalizados[0].IdCliente) return prev;
+             return{ ...prev, idCliente: datosNormalizados[0].IdCliente }});
         }
       } catch (err) {
         setError("No hay órdenes activas para este cliente");
