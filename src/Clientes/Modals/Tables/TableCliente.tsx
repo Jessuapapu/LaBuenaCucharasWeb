@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
-import ModalNuevoCliente from "../modals/ModalNuevoCliente";
-import ModalEditarCliente from "../modals/ModalEditarCliente";
-import type { cliente } from "../../interfaces/Clientes";
+import ModalNuevoCliente from "../ModalNuevoCliente";
+import ModalEditarCliente from "../ModalEditarCliente";
+import type { cliente } from "../../../interfaces/Clientes";
 
 
 

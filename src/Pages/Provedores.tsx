@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
-import TablaProveedores from "../components/table/TablaProvedor";
+import TablaProveedores from "../Proveedor/tables/TablaProvedor";
 import { Truck, ArrowLeft, Users, ShieldCheck, RefreshCw } from "lucide-react"; 
 import { useProveedores } from "../components/Hooks/hookProveedor";
-import ModalNuevoIngrediente from "../components/modals/ModalNuevoIngrediente";
+import ModalNuevoIngrediente from "../Ingredientes/modals/ModalNuevoIngrediente";
 
 export default function ProveedoresPage() {
   // Solo llamamos a tu nuevo hook y extraemos lo que necesitamos

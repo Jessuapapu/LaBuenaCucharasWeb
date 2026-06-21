@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import ModalNuevoProveedor from "../modals/ModalNuevoProovedor";
+import ModalNuevoProveedor from "../../Proveedor/modals/ModalNuevoProovedor";
 import ModalEditarProveedor from "../modals/ModalEditarProvedor";
 import type { Proveedor } from "../../interfaces/Proveedor";
 

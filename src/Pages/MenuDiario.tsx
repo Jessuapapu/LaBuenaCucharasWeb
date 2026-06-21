@@ -1,5 +1,5 @@
 //import { useEffect, useState } from "react";
-import TablaMenus from "../components/table/TableMenu";
+import TablaMenus from "../Menu/tables/TableMenu";
 //import CalendarioPlatillo from "../components/Calendar/Calendarioplatillo";
 import Calendario from "../components/Calendar/CalendarioMenu";
 import { useMenu_diario } from "../components/Hooks/hookMenu_diario";

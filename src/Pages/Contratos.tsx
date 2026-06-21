@@ -4,7 +4,7 @@ import { Briefcase, TrendingUp, ShieldCheck, FileText, Loader2 } from "lucide-re
 import { useContratos } from "../components/Hooks/hookContratos";
 
 // Componentes
-import TablaContratos from "../components/table/TableContratos"; // <-- Asegúrate de que la ruta coincida con tu estructura
+import TablaContratos from "../Contratos/tables/TableContratos"; // <-- Asegúrate de que la ruta coincida con tu estructura
 
 // Componente interno para las tarjetas KPI
 const KpiCard = ({ title, value, icon, colorClass, borderClass }: any) => (
@@ -38,7 +38,7 @@ export default function ContratosPage() {
                             <Briefcase size={28} />
                         </div>
                         <div>
-                            <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight">Gestión de Contratos</h1>
+                            <h1 className="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Gestión de Contratos</h1>
                             <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">Acuerdos comerciales corporativos</p>
                         </div>
                     </div>

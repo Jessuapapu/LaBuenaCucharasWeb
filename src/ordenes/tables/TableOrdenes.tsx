@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Edit, Calendar, Loader2, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, MapPin, Receipt, Search, Filter } from 'lucide-react';
 import type { OrdenHistorial, DetalleOrden } from '../hooks/hookOrdenes';
-import { useImagenesPlatillo } from "../../components/Hooks/hookImagenes";
+import { useImagenesPlatillo, useImagenPlatillo } from "../../components/Hooks/hookImagenes";
 
 interface TablaOrdenesProps {
     ordenes: OrdenHistorial[];
@@ -18,7 +18,7 @@ interface TablaOrdenesProps {
 
 // Subcomponente: Platillo
 function TarjetaPlatillo({ det }: { det: DetalleOrden }) {
-    const { Urlimagen, cargando } = useImagenesPlatillo(det.nombre_platillo);
+    const { Urlimagen, cargando } = useImagenPlatillo(det.nombre_platillo);
 
     return (
         <div className="flex items-center gap-4 bg-slate-800/40 p-3 sm:p-4 rounded-xl border border-slate-700/50 hover:bg-slate-800/60 transition-colors">

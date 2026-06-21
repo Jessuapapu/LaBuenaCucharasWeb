@@ -1,7 +1,7 @@
 import { useState, useMemo, useRef } from "react";
 import { Check, User, Search, Calendar, Trash2, Download,
    Layers, Loader2, ShieldAlert, FileText, ArrowRight, X, CreditCard} from "lucide-react";
-import { useFacturaModal} from "../Hooks/hookFacturas";
+import { useFacturaModal} from "../../components/Hooks/hookFacturas";
 //import { useClientes } from "../Hooks/hookClientes";
 import type { ModalNuevaFacturaProps } from "../../interfaces/Ordenes";
 //import type { PayloadFactura } from "../../interfaces/Factura";

@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
-import TablaClientes from "../components/table/TableCliente";
+import TablaClientes from "../Clientes/Modals/Tables/TableCliente";
 import { Users, FileText, ArrowRight } from "lucide-react";
 import { useSoloClientes } from "../components/Hooks/hookClientes";// Ajusta la ruta de tu nuevo hook
 
@@ -21,7 +21,7 @@ export default function ClientesPage() {
       )}
 
       {/* 1. Encabezado */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white-70 backdrop-blur-md p-6 rounded-2xl border border-slate-200/60 shadow-sm shadow-slate-900/5">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white/70 backdrop-blur-md p-6 rounded-2xl border border-slate-200/60 shadow-sm shadow-slate-900/5">
         <div>
           <h1 className="text-2xl font-black text-slate-800 tracking-tight">Directorio de Clientes</h1>
           <p className="text-slate-800 mt-1 text-xs font-medium">Gestiona la información de contacto y direcciones.</p>

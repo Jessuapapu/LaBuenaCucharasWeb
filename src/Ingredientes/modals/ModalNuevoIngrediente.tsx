@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useCrearIngredientes } from "../Hooks/hookIngredientes";
+import { useCrearIngredientes } from "../../components/Hooks/hookIngredientes";
 
 interface ModalIngrediente{
     onClose: ()=> void

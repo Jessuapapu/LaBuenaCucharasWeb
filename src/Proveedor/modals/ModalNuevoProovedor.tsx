@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useCrearProveedor } from "../Hooks/hookProveedor"; // Ajusta la ruta
+import { useCrearProveedor } from "../../components/Hooks/hookProveedor";
 
 interface ModalNuevoProveedorProps {
     onClose: () => void;

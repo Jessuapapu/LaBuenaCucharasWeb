@@ -2,7 +2,7 @@
 import { useState, useEffect, useMemo } from "react";
 import ModalNuevaFactura from "../modals/ModalNuevaFactura";
 //import ModalEditarFactura from "../modals/ModalEditarFactura";
-import { useFacturaPaginacion } from "../Hooks/hookFacturas";
+import { useFacturaPaginacion } from "../../components/Hooks/hookFacturas";
 import type { Factura } from "../../interfaces/Factura";
 
 

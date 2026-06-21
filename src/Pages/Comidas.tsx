@@ -1,4 +1,4 @@
-import TablaPlatillos from "../components/table/TablePlatillos";
+import TablaPlatillos from "../Platillos/tables/TablePlatillos";
 import GraficoPlatillosVendidos from "../components/Graficos/GraficoPlatillosVendidos"; 
 import { Utensils, TrendingUp, Layers, Sparkles, RefreshCw } from "lucide-react";
 import { FoodCard } from "../components/cards/FoodCard";
@@ -23,13 +23,13 @@ export default function ComidasPage() {
       )}
 
       {/* 1. Encabezado */}
-      <div className="bg-slate-900/30 backdrop-blur-md p-6 rounded-2xl border border-slate-800/50 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="bg-white/70 backdrop-blur-md p-6 rounded-2xl border border-slate-800/50 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex items-center gap-4">
              <div className="p-3 bg-gradient-to-br from-blue-500 to-sky-600 rounded-xl text-orange-400 shadow-lg shadow-blue-500/20">
                 <Utensils className="w-6 h-6" />
             </div>
             <div>
-                <h1 className="text-2xl font-black text-white tracking-tight">Gestión de Comidas</h1>
+                <h1 className="text-2xl font-black text-slate-800 tracking-tight">Gestión de Comidas</h1>
                 <p className="text-slate-400 mt-0.5 text-xs font-medium">Administra el catálogo, categorías y popularidad.</p>
             </div>
         </div>

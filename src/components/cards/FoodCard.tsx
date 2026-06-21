@@ -1,5 +1,5 @@
 import { TrendingUp } from "lucide-react";
-import ModalEditPlatillo from "../modals/ModalEditPlatillos";
+import ModalEditPlatillo from "../../Platillos/Modals/ModalEditPlatillos";
 import { useState } from "react";
 import { useImagenesPlatillo } from "../Hooks/hookImagenes";
 import type { FoodCardProps, Platillo } from "../../interfaces/Platillos";
