@@ -1,6 +1,6 @@
 import { useState, useMemo, useRef } from "react";
-import { Check, User, Search, Calendar, Trash2, Download,
-   Layers, Loader2, ShieldAlert, FileText, ArrowRight, X, CreditCard} from "lucide-react";
+import { Check, User, Search, Calendar, Trash2, Download, ChevronDown,
+   Layers, Loader2, ShieldAlert, FileText, ArrowRight, X, CreditCard, Plus} from "lucide-react";
 import { useFacturaModal} from "../../components/Hooks/hookFacturas";
 //import { useClientes } from "../Hooks/hookClientes";
 import type { ModalNuevaFacturaProps } from "../../interfaces/Ordenes";
@@ -20,9 +20,10 @@ export default function ModalNuevaFactura({
 }: ModalFacturaExtendidoProps) {
   
   const [BusquedaCliente, setBusquedaCliente] = useState(""); 
-  //const [mostarSelector, setmostarselector] = useState(false);
+  const [mostarFlotante, setmostarFlotante] = useState(false);
   const [Exportapdf, setExportapdf]= useState(false);
   const ticketpreviwe= useRef<HTMLDivElement>(null);
+  const contenedorBuscador= useRef<HTMLDivElement>(null);
 //const [clienteSeleccionado, setclienteSeleccionado] = useState<number | "">("");
   const {
     formulario,
@@ -53,13 +54,6 @@ const NoFacturable = useMemo(() => {
       ordenesSeleccionadas.includes(p.idOrden ?? p.IdOrden)
     );
   }, [pedidosPendientes, ordenesSeleccionadas]);
-
-  // 4. Costo promedio real por comanda vinculada
-  const precioUnitario = useMemo(() => {
-    const total = Number(subTotalVisual || 0);
-    const cantidad = Number(ordenesSeleccionadas.length || 0);
-    return cantidad > 0 ? total / cantidad : total;
-  }, [subTotalVisual, ordenesSeleccionadas.length]);
 
   const limpiarSeleccionDocumentos = () => {
     setFormulario(prev => ({ ...prev, OrdenesSeleccion: [] }));
@@ -182,12 +176,74 @@ const NoFacturable = useMemo(() => {
               </div>
             )}
 
-            {/* TABLA DE ÓRDENES TRAÍDAS POR EL HOOK */}
-            {formulario.idCliente !== 0 && !NoFacturable ? (
-              <div className="bg-slate-950 border border-slate-800 rounded-2xl p-4 space-y-3 animate-in fade-in duration-300">
+            {/* SECCIÓN BUSCADOR CON LISTADO FLOTANTE */}
+            <div ref={contenedorBuscador} className="space-y-2 relative">
+              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
+                <User size={12} className="text-blue-500" /> Cliente / Comandas
+              </label>
+              <div className="relative">
+                <Search className="absolute left-3.5 top-3.5 text-slate-500" size={16} />
+                <input
+                  type="text"
+                  className="w-full pl-10 pr-10 py-3 rounded-xl bg-slate-950 border border-slate-800 focus:border-blue-500 outline-none text-sm transition-colors text-white font-medium"
+                  placeholder="Escriba el nombre para buscar comandas..."
+                  value={BusquedaCliente}
+                  onFocus={() => setmostarFlotante(true)}
+                  onChange={(e) => {
+                    setBusquedaCliente(e.target.value);
+                    setmostarFlotante(true);
+                  }}
+                />
+                <ChevronDown className="absolute right-3 top-3.5 text-slate-500 pointer-events-none" size={16} />
+                {loading && <Loader2 className="absolute right-8 top-3.5 text-blue-500 animate-spin" size={16} />}
+              </div>
+
+              {/* LISTADO FLOTANTE (DROPDOWN) */}
+              {mostarFlotante && !NoFacturable && BusquedaCliente.trim().length > 0 && (
+                <div className="absolute left-0 right-0 top-[full+4px] mt-1 bg-slate-950 border border-slate-800 rounded-xl shadow-2xl z-50 max-h-56 overflow-y-auto custom-scrollbar divide-y divide-slate-900 animate-in fade-in slide-in-from-top-2 duration-150">
+                  {pedidosPendientes.length > 0 ? (
+                    pedidosPendientes.map((pedido) => {
+                      const seleccionado = ordenesSeleccionadas.includes(pedido.IdOrden);
+                      return (
+                        <div
+                          key={pedido.IdOrden}
+                          onClick={() => alternarSeleccionOrden(pedido.IdOrden)}
+                          className={`flex items-center justify-between p-3 cursor-pointer text-xs transition-colors ${
+                            seleccionado ? "bg-blue-600/10 text-blue-400" : "hover:bg-slate-800 text-slate-300"
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className={`w-4 h-4 rounded flex items-center justify-center border transition-all ${
+                              seleccionado ? "bg-blue-500 border-blue-400" : "border-slate-700 bg-slate-900"
+                            }`}>
+                              {seleccionado && <Check size={10} className="text-slate-950 font-black" />}
+                            </div>
+                            <span className="font-mono font-semibold">Orden #{pedido.IdOrden}</span>
+                          </div>
+                          <span className="font-mono font-bold text-emerald-400">C$ {pedido.MontoTotal.toFixed(2)}</span>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className="p-4 text-center text-xs text-slate-500 italic">
+                      No se encontraron comandas pendientes para este cliente.
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+              {NoFacturable && (
+                <div className="border border-dashed border-slate-800 rounded-2xl p-6 text-center text-slate-500 text-xs space-y-2">
+                  <FileText className="mx-auto text-slate-600" size={24} />
+                  <p>Ingrese el nombre de un cliente válido arriba para cargar sus comandas.</p>
+                </div>
+              )}
+
+              {formulario.idCliente !== 0 && !NoFacturable && (
+              <div className="bg-slate-950/40 border border-slate-800 rounded-2xl p-4 space-y-3 animate-in fade-in">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold uppercase tracking-wider text-blue-400 flex items-center gap-1">
-                    <Layers size={12}/> Comandas pendientes encontradas
+                    <Layers size={12}/> Resumen de órdenes vinculadas ({ordenesSeleccionadas.length})
                   </span>
                   {ordenesSeleccionadas.length > 0 && (
                     <button
@@ -195,59 +251,40 @@ const NoFacturable = useMemo(() => {
                       onClick={limpiarSeleccionDocumentos}
                       className="text-xs flex items-center gap-1 text-red-400 hover:text-red-300 font-semibold transition-colors"
                     >
-                      <Trash2 size={12} /> Limpiar Selección
+                      <Trash2 size={12} /> Desvincular todas
                     </button>
                   )}
                 </div>
 
-                <div className="overflow-x-auto border border-slate-900 rounded-xl max-h-44 overflow-y-auto custom-scrollbar">
-                  <table className="w-full text-left border-collapse">
-                    <thead>
-                      <tr className="bg-slate-900 text-slate-400 text-[10px] uppercase font-bold tracking-wider border-b border-slate-800">
-                        <th className="p-3 text-center w-12">Cobrar</th>
-                        <th className="p-3 font-mono">N° Orden</th>
-                        <th className="p-3 text-right">Monto</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-900 text-xs">
-                      {pedidosPendientes.map((pedido) => {
-                        const idActual = pedido.IdOrden; // Usar propiedad normalizada estrictamente
-                        const seleccionado = ordenesSeleccionadas.includes(idActual);
-                        return (
-                          <tr 
-                            key={idActual}
-                            onClick={() => alternarSeleccionOrden(idActual)}
-                            className={`cursor-pointer transition-colors ${
-                              seleccionado ? "bg-blue-600/10 text-white font-semibold" : "hover:bg-slate-800/50 text-slate-300"
-                            }`}
-                          >
-                            <td className="p-3 text-center">
-                              <div className={`w-4 h-4 mx-auto rounded flex items-center justify-center border transition-all ${
-                                seleccionado ? "bg-blue-500 border-blue-400" : "border-slate-700 bg-slate-900"
-                              }`}>
-                                {seleccionado && <Check size={10} className="text-slate-950 font-black" />}
-                              </div>
-                            </td>
-                            <td className="p-3 font-mono text-slate-400">
-                              <span className={seleccionado ? "text-blue-400 font-bold" : ""}>Orden #{idActual}</span>
-                            </td>
-                            <td className="p-3 text-right font-mono font-bold text-emerald-400">
-                              C$ {pedido.MontoTotal.toFixed(2)} {/* Mapeo directo y seguro de moneda local (NIO) */}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
+                {pedidosSeleccionadosVisual.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-40 overflow-y-auto custom-scrollbar pr-1">
+                    {pedidosSeleccionadosVisual.map((pedido) => (
+                      <div 
+                        key={pedido.IdOrden}
+                        className="bg-slate-950 border border-slate-800/80 rounded-xl p-3 flex items-center justify-between group hover:border-slate-700 transition-colors"
+                      >
+                        <div className="space-y-0.5">
+                          <div className="text-xs font-mono font-bold text-slate-300">Orden #{pedido.IdOrden}</div>
+                          <div className="text-[11px] font-mono font-bold text-emerald-400">C$ {pedido.MontoTotal.toFixed(2)}</div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => alternarSeleccionOrden(pedido.IdOrden)}
+                          className="text-slate-500 hover:text-red-400 p-1.5 rounded-lg hover:bg-red-950/20 transition-colors"
+                          title="Remover orden"
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="border border-dashed border-slate-800 rounded-xl p-6 text-center text-slate-500 text-xs flex flex-col items-center gap-1">
+                    <Plus className="text-blue-500 animate-pulse mb-1" size={16} />
+                    <p>Usa el buscador de arriba para desplegar y asociar órdenes a esta factura.</p>
+                  </div>
+                )}
               </div>
-            ) : (
-              !NoFacturable && (
-                <div className="border border-dashed border-slate-800 rounded-2xl p-6 text-center text-slate-500 text-xs space-y-2">
-                  <FileText className="mx-auto text-slate-600" size={24} />
-                  <p>Ingrese el nombre de un cliente válido arriba para cargar sus comandas.</p>
-                </div>
-              )
             )}
 
             {/* METADATOS FISCALES */}
@@ -277,19 +314,6 @@ const NoFacturable = useMemo(() => {
                   >
                     <option value="EFECTIVO">Efectivo</option>
                     <option value="TRANSFERENCIA">Transferencia</option>
-                  </select>
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[11px] font-bold text-slate-400 uppercase flex items-center gap-1">
-                    <FileText className="text-blue-500" size={12} /> Condición
-                  </label>
-                  <select
-                    className="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:border-blue-500 outline-none"
-                    value={formulario.CondicionPago}
-                    onChange={(e) => setFormulario(prev => ({ ...prev, CondicionPago: e.target.value }))}
-                  >
-                    <option value="CONTADO">Contado</option>
-                    <option value="CREDITO">Crédito</option>
                   </select>
                 </div>
               </div>
@@ -354,8 +378,8 @@ const NoFacturable = useMemo(() => {
                         <span className="font-mono text-slate-900 font-bold">{formulario.Fecha || new Date().toISOString().split("T")[0]}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-slate-400 uppercase font-bold text-[7px]">Condición:</span>
-                        <span className="text-slate-900 font-bold">{formulario.CondicionPago} / {formulario.MetodoPago}</span>
+                        <span className="text-slate-400 uppercase font-bold text-[7px]">Metodo de pago:</span>
+                        <span className="text-slate-900 font-bold">{formulario.MetodoPago} / {formulario.MetodoPago}</span>
                       </div>
                       
                       <div className="border-b border-dashed border-slate-200 my-2" />
@@ -380,10 +404,6 @@ const NoFacturable = useMemo(() => {
                       <div className="flex justify-between">
                         <span>Órdenes Unidas:</span>
                         <span className="font-bold text-slate-900">{ordenesSeleccionadas.length} U</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Costo Promedio:</span>
-                        <span className="font-mono text-slate-950 font-bold">C$ {precioUnitario.toFixed(2)}</span>
                       </div>
                     </div>
                   </div>

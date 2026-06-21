@@ -2,14 +2,24 @@ import TablaPlatillos from "../Platillos/tables/TablePlatillos";
 import GraficoPlatillosVendidos from "../components/Graficos/GraficoPlatillosVendidos"; 
 import { Utensils, TrendingUp, Layers, Sparkles, RefreshCw } from "lucide-react";
 import { FoodCard } from "../components/cards/FoodCard";
+import { FiltroPlatillos } from "../components/Filtro/Filtroplatillos";
 
 
-import { usePlatillos, useVentasPlatillos } from "../components/Hooks/hookPlatillos";
+import { usePlatillos, useVentasPlatillos, usePlatillosForm } from "../components/Hooks/hookPlatillos";
+import { useState, useMemo } from "react";
 
 export default function ComidasPage() {
+  const [categoriaActiva, setCategoriaActiva]= useState("TODOS")
   // Consumimos los estados independientes
-  const { platillos, destacados, loadingPlatillos, errorPlatillos } = usePlatillos();
+  const { platillos, destacados, loadingPlatillos, errorPlatillos } = usePlatillos(categoriaActiva);
   const { ventas, loadingVentas, errorVentas } = useVentasPlatillos(); 
+  const { loadingCategorias, listaCategorias }= usePlatillosForm()
+
+  const categoriasUnificadas = useMemo(() => {
+    const nombresExtraidos = listaCategorias.map(c => c.nombre_categoria);
+    return ["TODOS", ...nombresExtraidos];
+  }, [listaCategorias]);
+
  
 
   return (
@@ -23,7 +33,7 @@ export default function ComidasPage() {
       )}
 
       {/* 1. Encabezado */}
-      <div className="bg-white/70 backdrop-blur-md p-6 rounded-2xl border border-slate-800/50 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="bg-white/70 backdrop-blur-md p-6 rounded-2xl border border-slate-200/60 shadow-sm shadow-slate-900/5 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex items-center gap-4">
              <div className="p-3 bg-gradient-to-br from-blue-500 to-sky-600 rounded-xl text-orange-400 shadow-lg shadow-blue-500/20">
                 <Utensils className="w-6 h-6" />
@@ -42,38 +52,58 @@ export default function ComidasPage() {
             </div>
             <div>
               <span className="block text-[10px] text-slate-500 uppercase font-bold tracking-wider">Total en Menú</span>
-              <p className="text-xl font-black text-white tracking-tight mt-0.5">{platillos.length}</p>
+              <p className="text-xl font-black text-white tracking-tight mt-0.5">{platillos.length}{categoriaActiva === "TODOS" ? "Platillos" : "Items"}</p>
             </div>
             </div>
         )}
       </div>
 
-      {/* 1.5 Destacados */}
+      {/* FILTRO DE CATEGORÍAS */}
+      <div className="space-y-2">
+        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block pl-1">Filtrar menú por clase</span>
+        {loadingCategorias ? (
+          <div className="h-11 w-48 bg-white/40 border border-slate-200/60 rounded-2xl animate-pulse" />
+        ) : (
+          <FiltroPlatillos 
+            categorias={categoriasUnificadas}
+            categoriaActiva={categoriaActiva}
+            onSeleccionar={setCategoriaActiva}
+          />
+        )}
+      </div>
+
+      {/* Destacados */}
       <div className="space-y-3">
         <div className="flex items-center gap-2 border-b border-slate-800/60 pb-2">
           <Sparkles className="w-4 h-4 text-sky-400" />
-          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-300">Platillos Destacados</h2>
+          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-300">
+            Platillos Destacados {categoriaActiva !== "TODOS" && `— ${categoriaActiva}`}
+          </h2>
         </div>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {/* Evaluamos solo loadingPlatillos */}
-          {loadingPlatillos ? (
-            [1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-64 bg-slate-900/30 animate-pulse rounded-2xl border border-slate-800/60 shadow-inner" />
-            ))
-          ) : (
-            destacados.map((item) => (
-              <div key={item.id} className="transition-transform duration-200 hover:scale-[1.01]">
-              <FoodCard 
-                key={item.id}
-                platillo={item}
-                ventas={true}
-              />
+        {loadingPlatillos ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="h-64 bg-slate-900/30 animate-pulse rounded-2xl border border-slate-800/60" />
+            ))}
+          </div>
+        ) : destacados.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {destacados.map((item) => (
+              <div key={item.id_platillo} className="transition-transform duration-200 hover:scale-[1.01]">
+                <FoodCard 
+                  platillo={item}
+                  ventas={true}
+                />
               </div>
-            ))
-          )}
-        </div>
-      </div> 
+            ))}
+          </div>
+        ) : (
+          <div className="border border-dashed border-slate-800 rounded-xl p-8 text-center text-slate-500 text-xs">
+            No hay registros destacados catalogados bajo la categoría "{categoriaActiva}".
+          </div>
+        )}
+      </div>
 
       {/* 2. Sección de Análisis (Gráfica Completa) */}
       <div className="bg-slate-900/40 backdrop-blur-md p-6 rounded-2xl border border-slate-800/60 shadow-xl flex flex-col justify-between">
