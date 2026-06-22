@@ -1,18 +1,40 @@
 import { motion } from "framer-motion";
-import { PlusCircle, UserPlus, FilePlus, Lightbulb, Sparkles } from "lucide-react";
+import { Users, Sparkles, FileSignature, ShoppingCart, BarChart3, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 // Interfaces de ejemplo para las funciones de tus modales
-interface AccionesRapidasProps {
-  setShowModalPedido: (show: boolean) => void;
-  setShowModalCliente: (show: boolean) => void;
-  setShowModalContrato: (show: boolean) => void;
-}
-
-export default function AccionesRapidas({
-  setShowModalPedido,
-  setShowModalCliente,
-  setShowModalContrato,
-}: AccionesRapidasProps) {
+export default function AccionesRapidas() {
+  // Configuración de los accesos directos para recorrerlos limpiamente
+  const rutasNavegacion = [
+    {
+      titulo: "Módulo Clientes",
+      to: "/Clientes",
+      icon: <Users size={18} />,
+      colorBg: "bg-blue-50 text-blue-600 border-blue-100",
+      hoverBorder: "hover:border-blue-400"
+    },
+    {
+      titulo: "Gestión de Contratos",
+      to: "/contratos", 
+      icon: <FileSignature size={18} />,
+      colorBg: "bg-blue-50 text-blue-600 border-blue-100",
+      hoverBorder: "hover:border-blue-400"
+    },
+    {
+      titulo: "Control de Órdenes",
+      to: "/ordenes",
+      icon: <ShoppingCart size={18} />,
+      colorBg: "bg-emerald-50 text-emerald-600 border-emerald-100",
+      hoverBorder: "hover:border-emerald-400"
+    },
+    {
+      titulo: "Informes y Auditoría",
+      to: "/informes",
+      icon: <BarChart3 size={18} />,
+      colorBg: "bg-blue-50 text-blue-600 border-blue-100",
+      hoverBorder: "hover:border-blue-400"
+    }
+  ];
   
   return (
     <div className="bg-white/70 backdrop-blur-md p-6 rounded-2xl border border-slate-200/60 shadow-sm shadow-slate-900/5 flex flex-col justify-between h-full transition-all duration-300 hover:shadow-md hover:shadow-slate-900/5">
@@ -20,91 +42,53 @@ export default function AccionesRapidas({
       {/* Encabezado del Bloque */}
       <div className="mb-5">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 bg-blue-50 text-blue-600 rounded-lg border border-blue-100">
-            <Sparkles size={16} className="animate-pulse" />
+          <div className="p-1.5 bg-slate-100 text-slate-700 rounded-lg border border-slate-200/60">
+            <Sparkles size={16} className="text-blue-500" />
           </div>
-          <h3 className="text-lg font-black text-slate-800 tracking-tight">Acciones Rápidas</h3>
+          <h3 className="text-lg font-black text-slate-800 tracking-tight">Accesos Directos</h3>
         </div>
-        <p className="text-slate-500 text-xs font-medium mt-1">Operaciones frecuentes del sistema</p>
       </div>
 
-      {/* Grid Interactivo Diferente */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 flex-1">
-        
-        {/* Botón: Nuevo Pedido */}
-        <motion.button
-          whileHover={{ y: -3, scale: 1.01 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={() => setShowModalPedido(true)}
-          className="group flex flex-col justify-between items-start p-4 bg-white/90 border border-slate-200 rounded-xl text-left transition-all hover:border-emerald-300 hover:shadow-sm shadow-slate-900/5"
-        >
-          <div className="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl border border-emerald-100 shadow-inner group-hover:bg-emerald-500 group-hover:text-white transition-colors duration-300">
-            <PlusCircle size={20} />
-          </div>
-          <div className="mt-4">
-            <span className="block text-xs font-bold text-slate-800 group-hover:text-emerald-600 transition-colors">
-              Registrar Pedido
-            </span>
-            <span className="block text-[11px] text-slate-400 font-medium mt-0.5">Venta manual</span>
-          </div>
-        </motion.button>
+      {/* Contenedor Vertical de Botones de Navegación */}
+      <div className="flex flex-col gap-3 flex-1 justify-center">
+        {rutasNavegacion.map((ruta) => (
+          <motion.div
+            key={ruta.to}
+            whileHover={{ x: 4 }}
+            whileTap={{ scale: 0.99 }}
+            className="w-full"
+          >
+            <Link
+              to={ruta.to}
+              className={`group flex items-center justify-between p-3.5 bg-white border border-slate-200/80 rounded-xl text-left transition-all ${ruta.hoverBorder} hover:shadow-sm shadow-slate-900/5 active:scale-[0.99]`}
+            >
+              <div className="flex items-center gap-3.5">
+                {/* Contenedor del Icono */}
+                <div className={`p-2.5 rounded-xl border ${ruta.colorBg} transition-transform duration-300 group-hover:scale-105`}>
+                  {ruta.icon}
+                </div>
+                {/* Textos descriptivos */}
+                <div>
+                  <span className="block text-xs font-bold text-slate-700 group-hover:text-slate-900 transition-colors">
+                    {ruta.titulo}
+                  </span>
+                </div>
+              </div>
 
-        {/* Botón: Nuevo Cliente */}
-        <motion.button
-          whileHover={{ y: -3, scale: 1.01 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={() => setShowModalCliente(true)}
-          className="group flex flex-col justify-between items-start p-4 bg-white/90 border border-slate-200 rounded-xl text-left transition-all hover:border-blue-400 hover:shadow-sm shadow-slate-900/5"
-        >
-          <div className="p-2.5 bg-blue-50 text-blue-600 rounded-xl border border-blue-100 shadow-inner group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
-            <UserPlus size={20} />
-          </div>
-          <div className="mt-4">
-            <span className="block text-xs font-bold text-slate-800 group-hover:text-blue-600 transition-colors">
-              Nuevo Cliente
-            </span>
-            <span className="block text-[11px] text-slate-400 font-medium mt-0.5">Crear perfil</span>
-          </div>
-        </motion.button>
-
-        {/* Botón: Nuevo Contrato */}
-        <motion.button
-          whileHover={{ y: -3, scale: 1.01 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={() => setShowModalContrato(true)}
-          className="group flex flex-col justify-between items-start p-4 bg-white/90 border border-slate-200 rounded-xl text-left transition-all hover:border-purple-400 hover:shadow-sm shadow-slate-900/5 sm:col-span-2"
-        >
-          <div className="flex items-center justify-between w-full">
-            <div className="p-2.5 bg-purple-50 text-purple-600 rounded-xl border border-purple-100 shadow-inner group-hover:bg-purple-600 group-hover:text-white transition-colors duration-300">
-              <FilePlus size={20} />
-            </div>
-            <span className="text-[10px] font-bold text-purple-600/70 bg-purple-50 px-2 py-0.5 rounded-full border border-purple-100 group-hover:bg-purple-100 transition-colors">
-              Empresarial
-            </span>
-          </div>
-          <div className="mt-3">
-            <span className="block text-xs font-bold text-slate-800 group-hover:text-purple-600 transition-colors">
-              Generar Nuevo Contrato
-            </span>
-            <span className="block text-[11px] text-slate-400 font-medium mt-0.5">Acuerdos y presupuestos vigentes</span>
-          </div>
-        </motion.button>
-
+              {/* Flecha indicadora de acción de salida rápida */}
+              <ArrowRight 
+                size={14} 
+                className="text-slate-300 group-hover:text-slate-500 group-hover:translate-x-0.5 transition-all" 
+              />
+            </Link>
+          </motion.div>
+        ))}
       </div>
 
-      {/* Sección Inferior: Tip del Día Adaptado */}
-      <div className="mt-5 pt-4 border-t border-slate-100">
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50/50 p-3.5 rounded-xl border border-blue-100/70 flex gap-3 items-start shadow-inner">
-          <div className="p-1.5 bg-white text-amber-500 rounded-lg shadow-sm border border-blue-50 shrink-0">
-            <Lightbulb size={16} />
-          </div>
-          <div>
-            <p className="text-blue-700 text-xs font-bold tracking-tight">Tip del día</p>
-            <p className="text-slate-600 text-[11px] font-medium mt-0.5 leading-relaxed">
-              Mantén actualizado el inventario de platillos para evitar cancelaciones en el comedor.
-            </p>
-          </div>
-        </div>
+      {/* Pie de Control Interno */}
+      <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400 font-bold tracking-wider uppercase">
+        <span>La Buena Cuchara</span>
+        <span>Mostrador</span>
       </div>
 
     </div>

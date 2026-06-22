@@ -14,20 +14,29 @@ export default function UsuarioModal({ isOpen, onClose, modoEdicion, usernameIni
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [rol, setRol] = useState('Mesero');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Sincronizar datos cuando se abre para edición
   useEffect(() => {
     if (isOpen) {
-      setUsername(usernameInicial);
-      setRol(rolInicial);
+      setUsername(modoEdicion ? usernameInicial: "");
+      setRol(modoEdicion ? rolInicial: "Mesero ");
       setPassword('');
     }
   }, [isOpen, usernameInicial, rolInicial]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!username.trim()) return;
-    await onGuardar(username, password || undefined, rol);
+    if (!username.trim() || isSubmitting) return;
+    try {
+      setIsSubmitting(true);
+      await onGuardar(username, password || undefined, rol);
+      onClose();
+    } catch (err) {
+      console.error("Error al procesar el usuario:", err);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (!isOpen) return null;

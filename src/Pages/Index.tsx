@@ -54,13 +54,13 @@ export default function IndexPage() {
     
     const isDashboardLoading = loadingVentas || loadingClientes || loadingFacturas;
 
-    const radialData = useMemo(()=> {
-        return datosVentas.map(d =>({
-            dia: d.x,
-            total_vendido: d.y,
-            nombre_platillo: "Top" // Adaptar según necesites
-        }))
-    }, [datosVentas]);
+    //const radialData = useMemo(()=> {
+      //  return datosVentas.map(d =>({
+        //    dia: d.x,
+        //    total_vendido: d.y,
+        //    nombre_platillo: "Top" // Adaptar según necesites
+       // }))
+   // }, [datosVentas]);
 
     const handleSuccessPedido = useCallback(() => {
         alert("Pedido creado correctamente desde el Panel.");
@@ -127,24 +127,15 @@ export default function IndexPage() {
                     colorSecundario="#5db8c3"
                  />
 
-<<<<<<< HEAD
-                 {<div className="w-full h-full ">
-=======
-            </div>
-                <div className="w-full h-full ">
->>>>>>> c80276f6b2609c270d51c368df54b91e4cbf9556
+                 {/*<div className="w-full h-full ">
                         {isDashboardLoading ? (
                             <span className="text-blue-400 animate-pulse">Cargando gráfica...</span>
                         ) : (
                             //ya no es un radial, es de barrras
                             <GraficoRadioplatillos />
                         )}
-<<<<<<< HEAD
-                    </div>}
+                    </div>*/}
             </div>
-=======
-                </div>
->>>>>>> c80276f6b2609c270d51c368df54b91e4cbf9556
 
             {/* 3. SECCIÓN DE ANÁLISIS Y GRÁFICAS */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
@@ -168,11 +159,7 @@ export default function IndexPage() {
                 </div>
 
                 {/* --- ACCIONES RÁPIDAS (Funcionales) --- */}
-                {<AccionesRapidas 
-                    setShowModalPedido={setShowModalPedido}
-                    setShowModalCliente={setShowModalCliente}
-                    setShowModalContrato={setShowModalContrato}
-                />}
+                {/*{<AccionesRapidas />}*/}
             </div>
 
             {/* --- RENDERIZADO CONDICIONAL DE MODALES --- */}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Shield, Edit2, UserX, CheckCircle, XCircle } from 'lucide-react';
 import type { UsuarioData } from '../interfaces/usuarios';
 
@@ -11,10 +11,15 @@ interface UsuariosTablaProps {
 export default function UsuariosTabla({ usuariosIniciales, onEditar, onDesactivar }: UsuariosTablaProps) {
     const [usuarios, setUsuarios] = useState<UsuarioData[]>(usuariosIniciales);
 
-    const handleDesactivarUsuario = async (usernameTarget: string) => {
-    if (window.confirm(`¿Desactivar al usuario "${usernameTarget}"?`)) {
+    useEffect(() => {
+    setUsuarios(usuariosIniciales);
+  }, [usuariosIniciales]);
+
+  const handleDesactivarUsuario = async (usernameTarget: string) => {
+    if (window.confirm(`¿Seguro que deseas revocar el acceso al usuario "${usernameTarget}"?`)) {
       const exito = await onDesactivar(usernameTarget);
       if (exito) {
+        // Optimistic UI update: cambia el estado local de forma reactiva e instantánea
         setUsuarios(prev => 
           prev.map(u => u.Username === usernameTarget ? { ...u, activo: false } : u)
         );

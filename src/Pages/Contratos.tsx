@@ -39,7 +39,7 @@ export default function ContratosPage() {
                         </div>
                         <div>
                             <h1 className="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Gestión de Contratos</h1>
-                            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">Acuerdos comerciales corporativos</p>
+                            <p className="text-xs font-bold text-slate-700 uppercase tracking-widest mt-1">Acuerdos comerciales corporativos</p>
                         </div>
                     </div>
                 </header>

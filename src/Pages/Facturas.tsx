@@ -33,8 +33,8 @@ export default function FacturasPage() {
             <FileText className="w-6 h-6" />
           </div>
           <div>
-            <h1 className="text-2xl font-black text-slate-800 tracking-tight uppercase">Control de Facturación</h1>
-            <p className="text-slate-500 mt-0.5 text-xs font-medium">Monitoreo en tiempo real de ingresos y estados de cuenta para La Buena Cuchara.</p>
+            <h1 className="text-2xl font-black text-slate-700 tracking-tight uppercase">Control de Facturación</h1>
+            <p className="text-slate-700 mt-0.5 text-xs font-medium">Monitoreo en tiempo real de ingresos y estados de cuenta para La Buena Cuchara.</p>
           </div>
         </div>
 

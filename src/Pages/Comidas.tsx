@@ -38,12 +38,12 @@ export default function ComidasPage() {
         {/* Mini KPI - Atado a la carga de platillos */}
         {!loadingPlatillos && (
             <div className="bg-slate-950/40 px-8 py-4 rounded-xl border border-slate-800 flex items-center gap-4 self-start md:self-auto group transition-all hover:border-sky-500/30">
-                <div className="p-2 bg-slate-900 border border-slate-800 text-sky-400 rounded-lg">
+                <div className="p-2 bg-slate-900 border border-slate-800 text-blue-600 rounded-lg">
               <Layers className="w-4 h-4" />
             </div>
             <div>
               <span className="block text-[10px] text-slate-500 uppercase font-bold tracking-wider">Total en Menú</span>
-              <p className="text-xl font-black text-white tracking-tight mt-0.5">{platillos.length}</p>
+              <p className="text-xl font-black text-blue-600 tracking-tight mt-0.5">{platillos.length}</p>
             </div>
             </div>
         )}
@@ -53,7 +53,7 @@ export default function ComidasPage() {
       <div className="space-y-3">
         <div className="flex items-center gap-2 border-b border-slate-800/60 pb-2">
           <Sparkles className="w-4 h-4 text-sky-400" />
-          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-300">Platillos Destacados</h2>
+          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-600">Platillos Destacados</h2>
         </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
