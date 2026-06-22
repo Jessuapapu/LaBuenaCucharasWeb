@@ -1,39 +1,23 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { getPlatillos, getPlatillosDestacados } from "../../services/platillos"; 
 import { getVentasPlatillos } from "../../services/ordenes";
 import type { categoriaPlatillo } from "../../interfaces/Platillos";
 
-const API_URL = import.meta.env.VITE_API_URL;
-
-// Auxiliar para mantener los headers consistentes
-const getHeaders = () => {
-  const token = localStorage.getItem("access_token");
-  return {
-    "Content-Type": "application/json",
-    ...(token ? { "Authorization": `Bearer ${token}` } : {})
-  };
-};
-
-export function usePlatillos(categoriaActiva: string= "TODOS") {
+export function usePlatillos() {
   const [platillos, setPlatillos] = useState<any[]>([]);
-  const [platillosDetacados, setPlatillosDetacados] = useState<any[]>([]);//es un raw/fila
+  const [platillosDetacados, setPlatillosDetacados] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
-  const [platillosDestacados, setFormatoDestacados] = useState<any[]>([]);
 
   const fetchPlatillos = useCallback(async () => {
     setLoading(true);
     setError(null);
     
     try {
-      // Paralelizamos las promesas para optimizar el tiempo de respuesta en mostrador
-      const [dataPlatillos, dataDestacados] = await Promise.all([
-        getPlatillos(),
-        getPlatillosDestacados()
-      ]);
-      setPlatillos(dataPlatillos);
-      setFormatoDestacados(dataDestacados);
+      const data = await getPlatillos();
+      setPlatillos(data);
+      const dataDestacatados = await getPlatillosDestacados();
+      setPlatillosDetacados(dataDestacatados);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Error al cargar el catálogo de platillos";
       console.error(errorMessage);
@@ -48,27 +32,11 @@ export function usePlatillos(categoriaActiva: string= "TODOS") {
     fetchPlatillos();
   }, [fetchPlatillos]);
 
-  
-
-  const platillosFiltrados = useMemo(() => {
-    if (!categoriaActiva || categoriaActiva.toUpperCase() === "TODOS") return platillos;
-    return platillos.filter(p => 
-      p.nombre_categoria?.toString().toUpperCase() === categoriaActiva.toUpperCase()
-    );
-  }, [platillos, categoriaActiva]);
-
   // Calculamos los destacados aquí mismo
-  const destacados = useMemo(()=> {
-    if (!categoriaActiva || categoriaActiva.toUpperCase() === "TODOS") {
-      return platillosDetacados.slice(0, 4);
-    }
-    return platillosDetacados
-      .filter(p => p.nombre_categoria?.toString().toUpperCase() === categoriaActiva.toUpperCase())
-      .slice(0, 4);
-  }, [platillosDetacados, categoriaActiva]);
+  const destacados = platillosDetacados.slice(0, 4);
 
   return { 
-    platillos: platillosFiltrados, 
+    platillos, 
     destacados, 
     loadingPlatillos: loading, 
     errorPlatillos: error,
@@ -116,10 +84,7 @@ export function usePlatillosForm() {
 
   useEffect(() => {
     setLoadingCategorias(true);
-    fetch(`${API_URL}/platillos/categoria`, {
-      method: "GET",
-      headers: getHeaders()
-    })
+    fetch("http://127.0.0.1:8001/platillos/categoria")
       .then((res) => {
         if (!res.ok) throw new Error("Error al cargar categorías");
         return res.json();
