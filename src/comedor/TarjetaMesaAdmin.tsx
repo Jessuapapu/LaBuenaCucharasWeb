@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { BotonMesa } from '../grid/botonMesa'; 
+import { BotonMesa } from './grid/botonMesa'; 
 import { socket } from '../services/websocket';
 import { useOrdenesMesa, useDetalleOrden } from "../components/Hooks/hookOrdenes";
 import { Loader2, ArrowUpRight, UtensilsCrossed, Receipt } from 'lucide-react';

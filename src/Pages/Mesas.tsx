@@ -6,7 +6,7 @@ import { socket } from '../services/websocket';
 import { LayoutDashboard, Clock, UtensilsCrossed } from 'lucide-react';
 
 // Ajusta las rutas a tu proyecto
-import { GridMetricasAdmin } from "../grid/GridMetricasAdmin";
+import { GridMetricasAdmin } from "../Comedor/grid/GridMetricasAdmin";
 import { BarraHerramientasAdmin } from "../comedor/BarraHerramientaadmin";
 import { TarjetaMesaAdmin } from "../comedor/TarjetaMesaAdmin";
 import { PantallaCerradoAdmin } from "../comedor/PantallaCerrado";

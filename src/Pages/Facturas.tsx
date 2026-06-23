@@ -1,10 +1,10 @@
 import TablaFacturas from "../Facturas/tables/TableFacturas";
-import { FileText, DollarSign, CreditCard, AlertCircle, RefreshCw } from "lucide-react";
+import { FileText, DollarSign, CreditCard, AlertCircle } from "lucide-react";
 import { useFacturasPage } from "../components/Hooks/hookFacturas";
 
 export default function FacturasPage() {
   // Consumimos únicamente la data estructural y de KPIs globales para la cabecera
-  const { stats, loading, error, refetch } = useFacturasPage();
+  const { stats, loading, error} = useFacturasPage();
 
   // Formateador oficial de moneda legal (NIO) con precisión de centavos para auditorías fiscales
   const formatMoney = (val: number) => 
@@ -27,7 +27,7 @@ export default function FacturasPage() {
       )}
 
       {/* Encabezado Principal del Módulo */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-white/70 backdrop-blur-md p-6 rounded-2xl border border-slate-200/60 shadow-sm shadow-slate-900/5 gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white-800 backdrop-blur-md p-6 rounded-xl border border-slate-200/60 shadow-sm shadow-slate-900/5 ">
         <div className="flex items-center gap-4">
           <div className="p-3 bg-gradient-to-br from-blue-500 to-sky-600 rounded-xl text-white shadow-md shadow-blue-500/20">
             <FileText className="w-6 h-6" />
@@ -39,14 +39,7 @@ export default function FacturasPage() {
         </div>
 
         {/* Botón de Sincronización Manual Forzada */}
-        <button 
-          onClick={() => refetch()}
-          disabled={loading}
-          className="self-end sm:self-center px-4 py-2 bg-slate-100 hover:bg-slate-200 disabled:opacity-50 text-slate-700 text-xs font-bold rounded-xl transition-all border border-slate-200/80 flex items-center gap-2 active:scale-95"
-        >
-          <RefreshCw className={`w-3.5 h-3.5 text-slate-500 ${loading ? "animate-spin" : ""}`} />
-          Recargar Resumen
-        </button>
+      
       </div>
 
       {/* Panel de Indicadores Clave de Rendimiento (KPIs) */}
@@ -61,9 +54,9 @@ export default function FacturasPage() {
           stats && (
             <>
               {/* KPI 1: Total Facturado Histórico */}
-              <div className="relative overflow-hidden bg-gradient-to-br from-white/90 via-white/80 to-emerald-50/30 backdrop-blur-md p-5 rounded-2xl border border-slate-200/60 shadow-sm shadow-slate-900/5 flex justify-between items-center group hover:border-emerald-400/50 transition-all duration-300 hover:shadow-md">
+              <div className="relative overflow-hidden bg-gradient-to-br bg-white-800 backdrop-blur-md p-6 rounded-xl border border-slate-200/60 shadow-sm shadow-slate-900/5  flex justify-between items-center group hover:border-emerald-400/50 transition-all duration-300 hover:shadow-md">
                 <div className="space-y-1">
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Total Facturado</p>
+                  <p className="text-lg text-slate-500 font-bold uppercase tracking-wider">Total Facturado</p>
                   <h3 className="text-xl font-black text-slate-800 tracking-tight group-hover:text-emerald-700 transition-colors">
                     {formatMoney(stats.total)}
                   </h3>
@@ -74,10 +67,10 @@ export default function FacturasPage() {
               </div>
 
               {/* KPI 2: Capital Líquido Cobrado */}
-              <div className="relative overflow-hidden bg-gradient-to-br from-white/90 via-white/80 to-blue-50/40 backdrop-blur-md p-5 rounded-2xl border border-slate-200/60 shadow-sm shadow-slate-900/5 flex justify-between items-center group hover:border-blue-400/50 transition-all duration-300 hover:shadow-md">
+              <div className="relative overflow-hidden bg-white-800 backdrop-blur-md p-6 rounded-xl border border-slate-200/60 shadow-sm shadow-slate-900/5 flex justify-between items-center group hover:border-blue-400/50 transition-all duration-300 hover:shadow-md">
                 <div className="space-y-1">
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Ingresos Cobrados</p>
-                  <h3 className="text-xl font-black text-blue-600 tracking-tight">
+                  <p className="text-lg text-slate-400 font-bold uppercase tracking-wider">Ingresos Cobrados</p>
+                  <h3 className="text-xl font-black text-black tracking-tight group-hover:text-blue-600  transition-colors">
                     {formatMoney(stats.pagadas)}
                   </h3>
                 </div>
@@ -87,10 +80,10 @@ export default function FacturasPage() {
               </div>
 
               {/* KPI 3: Cuentas por Cobrar Pendientes */}
-              <div className="relative overflow-hidden bg-gradient-to-br from-white/90 via-white/80 to-amber-50/30 backdrop-blur-md p-5 rounded-2xl border border-slate-200/60 shadow-sm shadow-slate-900/5 flex justify-between items-center group hover:border-amber-400/50 transition-all duration-300 hover:shadow-md">
+              <div className="relative overflow-hidden bg-white-800 backdrop-blur-md p-6 rounded-xl border border-slate-200/60 shadow-sm shadow-slate-900/5 flex justify-between items-center group hover:border-amber-400/50 transition-all duration-300 hover:shadow-md">
                 <div className="space-y-1">
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Facturas Pendientes</p>
-                  <h3 className="text-2xl font-black text-amber-600 tracking-tight">
+                  <p className="text-lg text-slate-500 font-bold uppercase tracking-wider">Facturas Pendientes</p>
+                  <h3 className="text-2xl font-black text-black  group-hover:text-amber-600 tracking-tight">
                     {stats.pendiente}
                   </h3>
                 </div>

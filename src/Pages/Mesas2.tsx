@@ -13,7 +13,7 @@ import { useCrearOrden, useActualizarOrden, useMandarACaja } from "../components
 import { socket } from "../services/websocket";
 
 // Componentes
-import { MenuDiaGrid } from "../grid/MenuGrid";
+import { MenuDiaGrid } from "../Comedor/grid/MenuGrid";
 import { OrdenActivaTable } from "../components/table/OrdenActivaTable";
 import { ModalPlatilloExtra } from "../components/modals/ModalDetallesExtra";
 import { ModalDetalleOrden } from "../components/modals/ModalMostrarDetalles";

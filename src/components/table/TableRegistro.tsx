@@ -255,7 +255,6 @@ export default function TablaRegistros({ data }: TablaRegistrosProps) {
         </div>
     </th>
   );
-
   return (
     <div className="w-full space-y-4 animate-in fade-in duration-500">
       <div className="bg-white/80 backdrop-blur-md p-4 rounded-xl shadow-md border border-[#9ab7e2]/30 flex flex-col md:flex-row justify-between items-center gap-4">
@@ -277,6 +276,7 @@ export default function TablaRegistros({ data }: TablaRegistrosProps) {
           </thead>
           <tbody>
             {paginatedRows.length > 0 ? (
+
               paginatedRows.map((row) => (
                 <FilaRegistro 
                   key={row.id_unico} 

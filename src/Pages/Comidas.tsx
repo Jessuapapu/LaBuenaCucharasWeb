@@ -50,11 +50,11 @@ export default function ComidasPage() {
       </div>
 
       {/* 1.5 Destacados */}
-      <div className="bg-slate-900/40 backdrop-blur-md p-6 rounded-2xl border border-slate-800/60 shadow-xl flex flex-col justify-between space-y-3">
+      <div className="bg-white-800 backdrop-blur-md p-6 rounded-xl border border-slate-200/60 shadow-sm shadow-slate-900/5 flex flex-col justify-between space-y-3">
         
         <div className="flex items-center gap-2 border-b border-slate-800/60 pb-2">
           <Sparkles className="w-4 h-4 text-sky-400" />
-          <h2 className="text-lg font-bold uppercase tracking-wider text-slate-1000">Platillos Destacados</h2>
+          <h2 className="text-2xl font-bold uppercase tracking-wider text-slate-500">Platillos Destacados</h2>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -79,9 +79,9 @@ export default function ComidasPage() {
 
 
       {/* 3. Tabla de Datos */}
-      <div className="bg-slate-900/20 backdrop-blur-md rounded-2xl border border-slate-800/50 overflow-hidden shadow-2xl">
+      <div className="bg-white-800 backdrop-blur-md p-6 rounded-xl border border-slate-200/60 shadow-sm shadow-slate-900/5 overflow-hidden shadow-2xl">
         <div className="p-5 border-b border-slate-800/50 bg-slate-900/40">
-          <h3 className="text-base font-bold text-white">Inventario de Platillos</h3>
+          <h3 className="text-2xl font-bold text-white">Inventario de Platillos</h3>
         </div>
 
         {/* Evaluamos solo loadingPlatillos */}

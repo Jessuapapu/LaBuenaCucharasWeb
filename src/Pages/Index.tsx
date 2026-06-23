@@ -1,7 +1,7 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, /*useMemo,*/ useCallback } from "react";
 import AnimatedKpiCard from "../components/cards/KPICardAnimado";
 import CardGraficoLinealSemanal from "../components/cards/CardsLineales/CardGrapLineal";
-import GraficoRadioplatillos from "../components/Graficos/GraficoRadioplatillo";
+//import GraficoRadioplatillos from "../components/Graficos/GraficoRadioplatillo";
 
 // Importamos los modales necesarios
 import ModalNuevoCliente from "../Clientes/Modals/ModalNuevoCliente";
@@ -13,7 +13,7 @@ import { ShoppingCart, Users, FileText, TrendingUp } from "lucide-react";
 import { useClientes } from "../components/Hooks/hookClientes";
 import { useFacturasPage } from "../components/Hooks/hookFacturas";
 import { useOrdenes } from "../components/Hooks/hookOrdenes"; // Cambiamos el hook importado
-import AccionesRapidas from "../components/Filtro/AccionesRapidas";
+//import AccionesRapidas from "../components/Filtro/AccionesRapidas";
 
 
 // Interfaces
@@ -160,6 +160,7 @@ export default function IndexPage() {
 
                 {/* --- ACCIONES RÁPIDAS (Funcionales) --- */}
                 {/*{<AccionesRapidas />}*/}
+
             </div>
 
             {/* --- RENDERIZADO CONDICIONAL DE MODALES --- */}

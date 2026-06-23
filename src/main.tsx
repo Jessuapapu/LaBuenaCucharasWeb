@@ -20,6 +20,7 @@ import OrdenesPage from "./Pages/Ordenes";
 import MenuMesas from "./Pages/Mesas2";
 import { IndexMesas } from "./Pages/Mesas";
 import CajaPage from "./Pages/caja";
+import HorariosPage from "./Pages/HorariosPage";
 
 const router = createBrowserRouter([
   {
@@ -55,7 +56,14 @@ const router = createBrowserRouter([
             ]
           },
           {/* path: '/Informe', element: <InformesPage />*/ },
-          { path: '/caja', element: <CajaPage /> }
+          { path: '/caja', element: <CajaPage /> },
+          {
+            path: '/configuracion',
+            children: [
+              {path: '/configuracion/horarios', element: <HorariosPage />}
+            ]
+
+          }
         ]
       }
 

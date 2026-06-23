@@ -1,5 +1,5 @@
 import { LayoutDashboard, Users, CheckCircle2, Percent } from 'lucide-react';
-import type { mesa } from '../components/Hooks/hookComedor';
+import type { mesa } from '../../components/Hooks/hookComedor';
 
 interface MetricasProps {
   cantidadMesas: number;
