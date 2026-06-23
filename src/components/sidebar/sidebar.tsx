@@ -76,7 +76,8 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, logoSrc, business
             <aside
                 onMouseEnter={() => setSidebarOpen(true)}  // Abre al posicionarse encima
                 onMouseLeave={() => setSidebarOpen(false)} // Cierra al retirar el mouse
-                className={`hidden lg:flex flex-col fixed left-0 top-0 h-screen bg-gradient-to-r from-sky-300 via-blue-200 to-emerald-200 backdrop-blur shadow-xl shadow-slate-900/5 z-50 transition-all duration-300 ease-in-out border-r border-white/30
+                //Para mas suave el tono dl sidebar: from-blue-400 via-blue-200 to-blue-600/60
+                className={`hidden lg:flex flex-col fixed left-0 top-0 h-screen bg-gradient-to-r from-cyan-400/60 to-blue-500 backdrop-blur-md shadow-xl shadow-blue-600/15 z-50 transition-all duration-300 ease-in-out border-r border-white/30
                 ${sidebarOpen ? "w-64" : "w-20"}`}
                 //style={{ backgroundColor: '#0b1323' }} 
             >

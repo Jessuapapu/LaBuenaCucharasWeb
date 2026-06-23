@@ -177,17 +177,17 @@ export default function InformesPage() {
 
       <div ref={areaReporteRef} className="space-y-6 bg-[#070a13] p-6 rounded-3xl">
         {/* Header */}
-        <div className="bg-slate-900/30 backdrop-blur-md p-8 rounded-2xl border border-slate-800/60 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="bg-white-800 backdrop-blur-md p-8 rounded-2xl border border-slate-200/60 shadow-sm shadow-slate-900/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-sky-400 font-bold text-xs uppercase tracking-widest mb-1">
+            <div className="flex items-center gap-2 text-white font-bold text-sm uppercase tracking-widest mb-1">
               <BarChart3 className="w-4 h-4" /> Servidor Local e Integración de Órdenes
             </div>
-              <h1 className="text-3xl font-black text-white tracking-tight">Centro de Inteligencia</h1>
-              <p className="text-slate-400 text-sm mt-0.5">Análisis financiero y operativo en tiempo real.</p>
+              <h1 className="text-2xl font-black text-white tracking-tight">Centro de Inteligencia</h1>
+              <p className="text-slate-800/60 text-sm mt-0.5">Análisis financiero y operativo en tiempo real.</p>
           </div>
-          <div className="bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-2.5">
-            <span className="block text-[9px] font-bold text-slate-500 uppercase tracking-wider">Divisa de Ajuste</span>
-            <span className="text-sm font-black text-white tracking-wide">Córdoba Nicaragüense (NIO)</span>
+          <div className="bg-slate-800/40 border border-slate-800 rounded-xl px-4 py-2.5">
+            <span className="block text-[9px] font-black text-white uppercase tracking-wider">Divisa de Ajuste</span>
+            <span className="text-sm font-bold text-white leading-normal italic tracking-wide">Córdoba Nicaragüense (NIO)</span>
          </div>
         </div>
 

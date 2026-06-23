@@ -32,7 +32,7 @@ export default function ContratosPage() {
         <div className="space-y-6 animate-in fade-in duration-500 relative">
                 
                 {/* ================= HEADER ================= */}
-                <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/80 backdrop-blur-lg p-6 rounded-2xl border border-slate-200/60 shadow-sm shadow-slate-900/5">
+        <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/80 backdrop-blur-lg p-6 rounded-2xl border border-slate-200/60 shadow-sm shadow-slate-900/5">
         <div className="flex items-center gap-4">
           <div className="p-3 bg-gradient-to-br from-blue-600 to-sky-600 text-white rounded-xl shadow-md shadow-blue-500/10">
             <Briefcase size={24} />

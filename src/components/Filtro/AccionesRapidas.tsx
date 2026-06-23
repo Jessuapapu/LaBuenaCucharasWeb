@@ -10,28 +10,28 @@ export default function AccionesRapidas() {
       titulo: "Módulo Clientes",
       to: "/Clientes",
       icon: <Users size={18} />,
-      colorBg: "bg-blue-50 text-blue-600 border-blue-100",
+      colorBg: "bg-gradient-to-r from-blue-400 to-cyan-400 text-white border-blue-100",
       hoverBorder: "hover:border-blue-400"
     },
     {
       titulo: "Gestión de Contratos",
       to: "/contratos", 
       icon: <FileSignature size={18} />,
-      colorBg: "bg-blue-50 text-blue-600 border-blue-100",
+      colorBg: "bg-gradient-to-r from-blue-400 to-cyan-400 hover:from-blue-500 hover:to-cyan-500 text-white border-blue-100",
       hoverBorder: "hover:border-blue-400"
     },
     {
       titulo: "Control de Órdenes",
       to: "/ordenes",
       icon: <ShoppingCart size={18} />,
-      colorBg: "bg-emerald-50 text-emerald-600 border-emerald-100",
-      hoverBorder: "hover:border-emerald-400"
+      colorBg: "bg-gradient-to-r from-blue-400 to-cyan-400 hover:from-blue-500 hover:to-cyan-500 text-white border-blue-100",
+      hoverBorder: "hover:border-blue-400"
     },
     {
       titulo: "Informes y Auditoría",
       to: "/informes",
       icon: <BarChart3 size={18} />,
-      colorBg: "bg-blue-50 text-blue-600 border-blue-100",
+      colorBg: "bg-gradient-to-r from-blue-400 to-cyan-400 hover:from-blue-500 hover:to-cyan-500 text-white border-blue-100",
       hoverBorder: "hover:border-blue-400"
     }
   ];
@@ -42,7 +42,7 @@ export default function AccionesRapidas() {
       {/* Encabezado del Bloque */}
       <div className="mb-5">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 bg-slate-100 text-slate-700 rounded-lg border border-slate-200/60">
+          <div className="p-1.5 bg-slate-100 text-slate-800 rounded-lg border border-slate-200/60">
             <Sparkles size={16} className="text-blue-500" />
           </div>
           <h3 className="text-lg font-black text-slate-800 tracking-tight">Accesos Directos</h3>
