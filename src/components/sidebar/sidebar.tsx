@@ -1,4 +1,5 @@
-import { X, CircleDashed, Tag } from "lucide-react";
+import { X, CircleDashed, Tag, Home, ClipboardList, FileText, UtensilsCrossed, CalendarDays, 
+    Users, Package, Wallet } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
 import React from "react"; // Necesario para la desestructuración de props
@@ -75,24 +76,24 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, logoSrc, business
             <aside
                 onMouseEnter={() => setSidebarOpen(true)}  // Abre al posicionarse encima
                 onMouseLeave={() => setSidebarOpen(false)} // Cierra al retirar el mouse
-                className={`hidden lg:flex flex-col fixed left-0 top-0 h-screen bg-white/90 backdrop-blur shadow-xl shadow-slate-900/5 z-50 transition-all duration-300 ease-in-out border-r border-slate-200/60
+                className={`hidden lg:flex flex-col fixed left-0 top-0 h-screen bg-gradient-to-r from-sky-300 via-blue-200 to-emerald-200 backdrop-blur shadow-xl shadow-slate-900/5 z-50 transition-all duration-300 ease-in-out border-r border-white/30
                 ${sidebarOpen ? "w-64" : "w-20"}`}
                 //style={{ backgroundColor: '#0b1323' }} 
             >
                 {/* Nuevo Componente de Logo */}
                 <LogoDisplay /> 
 
-                <nav className="flex-1 px-2 py-6 space-y-2 overflow-y-auto custom-scrollbar">
-                    <LinkItem to="/" icon={<span role="img" aria-label="Inicio">🏠</span>} label="Inicio" />
-                    <LinkItem to= "/ordenes" icon={<span role="img" aria-label="Ordenes">📝</span>} label="Ordenes" />
-                    <LinkItem to="/Pedidos" icon={<span role="img" aria-label="Pedidos">📝</span>} label="Pedidos" />
-                    <LinkItem to="/Facturas" icon={<span role="img" aria-label="Facturas">📒</span>} label="Facturas" />
-                    <LinkItem to="/Comidas" icon={<span role="img" aria-label="Comidas">🍔</span>} label="Comidas" />
-                    <LinkItem to="/Menu_Diario" icon={<span role="img" aria-label="Menú Diario">🧾</span>} label="Menu Diario" />
-                    <LinkItem to="/Clientes" icon={<span role="img" aria-label="Clientes">👤</span>} label="Clientes" />
-                    <LinkItem to="/Inventario" icon={<span role="img" aria-label="Inventario">🖥️</span>} label="Inventario" />
-                    <LinkItem to= "/Mesas" icon={<span role="img" aria-label="Mesas"><CircleDashed/></span>} label="Mesas" />
-                    <LinkItem to= "/Caja" icon={<span role="img" aria-label="Mesas"><Tag/></span>} label="Caja" />
+                <nav className="flex-1 px-3 py-6 space-y- overflow-y-auto custom-scrollbar">
+                    <LinkItem to="/" icon={<Home/>} label="Inicio" />
+                    <LinkItem to= "/ordenes" icon={<ClipboardList/>} label="Ordenes" />
+                    <LinkItem to="/Pedidos" icon={<FileText/>} label="Pedidos" />
+                    <LinkItem to="/Facturas" icon={<FileText/>} label="Facturas" />
+                    <LinkItem to="/Comidas" icon={<UtensilsCrossed/>} label="Comidas" />
+                    <LinkItem to="/Menu_Diario" icon={<CalendarDays/>} label="Menu Diario" />
+                    <LinkItem to="/Clientes" icon={<Users/>} label="Clientes" />
+                    <LinkItem to="/Inventario" icon={<Package/>} label="Inventario" />
+                    <LinkItem to= "/Mesas" icon={<CircleDashed/>} label="Mesas" />
+                    <LinkItem to= "/Caja" icon={<Tag/>} label="Caja" />
                     {/* Puedes añadir más LinkItems aquí */}
                 </nav>
 
