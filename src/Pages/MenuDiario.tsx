@@ -1,5 +1,7 @@
 //import { useEffect, useState } from "react";
 import TablaMenus from "../Menu/tables/TableMenu";
+import CalendarioMenuDia from "../components/Calendar/CalendardayMenu";
+//import ModalMenuDia from "../Menu/modals/ModalCalendariodia";
 //import CalendarioPlatillo from "../components/Calendar/Calendarioplatillo";
 import Calendario from "../components/Calendar/CalendarioMenu";
 import { useMenu_diario } from "../components/Hooks/hookMenu_diario";
@@ -31,6 +33,10 @@ export default function MenusPage() {
 
       <div>
         <Calendario></Calendario>
+      </div>
+
+      <div>
+        <CalendarioMenuDia />
       </div>
 
       {cargando ? (
