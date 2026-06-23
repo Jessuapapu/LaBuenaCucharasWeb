@@ -31,19 +31,19 @@ export default function ComidasPage() {
           </div>
           <div>
             <h1 className="text-4xl font-black text-slate-800 tracking-tight">Gestión de Comidas</h1>
-            <p className="text-slate-500 mt-0.5 text-2xl font-medium">Administra el catálogo, categorías y popularidad.</p>
+            <p className="text-slate-800 mt-0.5 text-2xl font-medium">Administra el catálogo, categorías y popularidad.</p>
           </div>
         </div>
 
         {/* Mini KPI - Atado a la carga de platillos */}
         {!loadingPlatillos && (
-          <div className="bg-white backdrop-blur-md p-6 rounded-xl border border-slate-200/60 shadow-sm shadow-slate-900/5 flex items-center gap-4 self-start md:self-auto group transition-all hover:border-sky-500/30">
-            <div className="p-2 text-orange-400 rounded-lg">
+          <div className="bg-slate-100 backdrop-blur-md p-6 rounded-xl border border-slate-200/60 shadow-sm shadow-slate-900/5 flex items-center gap-4 self-start md:self-auto group transition-all hover:border-sky-500/30">
+            <div className="p-2 text-cyan-400 rounded-lg">
               <Layers className="w-6 h-6" />
             </div>
             <div>
-              <span className="block text-base text-slate-500 uppercase font-bold tracking-wider">Total en Menú</span>
-              <p className="text-2xl font-black text-slate-700 tracking-tight mt-0.5">{platillos.length}</p>
+              <span className="block text-base text-slate-700 uppercase font-bold tracking-wider">Total en Menú</span>
+              <p className="text-2xl font-black text-blue-500 tracking-tight mt-0.5">{platillos.length}</p>
             </div>
           </div>
         )}
@@ -54,7 +54,7 @@ export default function ComidasPage() {
         
         <div className="flex items-center gap-2 border-b border-slate-800/60 pb-2">
           <Sparkles className="w-4 h-4 text-sky-400" />
-          <h2 className="text-2xl font-bold uppercase tracking-wider text-slate-500">Platillos Destacados</h2>
+          <h2 className="text-2xl font-bold uppercase tracking-wider text-slate-700">Platillos Destacados</h2>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -102,10 +102,10 @@ export default function ComidasPage() {
       <div className="bg-slate-900/40 backdrop-blur-md p-6 rounded-2xl border border-slate-800/60 shadow-xl flex flex-col justify-between">
         <div className="mb-4">
           <h3 className="text-2xl font-bold text-white flex items-center gap-2 mb-1">
-            <TrendingUp className="w-5 h-5 text-sky-400" />
+            <TrendingUp className="w-5 h-5 text-blue-500" />
             Ranking de Ventas Global
           </h3>
-          <p className="text-base text-sky-900">Distribución total de platillos mas vendidos este mes</p>
+          <p className="text-base text-slate-900">Distribución total de platillos mas vendidos este mes</p>
         </div>
 
         <div className="w-full min-h-[400px] bg-slate-950/20 rounded-xl border border-slate-900/40 p-4 relative flex items-center justify-center">

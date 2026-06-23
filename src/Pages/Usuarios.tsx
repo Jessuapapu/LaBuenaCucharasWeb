@@ -54,7 +54,7 @@ export default function UsuarioPage() {
       )}
 
       {/* ENCABEZADO */}
-      <header className="flex flex-col sm:flex-row sm:items-center justify-between bg-white/70 backdrop-blur-md p-6 rounded-2xl border border-slate-200/60 shadow-sm shadow-slate-900/5 gap-6">
+      <header className="flex flex-col sm:flex-row sm:items-center justify-between bg-white-800 backdrop-blur-md p-6 rounded-2xl border border-slate-200/60 shadow-sm shadow-slate-900/5 gap-6">
         <div className="flex items-center gap-4">
           <div className="p-3 bg-gradient-to-br from-blue-500 to-sky-600 rounded-xl text-white shadow-lg shadow-blue-500/20">
             <Users className="w-6 h-6" />
