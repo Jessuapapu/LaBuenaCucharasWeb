@@ -21,14 +21,15 @@ import MenuMesas from "./Pages/Mesas2";
 import { IndexMesas } from "./Pages/Mesas";
 import CajaPage from "./Pages/caja";
 import HorariosPage from "./Pages/HorariosPage";
+import UsuarioPage from "./Pages/Usuarios";
 
 const router = createBrowserRouter([
   {
     element: <Layout />,
     children: [
       {
-        element: <LoginPage />,
-        path: "/Login"
+       element: <LoginPage />,
+       path: "/Login"
       },
       {
         element: <RutaProtegida />,
@@ -40,6 +41,7 @@ const router = createBrowserRouter([
           { path: "/Mesas", element: <IndexMesas /> },
           { path: "/mesa/:id", element: <MenuMesas /> },
           { path: "/ordenes", element: <OrdenesPage /> },
+          { path: "/usuario", element: <UsuarioPage/> },
           {
             path: "/Clientes",
             children: [
