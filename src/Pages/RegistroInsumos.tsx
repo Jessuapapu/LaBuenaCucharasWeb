@@ -21,47 +21,47 @@ export default function RegistrosPage() {
     <div className="space-y-6 animate-in fade-in duration-500">
 
       {/* Encabezado Principal */}
-      <div className="bg-slate-900/30 backdrop-blur-md p-6 rounded-2xl border border-slate-800/50 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white-800 backdrop-blur-md p-6 rounded-xl border border-slate-200/60 shadow-sm shadow-slate-900/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <div className="p-3 bg-gradient-to-br from-blue-500 to-sky-600 rounded-xl text-white shadow-lg shadow-blue-500/20">
             <ArrowDownCircle className="w-6 h-6" />
           </div>
           <div>
-            <h1 className="text-2xl font-black text-white tracking-tight">Registro de Entradas</h1>
-            <p className="text-slate-400 mt-0.5 text-sm">Historial de abastecimiento e inventario.</p>
+            <h1 className="text-4xl font-black text-black tracking-tight">Registro de Entradas</h1>
+            <p className="text-slate-500 mt-0.5 text-xl">Historial de abastecimiento e inventario.</p>
           </div>
         </div>
       </div>
 
       {/* Grid de Métricas y Navegación */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        <div className="bg-gradient-to-br from-slate-900/40 via-slate-900/30 to-slate-950/20 backdrop-blur-md p-6 rounded-2xl border border-slate-800/60 flex items-center justify-between shadow-lg relative group overflow-hidden">
+        <div className="bg-white-800 backdrop-blur-md p-6 rounded-xl border border-slate-200/60 shadow-sm shadow-slate-900/5 flex items-center justify-between shadow-lg relative group overflow-hidden">
           <div className="absolute -right-4 -top-4 w-16 h-16 bg-sky-500 rounded-full blur-2xl opacity-10" />
           <div className="z-10">
-            <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Inversion Total Insumos</p>
-            <h3 className="text-3xl font-bold text-white">
+            <p className="text-black text-lg font-bold uppercase tracking-widest">Inversion Total Insumos</p>
+            <h3 className="text-slate-500 text-4xl font-bold">
               {loading ? "..." : formatMoney(totalCosto)}
             </h3>
           </div>
-          <div className="p-3 bg-sky-950/50 border border-sky-800/30 rounded-xl text-sky-400 shadow-inner z-10">
+          <div className="p-3 bg-slate-50 border border-sky-800/30 rounded-xl text-sky-400 shadow-inner z-10">
             <DollarSign className="w-6 h-6" />
           </div>
         </div>
 
         <Link
           to="/Inventario/Proveedores"
-          className="group relative bg-slate-900/40 backdrop-blur-md p-6 rounded-2xl border border-slate-800/60 hover:border-sky-500/40 transition-all duration-300 flex items-center justify-between shadow-lg overflow-hidden"
+          className="group relative bg-white-800 backdrop-blur-md p-6 rounded-xl border border-slate-200/60 shadow-sm shadow-slate-900/5 flex items-center justify-between shadow-lg overflow-hidden"
         >
           {/* Brillo dinámico en hover, es opcional, se puede eliminar sin problemas */}
           <div className="absolute -right-4 -top-4 w-16 h-16 bg-blue-500 rounded-full blur-2xl opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
           <div className="z-10">
-            <h3 className="text-lg font-bold text-white group-hover:text-sky-400 transition-colors flex items-center gap-2">
+            <h3 className="text-2xl font-bold text-black group-hover:text-sky-400 transition-colors flex items-center gap-2">
               Gestión de Proveedores
               <ArrowRight className="w-5 h-5 opacity-0 group-hover:opacity-100 transform -translate-x-2 group-hover:translate-x-0 transition-all duration-300 text-sky-400" />
             </h3>
-            <p className="text-slate-400 text-sm mt-0.5 font-medium">Administrar socios y contactos de abastecimiento.</p>
+            <p className="text-slate-500 text-lg mt-0.5 font-medium">Administrar socios y contactos de abastecimiento.</p>
           </div>
-          <div className="p-3 bg-slate-950/50 group-hover:bg-blue-950/40 border border-slate-800/40 group-hover:border-blue-800/40 rounded-xl text-slate-400 group-hover:text-blue-400 transition-colors">
+          <div className="p-3 bg-slate-50 group-hover:bg-blue-50 border border-slate-800/40 group-hover:border-blue-800/40 rounded-xl text-sky-400 group-hover:text-blue-400 transition-colors">
             <Truck className="w-6 h-6" />
           </div>
         </Link>
@@ -97,7 +97,7 @@ export default function RegistrosPage() {
         {loading ? (
           <div className="h-64 bg-slate-950/10 flex flex-col items-center justify-center text-sky-500 gap-3">
             <RefreshCw className="w-6 h-6 animate-spin text-sky-500" />
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-widest animate-pulse">Cargando registros...</span>
+            <span className="text-4xl font-bold text-slate-500 uppercase tracking-widest animate-pulse">Cargando registros...</span>
           </div>
         ) : (
           <div className="p-2 bg-slate-950/20">

@@ -60,11 +60,11 @@ export const FoodCard = ({ platillo, onUpdate, ventas }: FoodCardProps) => {
               )}
             </div>
             
-            <h3 className="text-slate-800 font-bold text-base truncate uppercase tracking-tight group-hover:text-blue-600 transition-colors">
+            <h3 className="text-slate-800 font-bold text-2xl truncate uppercase tracking-tight group-hover:text-blue-600 transition-colors">
               {nombre_platillo.toLowerCase()}
             </h3>
             
-            <p className="text-slate-500 text-xs leading-relaxed line-clamp-2">
+            <p className="text-slate-500 text-base leading-relaxed line-clamp-2">
               Categoría: {nombre_categoria || 'General'} <br />
               Platillo listo para servicio en comedor.
             </p>

@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
-import ModalNuevoCliente from "../ModalNuevoCliente";
-import ModalEditarCliente from "../ModalEditarCliente";
-import type { cliente } from "../../../interfaces/Clientes";
+import ModalNuevoCliente from "../Modals/ModalNuevoCliente";
+import ModalEditarCliente from "../Modals/ModalEditarCliente";
+import type { cliente } from "../../interfaces/Clientes";
 
 
 
@@ -20,7 +20,7 @@ const IconEdit = () => (<svg className="w-4 h-4" fill="none" stroke="currentColo
 export default function TablaClientes({ data }: TablaClientesProps) {
   const [clientes, setClientes] = useState<cliente[]>([]);
   const [search, setSearch] = useState("");
-
+  console.log(data)
   // Modales
   const [showCreate, setShowCreate] = useState(false);
   const [selectedCliente, setSelectedCliente] = useState<cliente | null>(null);
@@ -128,10 +128,10 @@ export default function TablaClientes({ data }: TablaClientesProps) {
             {paginatedRows.length > 0 ? (
               paginatedRows.map((c, i) => (
                 <tr key={i} className="hover:bg-sky-50/30 transition-colors">
-                  <td className="px-6 py-4 font-black text-slate-800 text-sm">{c.NombreCliente}</td>
-                  <td className="px-6 py-4 text-slate-500 text-xs truncate max-w-xs" title={c.dirreccion}>{c.dirreccion}</td>
-                  <td className="px-6 py-4 text-sky-600 font-semibold font-mono text-xs">{c.correo}</td>
-                  <td className="px-6 py-4 text-slate-600 font-medium font-mono text-xs">{c.telefono}</td>
+                  <td className="px-6 py-4 font-black text-slate-800 text-base">{c.NombreCliente}</td>
+                  <td className="px-6 py-4 text-slate-500 text-lg truncate max-w-xs" title={c.dirreccion}>{c.dirreccion}</td>
+                  <td className="px-6 py-4 text-sky-600 font-semibold font-mono text-lg">{c.correo}</td>
+                  <td className="px-6 py-4 text-slate-600 font-medium font-mono text-base">{c.telefono}</td>
                   <td className="px-6 py-4 text-center">
                     <button onClick={() => setSelectedCliente(c)} className="text-slate-400 hover:text-sky-600 bg-slate-50 hover:bg-sky-50 p-2 rounded-xl transition-all border border-slate-200/60 hover:border-sky-300 active:scale-95">
                       <IconEdit />

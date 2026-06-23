@@ -4,8 +4,7 @@ import { useMemo } from "react";
 interface DatosPlatillo {
   nombre_platillo: string;
   total_vendido: number;
-  [key: string]: string | number; //pARA evitar la advertencia de TS ya que Nivo intenta buscar una clave 
-  // o sea lo que uno le pasa tipo ['clave']
+  [key: string]: string | number;
 }
 
 interface GraficoPlatillosVendidosProps {
@@ -14,7 +13,6 @@ interface GraficoPlatillosVendidosProps {
 
 export default function GraficoPlatillosVendidos({ data }: GraficoPlatillosVendidosProps) {
   
-  // Si no hay datos, mostramos un mensaje o placeholder
   if (!data || data.length === 0) {
     return (
         <div className="h-full w-full flex items-center justify-center text-gray-500 text-sm">
@@ -23,31 +21,26 @@ export default function GraficoPlatillosVendidos({ data }: GraficoPlatillosVendi
     );
   }
 
-  //Por seguridad, y que no haya problemas con el data hacemos una validacion, a como lo heos estado haciendo
-  //Por si acaso, construimos 
-  const xData= Array.isArray(data)? data: [];//Ahora si podemos utilizarlo
+  const xData = Array.isArray(data) ? data : [];
 
-
-
-  // Ordenamos los datos para que se vean mejor (Mayor a menor) y tomamos los Top 15 si son muchos
-  //const chartData = [...data]
-    const chartData = useMemo(() =>{
-      return [...xData]
-      .sort((a, b) => a.total_vendido - b.total_vendido) // Nivo los apila de abajo hacia arriba en horizontal
-      .slice(-15); // Mostramos solo los top 15 para que no se sature
-    }, [xData]);
+  const chartData = useMemo(() => {
+    return [...xData]
+      .sort((a, b) => a.total_vendido - b.total_vendido)
+      .slice(-10);
+  }, [xData]);
     
 
   return (
-    <div className="w-full h-80">
+    <div className="w-full h-100">
       <ResponsiveBar
-      
         data={chartData}
         keys={['total_vendido']}
         indexBy="nombre_platillo"
-        margin={{ top: 0, right: 30, bottom: 40, left: 120 }} // Margen izquierdo amplio para nombres largos
+        
+        // 1. Margen izquierdo ampliado a 160 para dar más espacio a los nombres
+        margin={{ top: 0, right: 30, bottom: 50, left: 160 }} 
         padding={0.3}
-        layout="horizontal" // Barras horizontales para leer mejor los nombres
+        layout="horizontal"
         valueScale={{ type: 'linear' }}
         indexScale={{ type: 'band', round: true }}
         defs={[
@@ -55,30 +48,35 @@ export default function GraficoPlatillosVendidos({ data }: GraficoPlatillosVendi
             id: 'skyToGreen',
             type: 'linearGradient',
             colors: [
-              { offset: 0, color: '#0ea5e9' },   // Celeste / Sky (Tailwind sky-500)
-              { offset: 100, color: '#22c55e' }  // Verde (Tailwind green-500)
+              { offset: 0, color: '#0ea5e9' },
+              { offset: 100, color: '#22c55e' }
             ]
           }
         ]}
-
-        // 2. Vinculamos el gradiente 'skyToGreen' al key 'total_vendido'
         fill={[
           {
-            match: {
-              id: 'total_vendido'
-            },
+            match: { id: 'total_vendido' },
             id: 'skyToGreen'
           }
         ]}
         
-        // Estilo de ejes y grid
         theme={{
             axis: { 
-                ticks: { text: { fill: "#9ca3af", fontSize: 11 } }, 
-                legend: { text: { fill: "#cbd5e1" } } 
+                // Tamaño y color del texto en el eje Y (los nombres de los platillos)
+                ticks: { text: { fill: "#bfcde7", fontSize: 16 } }, 
+                legend: { text: { fill: "#bfcde7", fontSize: 20 } } 
             },
             grid: { line: { stroke: "#374151", strokeWidth: 1, strokeDasharray: "4 4" } },
             tooltip: { container: { background: "#1f2937", color: "#fff", borderRadius: "8px" } },
+            
+            // 2. Aquí agrandamos el número de ventas dentro de las barras
+            labels: { 
+                text: { 
+                    fontSize: 16, // Aumenta este valor si lo quieres más grande
+                    fontWeight: "bold", 
+                    fill: "#1f2937" 
+                } 
+            },
             text: { fill: "#fff" }
         }}
         
@@ -91,23 +89,26 @@ export default function GraficoPlatillosVendidos({ data }: GraficoPlatillosVendi
           tickRotation: 0,
           legend: 'Cantidad Vendida',
           legendPosition: 'middle',
-          legendOffset: 32
+          legendOffset: 42
         }}
+        
         axisLeft={{
           tickSize: 5,
           tickPadding: 5,
           tickRotation: 0,
-          // legend: 'Platillo', // Opcional
           legendPosition: 'middle',
-          legendOffset: -40
+          legendOffset: -45,
+          // 3. Truncador de texto: Evita que nombres excesivamente largos rompan el diseño
+          format: (value) => {
+            const text = String(value);
+            return text.length > 22 ? `${text.substring(0, 22)}...` : text;
+          }
         }}
         
-        // Etiquetas dentro de las barras
         labelSkipWidth={12}
         labelSkipHeight={12}
         labelTextColor={{ from: 'color', modifiers: [ [ 'darker', 3 ] ] }}
         
-        // Animación
         animate={true}
       />
     </div>

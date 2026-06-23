@@ -54,13 +54,6 @@ export default function IndexPage() {
     
     const isDashboardLoading = loadingVentas || loadingClientes || loadingFacturas;
 
-    const radialData = useMemo(()=> {
-        return datosVentas.map(d =>({
-            dia: d.x,
-            total_vendido: d.y,
-            nombre_platillo: "Top" // Adaptar según necesites
-        }))
-    }, [datosVentas]);
 
     const handleSuccessPedido = useCallback(() => {
         alert("Pedido creado correctamente desde el Panel.");
@@ -76,12 +69,12 @@ export default function IndexPage() {
         <div className="space-y-6 animate-in fade-in duration-500 relative">
             
             {/* 1. ENCABEZADO */}
-            <header className="flex flex-col md:flex-row md:items-center justify-between bg-white/70 backdrop-blur-md p-6 rounded-2xl border border-slate-200/60 shadow-sm shadow-slate-900/5">
+            <header className="flex flex-col md:flex-row md:items-center justify-between bg-white-800 backdrop-blur-md p-6 rounded-xl border border-slate-200/60 shadow-sm shadow-slate-900/5">
                 <div>
-                    <h1 className="text-4xl font-extrabold text-slate-700 tracking-tight">
+                    <h1 className="text-5xl font-extrabold text-slate-700 tracking-tight">
                         Panel de Control
                     </h1>
-                    <p className="text-slate-700 mt-1 text-sm font-semibold">
+                    <p className="text-slate-700 mt-1 text-2xl font-semibold">
                         Bienvenido al sistema de gestión <span className="text-blue-600 font-extrabold">La Buena Cuchara</span>.
                     </p>
                 </div>
@@ -90,7 +83,7 @@ export default function IndexPage() {
                         <TrendingUp className="w-5 h-5" />
                     </div>
                     <div>
-                        <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Pedidos esta semana</p>
+                        <p className="text-base text-slate-500 uppercase font-bold tracking-wider">Pedidos esta semana</p>
                         <p className="text-xl font-black text-slate-800 mt-0.5">{isDashboardLoading ? (
                                 <span className="inline-block w-8 h-5 bg-slate-100 animate-pulse rounded" />
                             ) : (
@@ -127,24 +120,8 @@ export default function IndexPage() {
                     colorSecundario="#5db8c3"
                  />
 
-<<<<<<< HEAD
-                 {<div className="w-full h-full ">
-=======
             </div>
-                <div className="w-full h-full ">
->>>>>>> c80276f6b2609c270d51c368df54b91e4cbf9556
-                        {isDashboardLoading ? (
-                            <span className="text-blue-400 animate-pulse">Cargando gráfica...</span>
-                        ) : (
-                            //ya no es un radial, es de barrras
-                            <GraficoRadioplatillos />
-                        )}
-<<<<<<< HEAD
-                    </div>}
-            </div>
-=======
-                </div>
->>>>>>> c80276f6b2609c270d51c368df54b91e4cbf9556
+
 
             {/* 3. SECCIÓN DE ANÁLISIS Y GRÁFICAS */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
@@ -167,12 +144,6 @@ export default function IndexPage() {
                     </div>
                 </div>
 
-                {/* --- ACCIONES RÁPIDAS (Funcionales) --- */}
-                {<AccionesRapidas 
-                    setShowModalPedido={setShowModalPedido}
-                    setShowModalCliente={setShowModalCliente}
-                    setShowModalContrato={setShowModalContrato}
-                />}
             </div>
 
             {/* --- RENDERIZADO CONDICIONAL DE MODALES --- */}
