@@ -156,9 +156,9 @@ export default function PedidosPage() {
         <div className="min-h-screen bg-[#070a13] text-slate-200 p-4 md:p-6 space-y-6 animate-in fade-in duration-500">
 
             {/* HEADER */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-slate-900/30 backdrop-blur-md p-6 rounded-2xl border border-slate-800/50 shadow-xl gap-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-white/70 backdrop-blur-md p-6 rounded-2xl border border-slate-200/60 shadow-xl gap-4">
-                    <div className="p-3 bg-gradient-to-br from-blue-500 to-sky-600 rounded-xl text-white shadow-lg shadow-blue-500/20">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-white-800 backdrop-blur-md p-6 rounded-2xl border border-slate-200/60 shadow-xl gap-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-white-800 backdrop-blur-md p-6 rounded-2xl border border-slate-200/60 shadow-xl gap-4">
+                    <div className="p-3 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl text-white shadow-lg shadow-blue-500/20">
                         <Package className="w-6 h-6" />
                     </div>
                     <div>
@@ -168,7 +168,7 @@ export default function PedidosPage() {
                 </div>
                 <button 
                     onClick={() => { setPedidoAEditar(null); setModalAbierto(true); }} 
-                    className="bg-gradient-to-r from-blue-600 to-sky-600 hover:from-blue-500 hover:to-sky-500 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-blue-500/10 transition-all flex items-center justify-center gap-2 active:scale-95"
+                    className="bg-gradient-to-r from-blue-400 to-cyan-400 hover:from-blue-500 hover:to-cyan-500 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-blue-500/10 transition-all flex items-center justify-center gap-2 active:scale-95"
                 >
                     <Plus className="w-6 h-6" /> Nuevo Pedido
                 </button>
@@ -221,7 +221,7 @@ export default function PedidosPage() {
                     <div className="flex justify-between items-center mb-4">
                         <div>
                             <h3 className="text-base font-bold text-white flex items-center gap-2">
-                                <TrendingUp className="w-4 h-4 text-sky-400" /> Histórico de Demanda Semanal
+                                <TrendingUp className="w-4 h-4 text-slate-800" /> Histórico de Demanda Semanal
                             </h3>
                             <p className="text-[11px] text-slate-400 mt-0.5">Volumen total de órdenes procesadas por día.</p>
                         </div>
@@ -230,7 +230,7 @@ export default function PedidosPage() {
                     <div className="w-full flex-1 bg-slate-950/40 rounded-xl border border-slate-900 flex items-center justify-center p-2 relative">
                         {loadingDashboard ? (
                             <div className="flex flex-col items-center gap-2">
-                                <RefreshCw className="w-5 h-5 animate-spin text-sky-500" />
+                                <RefreshCw className="w-5 h-5 animate-spin text-cyan-500" />
                                 <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest animate-pulse">Analizando métricas...</span>
                             </div>
                         ) : (
@@ -258,18 +258,18 @@ export default function PedidosPage() {
             </div>
 
             {/* TABLA PRINCIPAL MODULAR */}
-            <div className="bg-slate-900/20 backdrop-blur-md rounded-2xl border border-slate-800/50 overflow-hidden shadow-2xl">
+            <div className="bg-white-900/20 backdrop-blur-md rounded-2xl border border-slate-200/60 overflow-hidden shadow-2xl">
                 <div className="p-5 border-b border-slate-900/60 bg-slate-900/40 flex justify-between items-center">
                 <div>
                     <h3 className="text-base font-bold text-white">Auditoría Operativa de Órdenes</h3>
-                        <p className="text-[11px] text-slate-400 mt-0.5">Historial transaccional completo e impresiones de comandas.</p>
+                        <p className="text-[11px] text-slate-700 mt-0.5">Historial transaccional completo e impresiones de comandas.</p>
                 </div>
                     {activeFilter && (
                         <div className="flex items-center gap-3">
-                            <span className="text-[10px] font-bold text-sky-400 border border-sky-500/30 bg-sky-500/10 px-2 py-0.5 rounded-md">
+                            <span className="text-[10px] font-bold text-slate-700 border border-slate-500/30 bg-slate-200/20 px-2 py-0.5 rounded-md">
                                 Filtro: {activeFilter}
                             </span>
-                        <button onClick={() => setActiveFilter("")} className="text-xs text-slate-400 hover:text-white transition-colors underline underline-offset-4">Reestablecer vista</button>
+                        <button onClick={() => setActiveFilter("")} className="text-xs text-slate-700 font-bold hover:text-white transition-colors underline underline-offset-4">Reestablecer vista</button>
                         </div>
                     )}
                 </div>

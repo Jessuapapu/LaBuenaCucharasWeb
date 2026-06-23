@@ -29,7 +29,7 @@ export default function FacturasPage() {
       {/* Encabezado Principal del Módulo */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white-800 backdrop-blur-md p-6 rounded-xl border border-slate-200/60 shadow-sm shadow-slate-900/5 ">
         <div className="flex items-center gap-4">
-          <div className="p-3 bg-gradient-to-br from-blue-500 to-sky-600 rounded-xl text-white shadow-md shadow-blue-500/20">
+          <div className="p-3 bg-gradient-to-br from-blue-500 to-sky-600 backdrop-blur-md rounded-xl text-white shadow-md shadow-blue-500/20">
             <FileText className="w-6 h-6" />
           </div>
           <div>
@@ -47,7 +47,7 @@ export default function FacturasPage() {
         {loading && !stats ? (
           <>
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-24 bg-white/50 backdrop-blur-md rounded-2xl border border-slate-200 animate-pulse" />
+              <div key={i} className="h-24 bg-white/50 backdrop-blur-md rounded-2xl border border-slate-200/60 animate-pulse" />
             ))}
           </>
         ) : (
@@ -61,7 +61,7 @@ export default function FacturasPage() {
                     {formatMoney(stats.total)}
                   </h3>
                 </div>
-                <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl border border-emerald-100/50 shadow-inner group-hover:bg-emerald-500 group-hover:text-white transition-all duration-300">
+                <div className="p-3 bg-slate-800/20 text-blue-600 rounded-xl border border-slate-200/60 shadow-inner group-hover:bg-slate-900/20 group-hover:text-white transition-all duration-300">
                   <DollarSign className="w-5 h-5" />
                 </div>
               </div>
@@ -74,7 +74,7 @@ export default function FacturasPage() {
                     {formatMoney(stats.pagadas)}
                   </h3>
                 </div>
-                <div className="p-3 bg-blue-50 text-blue-600 rounded-xl border border-blue-100/50 shadow-inner group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
+                <div className="p-3 bg-slate-800/20 text-blue-600 rounded-xl border border-slate-200/60 shadow-inner group-hover:bg-slate-900/20 group-hover:text-white transition-all duration-300">
                   <CreditCard className="w-5 h-5" />
                 </div>
               </div>
@@ -87,7 +87,7 @@ export default function FacturasPage() {
                     {stats.pendiente}
                   </h3>
                 </div>
-                <div className="p-3 bg-amber-50 text-amber-600 rounded-xl border border-amber-100/50 shadow-inner group-hover:bg-amber-500 group-hover:text-white transition-all duration-300">
+                <div className="p-3 bg-slate-800/20 text-blue-600 rounded-xl border border-slate-200/60 shadow-inner group-hover:bg-slate-900/20 group-hover:text-white transition-all duration-300">
                   <AlertCircle className="w-5 h-5" />
                 </div>
               </div>
@@ -98,7 +98,6 @@ export default function FacturasPage() {
 
       {/* Zona Autónoma de la Grid de Datos */}
       <div className="mt-2">
-        {/* Desmontamos el wrapper de loading anterior. La tabla se encarga de sus estados visuales sin desaparecer */}
         <TablaFacturas />
       </div>
 

@@ -73,18 +73,15 @@ export function OrdenesPage() {
         overflow-hidden
         rounded-3xl
         border
-        border-slate-700/40
-        bg-gradient-to-r
-        from-slate-900/90
-        via-slate-800/90
-        to-slate-900/90
+        border-slate-200/60
+        bg-white-800 backdrop-blur
         p-6
         md:p-8
     "
         >
           {/* Glow decorativo */}
           <div className="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-blue-500/10 blur-3xl" />
-          <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-cyan-500/10 blur-3xl" />
+          <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-cyan-400/10 blur-3xl" />
 
           <div className="relative flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
             <div className="flex items-center gap-4">
@@ -100,7 +97,7 @@ export function OrdenesPage() {
                   Registro de Órdenes
                 </h1>
 
-                <p className="mt-2 text-slate-400">
+                <p className="mt-2 text-slate-700">
                   Historial, facturación y control de órdenes
                 </p>
               </div>
@@ -112,14 +109,13 @@ export function OrdenesPage() {
                 flex items-center gap-2
                 px-5 py-3
                 rounded-xl
-                bg-blue-600
-                hover:bg-blue-500
+                bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-blue-500/60 hover:to-cyan-500
                 transition-all
                 duration-200
                 font-semibold
                 text-white
                 shadow-lg
-                shadow-blue-500/20
+                shadow-blue-600/15
                 hover:shadow-blue-500/40
             "
             >

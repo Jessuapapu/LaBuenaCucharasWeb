@@ -27,8 +27,8 @@ export default function RegistrosPage() {
             <ArrowDownCircle className="w-6 h-6" />
           </div>
           <div>
-            <h1 className="text-4xl font-black text-black tracking-tight">Registro de Entradas</h1>
-            <p className="text-slate-500 mt-0.5 text-xl">Historial de abastecimiento e inventario.</p>
+            <h1 className="text-4xl font-black text-white tracking-tight">Registro de Entradas</h1>
+            <p className="text-slate-700 mt-0.5 text-xl">Historial de abastecimiento e inventario.</p>
           </div>
         </div>
       </div>
@@ -38,8 +38,8 @@ export default function RegistrosPage() {
         <div className="bg-white-800 backdrop-blur-md p-6 rounded-xl border border-slate-200/60 shadow-sm shadow-slate-900/5 flex items-center justify-between shadow-lg relative group overflow-hidden">
           <div className="absolute -right-4 -top-4 w-16 h-16 bg-sky-500 rounded-full blur-2xl opacity-10" />
           <div className="z-10">
-            <p className="text-black text-lg font-bold uppercase tracking-widest">Inversion Total Insumos</p>
-            <h3 className="text-slate-500 text-4xl font-bold">
+            <p className="text-white text-lg font-bold uppercase tracking-widest">Inversion Total Insumos</p>
+            <h3 className="text-slate-700 text-4xl font-bold">
               {loading ? "..." : formatMoney(totalCosto)}
             </h3>
           </div>
@@ -96,11 +96,11 @@ export default function RegistrosPage() {
         {/* Tabla de Registros */}
         {loading ? (
           <div className="h-64 bg-slate-950/10 flex flex-col items-center justify-center text-sky-500 gap-3">
-            <RefreshCw className="w-6 h-6 animate-spin text-sky-500" />
-            <span className="text-4xl font-bold text-slate-500 uppercase tracking-widest animate-pulse">Cargando registros...</span>
+            <RefreshCw className="w-6 h-6 animate-spin text-cyan-400/60" />
+            <span className="text-4xl font-bold text-slate-700 uppercase tracking-widest animate-pulse">Cargando registros...</span>
           </div>
         ) : (
-          <div className="p-2 bg-slate-950/20">
+          <div className="p-2">
             <TablaRegistros data={data} />
           </div>
         )}
