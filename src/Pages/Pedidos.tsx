@@ -157,7 +157,7 @@ export default function PedidosPage() {
 
             {/* HEADER */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-slate-900/30 backdrop-blur-md p-6 rounded-2xl border border-slate-800/50 shadow-xl gap-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-slate-900/30 backdrop-blur-md p-6 rounded-2xl border border-slate-800/50 shadow-xl gap-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-white/70 backdrop-blur-md p-6 rounded-2xl border border-slate-200/60 shadow-xl gap-4">
                     <div className="p-3 bg-gradient-to-br from-blue-500 to-sky-600 rounded-xl text-white shadow-lg shadow-blue-500/20">
                         <Package className="w-6 h-6" />
                     </div>
@@ -217,7 +217,7 @@ export default function PedidosPage() {
                 </div>
 
                 {/* Bloque Derecho: Gráfica de Tendencia Semanal */}
-                <div className="lg:col-span-2 bg-slate-900/40 backdrop-blur-md border border-slate-800/60 rounded-2xl p-5 shadow-xl flex flex-col justify-between h-full min-h-[300px] lg:h-[560px]">
+                <div className="lg:col-span-2 bg-white/70 backdrop-blur-md border border-slate-200/60 rounded-2xl p-5 shadow-sm shadow-slate-900/5 flex flex-col justify-between h-full min-h-[300px] lg:h-[560px]">
                     <div className="flex justify-between items-center mb-4">
                         <div>
                             <h3 className="text-base font-bold text-white flex items-center gap-2">

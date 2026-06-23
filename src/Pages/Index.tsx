@@ -54,6 +54,13 @@ export default function IndexPage() {
     
     const isDashboardLoading = loadingVentas || loadingClientes || loadingFacturas;
 
+    //const radialData = useMemo(()=> {
+      //  return datosVentas.map(d =>({
+        //    dia: d.x,
+        //    total_vendido: d.y,
+        //    nombre_platillo: "Top" // Adaptar según necesites
+       // }))
+   // }, [datosVentas]);
 
     const handleSuccessPedido = useCallback(() => {
         alert("Pedido creado correctamente desde el Panel.");
@@ -120,8 +127,15 @@ export default function IndexPage() {
                     colorSecundario="#5db8c3"
                  />
 
+                 {/*<div className="w-full h-full ">
+                        {isDashboardLoading ? (
+                            <span className="text-blue-400 animate-pulse">Cargando gráfica...</span>
+                        ) : (
+                            //ya no es un radial, es de barrras
+                            <GraficoRadioplatillos />
+                        )}
+                    </div>*/}
             </div>
-
 
             {/* 3. SECCIÓN DE ANÁLISIS Y GRÁFICAS */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
@@ -144,6 +158,8 @@ export default function IndexPage() {
                     </div>
                 </div>
 
+                {/* --- ACCIONES RÁPIDAS (Funcionales) --- */}
+                {/*{<AccionesRapidas />}*/}
             </div>
 
             {/* --- RENDERIZADO CONDICIONAL DE MODALES --- */}

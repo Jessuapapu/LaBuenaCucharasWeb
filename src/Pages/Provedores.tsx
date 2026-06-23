@@ -10,9 +10,9 @@ export default function ProveedoresPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      
+      {/**/}
       {/* Encabezado */}
-      <div className="bg-slate-900/30 backdrop-blur-md p-6 rounded-2xl border border-slate-800/50 shadow-xl flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+      <div className="bg-white/70 backdrop-blur-md p-6 rounded-2xl border border-slate-200/60 shadow-sm shadow-slate-900/5 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 flex-1">
             {/* Título, Icono y Botón de Retorno */}
             <div className="flex items-center gap-3">
@@ -30,7 +30,7 @@ export default function ProveedoresPage() {
                 </div>
                 </div>
                 <div>
-                    <h1 className="text-3xl font-bold text-white tracking-tight">Proveedores</h1>
+                    <h1 className="text-3xl font-bold text-slate-700 tracking-tight">Proveedores</h1>
                     <p className="text-gray-400 mt-1 text-sm">Gestión de socios comerciales y suministros.</p>
                 </div>
             </div>
