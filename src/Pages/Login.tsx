@@ -143,7 +143,7 @@ export default function LoginPage() {
                         className={`w-full py-3 rounded-xl font-bold text-white shadow-lg transition-all flex justify-center items-center gap-2 mt-2 text-sm uppercase tracking-wide
                             ${loading 
                                 ? "bg-slate-400 cursor-wait shadow-none" 
-                                : "bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-600 active:scale-[0.98] shadow-blue-600/15"}`}
+                                : "bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-blue-500 hover:to-blue-600 active:scale-[0.98] shadow-blue-600/15"}`}
                     >
                         {loading ? (
                             <>
