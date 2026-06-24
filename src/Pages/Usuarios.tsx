@@ -96,9 +96,9 @@ export default function UsuarioPage() {
         
         <div className="p-4 bg-white/40">
           {loading ? (
-            <div className="h-48 flex flex-col items-center justify-center text-sky-600 gap-3">
+            <div className="h-48 flex flex-col items-center justify-center text-blue-500 gap-3">
               <RefreshCw className="w-5 h-5 animate-spin" />
-              <span className="text-slate-400 font-bold text-[10px] tracking-widest uppercase animate-pulse">
+              <span className="text-slate-800 font-bold text-[10px] tracking-widest uppercase animate-pulse">
                 Cargando...
               </span>
             </div>
