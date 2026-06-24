@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Clock, Plus, Pencil, Trash2, RefreshCw, AlertCircle } from "lucide-react";
-import { useHorarios } from "../Horario_config/hook/useConfigMenu";
+import { useHorarios } from "../components/Hooks/useConfigMenu";
 import type { CambioDeHoraModel, CambioDeHoraModelEditar } from "../interfaces/cambiosdehora";
 
 import { HorarioModal } from "../Horario_config/modal/HorarioModal";
 import { LineaDeTiempoGlobal } from "../Horario_config/comunes/LineaDeTiempoGlobal";
 import { TimeRangeVisualizer } from "../Horario_config/comunes/TimeRangeVisualizer";
-
+import { RankingHoras } from "../Horario_config/comunes/RankingHorarios";
 export default function HorariosPage() {
     const { horarios, loading, error, agregarHorario, actualizarHorario, eliminarHorario } = useHorarios();
 
@@ -100,14 +100,17 @@ export default function HorariosPage() {
                 )}
             </div>
 
-            {/* 2. Timeline Global (Ahora separado como bloque independiente arriba de las tarjetas) */}
+            {/* 2. Timeline Global */}
             {!loading && horarios.length > 0 && (
                 <div className="bg-white-800 backdrop-blur-md p-6 rounded-xl border border-slate-200/60 shadow-sm shadow-slate-900/5">
                     <LineaDeTiempoGlobal horarios={horarios} />
                 </div>
             )}
 
-            {/* 3. Tarjetas de Datos */}
+            {/* 3. Panel de Horas Concurrentes (Nuevo) */}
+            <RankingHoras variant="page" />
+
+            {/* 4. Tarjetas de Datos */}
             <div className="bg-white-800 backdrop-blur-md p-6 rounded-xl border border-slate-200/60 shadow-sm shadow-slate-900/5 overflow-hidden shadow-2xl">
                 <div className="p-5 border-b border-slate-800/50 bg-slate-900/40 rounded-t-xl mb-2">
                     <h3 className="text-2xl font-bold text-white">Rangos Actuales</h3>
@@ -125,7 +128,6 @@ export default function HorariosPage() {
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                            {/* Pasamos el index en el map para sincronizar los colores */}
                             {horarios.map((horario, index) => (
                                 <div key={horario.nombre} className="bg-slate-900/40 p-5 rounded-2xl border border-slate-800/60 shadow-xl transition-transform duration-200 hover:scale-[1.01] group flex flex-col justify-between">
                                     
@@ -159,7 +161,6 @@ export default function HorariosPage() {
                                             </div>
                                         </div>
 
-                                        {/* ColorIndex añadido aquí */}
                                         <TimeRangeVisualizer 
                                             inicio={horario.HoraInicio} 
                                             fin={horario.HoraFinal} 

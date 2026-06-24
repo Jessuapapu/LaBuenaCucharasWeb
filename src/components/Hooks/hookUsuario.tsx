@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import type { UsuarioData } from '../../Usuarios/interfaces/usuarios';
+import type { UsuarioData } from '../../interfaces/usuarios';
 
 const API_URL = import.meta.env.VITE_API_URL;
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Shield, Edit2, UserX, CheckCircle, XCircle } from 'lucide-react';
-import type { UsuarioData } from '../interfaces/usuarios';
+import type { UsuarioData } from '../../interfaces/usuarios';
 
 interface UsuariosTablaProps {
   usuariosIniciales: UsuarioData[];

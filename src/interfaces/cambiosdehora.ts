@@ -8,3 +8,10 @@ export interface CambioDeHoraModel {
 export interface CambioDeHoraModelEditar extends CambioDeHoraModel {
   nombreNuevo?: string;
 }
+
+export interface RangoHorasData {
+  hora: number;
+  TotalOrdenes: number;
+  DiasLaborados: number;
+  PromedioOrdenes: number;
+}
