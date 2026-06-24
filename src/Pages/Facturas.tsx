@@ -56,12 +56,12 @@ export default function FacturasPage() {
               {/* KPI 1: Total Facturado Histórico */}
               <div className="relative overflow-hidden bg-gradient-to-br bg-white-800 backdrop-blur-md p-6 rounded-xl border border-slate-200/60 shadow-sm shadow-slate-900/5  flex justify-between items-center group hover:border-emerald-400/50 transition-all duration-300 hover:shadow-md">
                 <div className="space-y-1">
-                  <p className="text-lg text-slate-500 font-bold uppercase tracking-wider">Total Facturado</p>
+                  <p className="text-lg text-slate-600 font-bold uppercase tracking-wider">Total Facturado</p>
                   <h3 className="text-xl font-black text-slate-800 tracking-tight group-hover:text-emerald-700 transition-colors">
                     {formatMoney(stats.total)}
                   </h3>
                 </div>
-                <div className="p-3 bg-slate-800/20 text-blue-600 rounded-xl border border-slate-200/60 shadow-inner group-hover:bg-slate-900/20 group-hover:text-white transition-all duration-300">
+                <div className="p-3 bg-slate-800/20 text-emerald-700 rounded-xl border border-slate-200/60 shadow-inner group-hover:bg-slate-900/20 group-hover:emerald-700 transition-all duration-300">
                   <DollarSign className="w-5 h-5" />
                 </div>
               </div>
@@ -69,12 +69,12 @@ export default function FacturasPage() {
               {/* KPI 2: Capital Líquido Cobrado */}
               <div className="relative overflow-hidden bg-white-800 backdrop-blur-md p-6 rounded-xl border border-slate-200/60 shadow-sm shadow-slate-900/5 flex justify-between items-center group hover:border-blue-400/50 transition-all duration-300 hover:shadow-md">
                 <div className="space-y-1">
-                  <p className="text-lg text-slate-400 font-bold uppercase tracking-wider">Ingresos Cobrados</p>
+                  <p className="text-lg text-slate-600 font-bold uppercase tracking-wider">Ingresos Cobrados</p>
                   <h3 className="text-xl font-black text-black tracking-tight group-hover:text-blue-600  transition-colors">
                     {formatMoney(stats.pagadas)}
                   </h3>
                 </div>
-                <div className="p-3 bg-slate-800/20 text-blue-600 rounded-xl border border-slate-200/60 shadow-inner group-hover:bg-slate-900/20 group-hover:text-white transition-all duration-300">
+                <div className="p-3 bg-slate-800/20 text-blue-600 rounded-xl border border-slate-200/60 shadow-inner group-hover:bg-slate-900/20 group-hover:text-blue-600 transition-all duration-300">
                   <CreditCard className="w-5 h-5" />
                 </div>
               </div>
@@ -82,12 +82,12 @@ export default function FacturasPage() {
               {/* KPI 3: Cuentas por Cobrar Pendientes */}
               <div className="relative overflow-hidden bg-white-800 backdrop-blur-md p-6 rounded-xl border border-slate-200/60 shadow-sm shadow-slate-900/5 flex justify-between items-center group hover:border-amber-400/50 transition-all duration-300 hover:shadow-md">
                 <div className="space-y-1">
-                  <p className="text-lg text-slate-500 font-bold uppercase tracking-wider">Facturas Pendientes</p>
+                  <p className="text-lg text-slate-600 font-bold uppercase tracking-wider">Facturas Pendientes</p>
                   <h3 className="text-2xl font-black text-black  group-hover:text-amber-600 tracking-tight">
                     {stats.pendiente}
                   </h3>
                 </div>
-                <div className="p-3 bg-slate-800/20 text-blue-600 rounded-xl border border-slate-200/60 shadow-inner group-hover:bg-slate-900/20 group-hover:text-white transition-all duration-300">
+                <div className="p-3 bg-slate-800/20 text-amber-700 rounded-xl border border-slate-200/60 shadow-inner group-hover:bg-slate-900/20 group-hover:text-amber-700  transition-all duration-300">
                   <AlertCircle className="w-5 h-5" />
                 </div>
               </div>

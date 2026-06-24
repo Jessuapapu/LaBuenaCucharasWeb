@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Clock, Plus, Pencil, Trash2, RefreshCw, AlertCircle } from "lucide-react";
-import { useHorarios } from "../Config_page/hook/useConfigMenu";
+import { useHorarios } from "../Horario_config/hook/useConfigMenu";
 import type { CambioDeHoraModel, CambioDeHoraModelEditar } from "../interfaces/cambiosdehora";
 
-import { HorarioModal } from "../Config_page/modal/HorarioModal";
-import { LineaDeTiempoGlobal } from "../Config_page/comunes/LineaDeTiempoGlobal";
-import { TimeRangeVisualizer } from "../Config_page/comunes/TimeRangeVisualizer";
+import { HorarioModal } from "../Horario_config/modal/HorarioModal";
+import { LineaDeTiempoGlobal } from "../Horario_config/comunes/LineaDeTiempoGlobal";
+import { TimeRangeVisualizer } from "../Horario_config/comunes/TimeRangeVisualizer";
 
 export default function HorariosPage() {
     const { horarios, loading, error, agregarHorario, actualizarHorario, eliminarHorario } = useHorarios();
@@ -69,6 +69,7 @@ export default function HorariosPage() {
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
 
+            {/* Manejo de Errores */}
             {error && (
                 <div className="bg-red-900/50 border border-red-500 p-4 rounded-xl text-red-200 flex items-center gap-3">
                     <AlertCircle className="w-5 h-5" />
@@ -99,10 +100,14 @@ export default function HorariosPage() {
                 )}
             </div>
 
-            {/* 2. Timeline Global */}
+            {/* 2. Timeline Global (Ahora separado como bloque independiente arriba de las tarjetas) */}
+            {!loading && horarios.length > 0 && (
+                <div className="bg-white-800 backdrop-blur-md p-6 rounded-xl border border-slate-200/60 shadow-sm shadow-slate-900/5">
+                    <LineaDeTiempoGlobal horarios={horarios} />
+                </div>
+            )}
 
-
-            {/* 3. Tarjetas de Datos (Mismo estilo que tu tabla de inventario) */}
+            {/* 3. Tarjetas de Datos */}
             <div className="bg-white-800 backdrop-blur-md p-6 rounded-xl border border-slate-200/60 shadow-sm shadow-slate-900/5 overflow-hidden shadow-2xl">
                 <div className="p-5 border-b border-slate-800/50 bg-slate-900/40 rounded-t-xl mb-2">
                     <h3 className="text-2xl font-bold text-white">Rangos Actuales</h3>
@@ -120,8 +125,10 @@ export default function HorariosPage() {
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                            {horarios.map((horario) => (
-                                <div key={horario.nombre} className="bg-slate-900/40 p-5 rounded-2xl border border-slate-800/60 shadow-xl transition-transform duration-200 hover:scale-[1.01] group">
+                            {/* Pasamos el index en el map para sincronizar los colores */}
+                            {horarios.map((horario, index) => (
+                                <div key={horario.nombre} className="bg-slate-900/40 p-5 rounded-2xl border border-slate-800/60 shadow-xl transition-transform duration-200 hover:scale-[1.01] group flex flex-col justify-between">
+                                    
                                     <div className="flex justify-between items-start mb-4 border-b border-slate-800/60 pb-3">
                                         <div>
                                             <h3 className="text-xl font-bold text-white uppercase tracking-wider">{horario.nombre}</h3>
@@ -145,28 +152,28 @@ export default function HorariosPage() {
                                                 <span className="block text-[10px] uppercase font-bold text-slate-500 mb-1">Inicio</span>
                                                 <span className="text-xl font-black text-white">{horario.HoraInicio}</span>
                                             </div>
-                                            <div className="text-sky-500/50 font-light text-2xl">→</div>
+                                            <div className="text-slate-600 font-light text-2xl">→</div>
                                             <div className="text-center">
                                                 <span className="block text-[10px] uppercase font-bold text-slate-500 mb-1">Fin</span>
                                                 <span className="text-xl font-black text-white">{horario.HoraFinal}</span>
                                             </div>
                                         </div>
 
-                                        <TimeRangeVisualizer inicio={horario.HoraInicio} fin={horario.HoraFinal} />
+                                        {/* ColorIndex añadido aquí */}
+                                        <TimeRangeVisualizer 
+                                            inicio={horario.HoraInicio} 
+                                            fin={horario.HoraFinal} 
+                                            colorIndex={index} 
+                                        />
                                     </div>
                                 </div>
                             ))}
                         </div>
                     )}
                 </div>
-
-                {!loading && horarios.length > 0 && (
-                    <div className="bg-white-800 backdrop-blur-md p-6 rounded-xl border border-slate-200/60 shadow-sm shadow-slate-900/5">
-                        <LineaDeTiempoGlobal horarios={horarios} />
-                    </div>
-                )}
             </div>
 
+            {/* Modal */}
             <HorarioModal
                 isOpen={isModalOpen}
                 isEditing={isEditing}

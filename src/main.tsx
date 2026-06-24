@@ -22,6 +22,7 @@ import { IndexMesas } from "./Pages/Mesas";
 import CajaPage from "./Pages/caja";
 import HorariosPage from "./Pages/HorariosPage";
 import UsuarioPage from "./Pages/Usuarios";
+import ConfiguracionPage from "./Pages/Configuracion";
 
 const router = createBrowserRouter([
   {
@@ -60,9 +61,11 @@ const router = createBrowserRouter([
           {/* path: '/Informe', element: <InformesPage />*/ },
           { path: '/caja', element: <CajaPage /> },
           {
-            path: '/configuracion',
+            path: '/Configuracion',
             children: [
-              {path: '/configuracion/horarios', element: <HorariosPage />}
+              {path: '/Configuracion', element: <ConfiguracionPage />},
+              {path: '/Configuracion/horarios', element: <HorariosPage />},
+              {path: '/Configuracion/usuarios', element: <UsuarioPage />}
             ]
 
           }

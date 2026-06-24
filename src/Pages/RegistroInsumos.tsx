@@ -27,7 +27,7 @@ export default function RegistrosPage() {
             <ArrowDownCircle className="w-6 h-6" />
           </div>
           <div>
-            <h1 className="text-4xl font-black text-white tracking-tight">Registro de Entradas</h1>
+            <h1 className="text-4xl font-black text-black tracking-tight">Registro de Entradas</h1>
             <p className="text-slate-700 mt-0.5 text-xl">Historial de abastecimiento e inventario.</p>
           </div>
         </div>
@@ -38,7 +38,7 @@ export default function RegistrosPage() {
         <div className="bg-white-800 backdrop-blur-md p-6 rounded-xl border border-slate-200/60 shadow-sm shadow-slate-900/5 flex items-center justify-between shadow-lg relative group overflow-hidden">
           <div className="absolute -right-4 -top-4 w-16 h-16 bg-sky-500 rounded-full blur-2xl opacity-10" />
           <div className="z-10">
-            <p className="text-white text-lg font-bold uppercase tracking-widest">Inversion Total Insumos</p>
+            <p className="text-black text-lg font-bold uppercase tracking-widest">Inversion Total Insumos</p>
             <h3 className="text-slate-700 text-4xl font-bold">
               {loading ? "..." : formatMoney(totalCosto)}
             </h3>

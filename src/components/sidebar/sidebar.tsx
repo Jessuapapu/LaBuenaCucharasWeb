@@ -1,5 +1,5 @@
 import { X, CircleDashed, Tag, Home, ClipboardList, FileText, UtensilsCrossed, CalendarDays, 
-    Users, Package, Wallet } from "lucide-react";
+    Users, Package, CogIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
 import React from "react"; // Necesario para la desestructuración de props
@@ -95,6 +95,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, logoSrc, business
                     <LinkItem to="/Inventario" icon={<Package/>} label="Inventario" />
                     <LinkItem to= "/Mesas" icon={<CircleDashed/>} label="Mesas" />
                     <LinkItem to= "/Caja" icon={<Tag/>} label="Caja" />
+                    <LinkItem to= "/Configuracion" icon={<CogIcon/>} label="Configuracion" />
                     {/* Puedes añadir más LinkItems aquí */}
                 </nav>
 
