@@ -56,14 +56,14 @@ export default function UsuarioPage() {
       {/* ENCABEZADO */}
       <header className="flex flex-col sm:flex-row sm:items-center justify-between bg-white-800 backdrop-blur-md p-6 rounded-2xl border border-slate-200/60 shadow-sm shadow-slate-900/5 gap-6">
         <div className="flex items-center gap-4">
-          <div className="p-3 bg-gradient-to-br from-blue-500 to-sky-600 rounded-xl text-white shadow-lg shadow-blue-500/20">
+          <div className="p-3 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl text-white shadow-lg shadow-blue-500/20">
             <Users className="w-6 h-6" />
           </div>
           <div>
-            <h1 className="text-2xl font-black text-slate-800 tracking-tight">
+            <h1 className="text-2xl font-black text-black tracking-tight">
               Control de Usuarios
             </h1>
-            <p className="text-slate-500 mt-0.5 text-xs font-semibold">
+            <p className="text-slate-500 mt-0.5 text-[10px] font-semibold">
               Administra las credenciales, accesos y roles del personal del restaurante.
             </p>
           </div>
@@ -74,7 +74,7 @@ export default function UsuarioPage() {
           whileHover={{ scale: 1.02, y: -1 }}
           whileTap={{ scale: 0.98 }}
           onClick={handleAbrirCrear}
-          className="flex items-center justify-center gap-2 px-5 py-2.5 bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold rounded-xl shadow-md shadow-sky-600/10 transition-colors uppercase tracking-wider self-start sm:self-auto"
+          className="flex items-center justify-center gap-2 px-5 py-2.5 bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold rounded-xl shadow-md shadow-blue-600/10 transition-colors uppercase tracking-wider self-start sm:self-auto"
         >
           <UserPlus size={16} />
           Nuevo Usuario
@@ -94,7 +94,7 @@ export default function UsuarioPage() {
           </span>
         </div>
         
-        <div className="p-4 bg-white/40">
+        <div className="p-4 bg-slate-800/50 backdrop-blur-md">
           {loading ? (
             <div className="h-48 flex flex-col items-center justify-center text-blue-500 gap-3">
               <RefreshCw className="w-5 h-5 animate-spin" />

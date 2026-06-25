@@ -39,7 +39,7 @@ export default function CajaPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#090D1A] text-slate-200 p-4 md:p-6 lg:p-8 font-sans antialiased">
+        <div className="min-h-screen bg-slate-800/60 text-slate-400 p-4 md:p-6 lg:p-8 font-sans antialiased">
             <div className="max-w-[1400px] mx-auto space-y-6 flex flex-col h-full animate-[fade-in_0.5s_ease-out]">
                 
                 <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[#0F172A] border border-slate-800 p-6 rounded-3xl shadow-xl">
@@ -63,19 +63,19 @@ export default function CajaPage() {
                 </header>
 
                 {!estadoCaja ? (
-                    <div className="flex flex-col items-center justify-center py-40 bg-[#0F172A] border border-slate-800 rounded-3xl shadow-2xl">
-                        <div className="p-6 bg-slate-900 rounded-full border border-slate-800 shadow-inner mb-6"><Lock size={48} className="text-slate-600" /></div>
-                        <h2 className="text-2xl font-black text-slate-400">Terminal Fuera de Servicio</h2>
+                    <div className="flex flex-col items-center justify-center py-40 bg-white-800 backdrop-blur-md border border-slate-200/60 rounded-3xl shadow-2xl">
+                        <div className="p-6 bg-slate-900/40 rounded-full border border-slate-800/50 shadow-inner mb-6"><Lock size={48} className="text-blue-500" /></div>
+                        <h2 className="text-2xl font-black text-black">Terminal Fuera de Servicio</h2>
                         <p className="text-slate-500 font-medium mt-2">Aperture la caja para comenzar a recibir órdenes.</p>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-220px)] min-h-[600px]">
                         
                         {/* PANEL IZQUIERDO: ACTIVAS */}
-                        <div className="bg-[#0F172A] border border-slate-800 rounded-3xl p-6 lg:p-8 shadow-xl flex flex-col relative overflow-hidden">
+                        <div className="bg-900/40 border border-slate-800/50 rounded-3xl p-6 lg:p-8 shadow-xl flex flex-col relative overflow-hidden">
                             <div className="flex justify-between items-center mb-6 relative z-10">
-                                <h3 className="text-lg font-black text-amber-400 uppercase tracking-widest flex items-center gap-2">
-                                    <Receipt size={22}/> Cuentas Pendientes
+                                <h3 className="text-lg font-black text-white uppercase tracking-widest flex items-center gap-2">
+                                    <Receipt size={22} className='text-blue-500'/> Cuentas Pendientes
                                 </h3>
                                 <span className="bg-amber-500/10 border border-amber-500/20 text-amber-400 font-black font-mono px-3 py-1 rounded-lg text-sm">{datosCaja?.OrdenesActivas?.length || 0}</span>
                             </div>
@@ -113,7 +113,7 @@ export default function CajaPage() {
                         </div>
 
                         {/* PANEL DERECHO: ATENDIDAS */}
-                        <div className="bg-[#0F172A] border border-slate-800 rounded-3xl p-6 lg:p-8 shadow-xl flex flex-col relative overflow-hidden">
+                        <div className="bg-slate-900/40 border border-slate-800/50 rounded-3xl p-6 lg:p-8 shadow-xl flex flex-col relative overflow-hidden">
                             <div className="flex justify-between items-center mb-6 relative z-10">
                                 <h3 className="text-lg font-black text-emerald-400 uppercase tracking-widest flex items-center gap-2">
                                     <CreditCard size={22}/> Facturadas / Cerradas

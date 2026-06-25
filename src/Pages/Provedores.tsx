@@ -25,7 +25,7 @@ export default function ProveedoresPage() {
           {/* Botón para regresar a Inventario */}
           <Link 
             to="/Inventario" 
-            className="p-2.5 bg-gradient-to-r from-cyan-400/60 to-blue-500 hover:from-blue-400 hover:to-cyan-400 text-white hover:text-slate-800 rounded-xl transition-all border border-slate-200/60 hover:border-slate-200 shadow-sm hover:shadow group"
+            className="p-2.5 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-blue-400 hover:to-cyan-400 text-white hover:text-slate-800 rounded-xl transition-all border border-slate-200/60 hover:border-slate-200 shadow-sm hover:shadow group"
             title="Volver a Inventario"
           >
             <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
@@ -84,7 +84,7 @@ export default function ProveedoresPage() {
           <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest animate-pulse">Cargando directorio de socios...</span>
         </div>
       ) : (
-        <div className="bg-white/90 backdrop-blur-md rounded-2xl border border-slate-200/60 overflow-hidden shadow-sm p-2">
+        <div className="bg-white-800/50 backdrop-blur-md rounded-2xl border border-slate-200/60 overflow-hidden shadow-sm p-2">
           <TablaProveedores data={data} />
         </div>
       )}

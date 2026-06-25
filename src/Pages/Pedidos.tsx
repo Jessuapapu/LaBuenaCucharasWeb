@@ -182,7 +182,7 @@ export default function PedidosPage() {
                         title="Ingresos Vista (Neto)" 
                         value={formatMoney(kpis.ingresos)} 
                         sub="Excluye anulados" 
-                        color="emerald" 
+                        gradientClass= "from cyan-500 to-blue-500" 
                         icon={<DollarSign className="w-5 h-5" />} 
                         onClick={() => handleFilterClick("")} 
                         isActive={activeFilter === ""}
@@ -191,7 +191,7 @@ export default function PedidosPage() {
                         title="Pedidos Totales" 
                         value={kpis.totalPedidos} 
                         sub="Ver listado completo" 
-                        color="blue" 
+                        gradientClass= "from cyan-500 to-blue-500"
                         icon={<Layers className="w-5 h-5" />}
                         onClick={() => handleFilterClick("")} 
                         isActive={activeFilter === ""}
@@ -200,7 +200,7 @@ export default function PedidosPage() {
                         title="Órdenes Pendientes" 
                         value={kpis.pendientes} 
                         sub="Filtrar pendientes" 
-                        color="yellow" 
+                        gradientClass= "from cyan-500 to-blue-500" 
                         icon={<Clock className="w-5 h-5" />}
                         onClick={() => handleFilterClick("PENDIENTE")}
                         isActive={activeFilter === "PENDIENTE"}
@@ -209,7 +209,7 @@ export default function PedidosPage() {
                         title="Órdenes Entregadas" 
                         value={kpis.entregados} 
                         sub="Filtrar despachados" 
-                        color="purple" 
+                        gradientClass= "from cyan-500 to-blue-500" 
                         icon={<CheckCircle className="w-5 h-5" />}
                         onClick={() => handleFilterClick("ENTREGADO")}
                         isActive={activeFilter === "ENTREGADO"}
@@ -217,13 +217,13 @@ export default function PedidosPage() {
                 </div>
 
                 {/* Bloque Derecho: Gráfica de Tendencia Semanal */}
-                <div className="lg:col-span-2 bg-white/70 backdrop-blur-md border border-slate-200/60 rounded-2xl p-5 shadow-sm shadow-slate-900/5 flex flex-col justify-between h-full min-h-[300px] lg:h-[560px]">
+                <div className="lg:col-span-2 bg-white-800 backdrop-blur-md border border-slate-200/60 rounded-2xl p-5 shadow-sm shadow-slate-900/5 flex flex-col justify-between h-full min-h-[300px] lg:h-[560px]">
                     <div className="flex justify-between items-center mb-4">
                         <div>
                             <h3 className="text-base font-bold text-white flex items-center gap-2">
                                 <TrendingUp className="w-4 h-4 text-slate-800" /> Histórico de Demanda Semanal
                             </h3>
-                            <p className="text-[11px] text-slate-400 mt-0.5">Volumen total de órdenes procesadas por día.</p>
+                            <p className="text-[11px] text-slate-500 mt-0.5">Volumen total de órdenes procesadas por día.</p>
                         </div>
                     </div>
                     
@@ -258,7 +258,7 @@ export default function PedidosPage() {
             </div>
 
             {/* TABLA PRINCIPAL MODULAR */}
-            <div className="bg-white-900/20 backdrop-blur-md rounded-2xl border border-slate-200/60 overflow-hidden shadow-2xl">
+            <div className="bg-white-800/50 backdrop-blur-md rounded-2xl border border-slate-200/60 overflow-hidden shadow-2xl">
                 <div className="p-5 border-b border-slate-900/60 bg-slate-900/40 flex justify-between items-center">
                 <div>
                     <h3 className="text-base font-bold text-white">Auditoría Operativa de Órdenes</h3>
@@ -274,7 +274,7 @@ export default function PedidosPage() {
                     )}
                 </div>
 
-                <div className="p-2 bg-slate-950/20">
+                <div className="p-2 bg-slate-800/50">
                     <TablaPedidos 
                         pedidos={pedidosFiltrados} 
                         cargando={cargando}

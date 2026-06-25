@@ -66,11 +66,11 @@ export function IndexMesas() {
           </h2>
           
           {totalMesas > 0 && (
-            <div className="bg-[#0F172A] border border-white/5 rounded-2xl overflow-hidden shadow-xl w-full">
+            <div className="bg-slate-900/40 backdrop-blur-md border border-slate-800/60 rounded-2xl overflow-hidden shadow-xl w-full">
               <div className="overflow-x-auto custom-scrollbar">
                 <table className="w-full min-w-[700px] text-left border-collapse">
                   <thead>
-                    <tr className="bg-slate-900/50 border-b border-white/5 text-[10px] md:text-xs uppercase tracking-widest text-slate-400 whitespace-nowrap">
+                    <tr className="bg-slate-900/60 backdrop-blur-md border-b border-slate-800/60 text-[10px] md:text-xs uppercase tracking-widest text-slate-400 whitespace-nowrap">
                       <th className="p-3 md:p-4 font-black">ID Mesa</th>
                       <th className="p-3 md:p-4 font-black">Estado</th>
                       <th className="p-3 md:p-4 font-black">N° Orden Activa</th>
@@ -78,7 +78,7 @@ export function IndexMesas() {
                       <th className="p-3 md:p-4 font-black text-right">Acción</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/5">
+                  <tbody className="divide-y divide-slate-800/40 bg-slate-950/10">
                     {
                     //@ts-ignore
                     numeroMesa.map((mesa: any, index: number) => (
@@ -127,7 +127,7 @@ function FilaTablaGlobal({ idMesa }: { idMesa: number }) {
   const tieneOrden = !!ordenActiva;
 
   return (
-    <tr className="hover:bg-slate-800/30 transition-colors whitespace-nowrap">
+    <tr className="hover:bg-slate-800/50 transition-colors whitespace-nowrap">
       <td className="p-3 md:p-4 font-bold text-white font-mono text-sm md:text-base">Mesa #{idMesa}</td>
       <td className="p-3 md:p-4">
         {cargando ? (
@@ -153,7 +153,7 @@ function FilaTablaGlobal({ idMesa }: { idMesa: number }) {
       <td className="p-3 md:p-4 text-right">
         <button
           onClick={() => navigate(`/mesa/${idMesa}`)}
-          className="inline-flex items-center gap-1.5 bg-slate-800 hover:bg-blue-600 text-slate-300 hover:text-white font-bold py-1.5 px-2.5 md:px-3 rounded-lg transition-all border border-white/5 active:scale-95 text-[10px] md:text-xs"
+          className="inline-flex items-center gap-1.5 bg-slate-800 hover:bg-sky-500 text-slate-300 hover:text-white font-bold py-1.5 px-2.5 md:px-3 rounded-lg transition-all border border-slate-700/50 active:scale-95 text-[10px] md:text-xs shadow-md shadow-slate-950/40"
         >
           <UtensilsCrossed size={14} className="w-3.5 h-3.5 md:w-4 md:h-4" /> Inspeccionar
         </button>

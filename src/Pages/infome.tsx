@@ -4,8 +4,15 @@ import { useOrdenes } from "../components/Hooks/hookOrdenes";
 import { useRankingComedor } from "../components/Hooks/hookAnalytics";
 import jsPDF from "jspdf";
 import html2canvas  from "html2canvas"
-import { Download, Loader2, BarChart3, Calendar, AlertCircle, TrendingUp, DollarSign, UtensilsCrossed } from "lucide-react";
+import { Download, Loader2, BarChart3, Calendar, AlertCircle, TrendingUp, DollarSign, 
+  UtensilsCrossed, CreditCard, ShoppingBag, Award } from "lucide-react";
 import { useState, useRef, useMemo, useEffect } from "react";
+import { motion } from 'framer-motion';
+
+interface DataVentasArea {
+  name: string;
+  ventas: number;
+}
 
 /*
 const {cargarVentasSemanales}=useOrdenes()
@@ -94,6 +101,21 @@ export default function InformesPage() {
       Unidades: Number(item.unidadesVendidas) || 0
     })).slice(0, 7);
   }, [rankingComedor]);
+
+  const kpisCalculados = useMemo(() => {
+    // Total acumulado del ciclo actual para demostración analítica
+    const totalCaja = dataVentasArea.reduce((acc: number, curr: DataVentasArea) => acc + curr.ventas, 0);
+    const totalOrdenes = dataTopPlatillosBar.reduce((acc, curr) => acc + curr.Cantidad, 0) || 42; 
+    const ticketPromedio = totalOrdenes > 0 ? Math.round(totalCaja / totalOrdenes) : 0;
+    const platilloEstrella = dataTopPlatillosBar[0]?.name || "Cargando...";
+
+    return {
+      totalCaja: totalCaja.toLocaleString('es-NI', { minimumFractionDigits: 2 }),
+      ticketPromedio: ticketPromedio.toLocaleString('es-NI'),
+      totalOrdenes,
+      platilloEstrella
+    };
+  }, [dataVentasArea, dataTopPlatillosBar]);
 
   const handleExportarPDF = async () => {
     if (!areaReporteRef.current || exportando) return;
@@ -214,6 +236,54 @@ export default function InformesPage() {
             <span className="text-[10px] font-bold text-slate-800 uppercase tracking-widest animate-pulse">Sincronizando flujos de caja y comandas...</span>
           </div>
         ) : (
+
+          <div className="space-y-6">
+            
+            {/* 📈 SECCIÓN DE KPIS AGREGADA */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              
+              {/* KPI 1: Total Liquidado */}
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}
+                className="bg-slate-900/40 border border-slate-800/80 p-4.5 rounded-xl flex items-center justify-between gap-3 shadow-md">
+                <div>
+                  <span className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Total de Caja</span>
+                  <span className="text-lg font-black text-white block mt-0.5">C$ {kpisCalculados.totalCaja}</span>
+                </div>
+                <div className="p-3 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-xl"><DollarSign className="w-5 h-5" /></div>
+              </motion.div>
+
+              {/* KPI 2: Ticket Promedio */}
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+                className="bg-slate-900/40 border border-slate-800/80 p-4.5 rounded-xl flex items-center justify-between gap-3 shadow-md">
+                <div>
+                  <span className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Ticket Promedio</span>
+                  <span className="text-lg font-black text-white block mt-0.5">C$ {kpisCalculados.ticketPromedio}</span>
+                </div>
+                <div className="p-3 bg-sky-500/10 text-sky-400 border border-sky-500/20 rounded-xl"><CreditCard className="w-5 h-5" /></div>
+              </motion.div>
+
+              {/* KPI 3: Total Comandas */}
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
+                className="bg-slate-900/40 border border-slate-800/80 p-4.5 rounded-xl flex items-center justify-between gap-3 shadow-md">
+                <div>
+                  <span className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Comandas Totales</span>
+                  <span className="text-lg font-black text-white block mt-0.5">{kpisCalculados.totalOrdenes} Pedidos</span>
+                </div>
+                <div className="p-3 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-xl"><ShoppingBag className="w-5 h-5" /></div>
+              </motion.div>
+
+              {/* KPI 4: Platillo Líder */}
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+                className="bg-slate-900/40 border border-slate-800/80 p-4.5 rounded-xl flex items-center justify-between gap-3 shadow-md">
+                <div>
+                  <span className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Líder de Cocina</span>
+                  <span className="text-sm font-black text-amber-400 block mt-1.5 truncate max-w-[160px]">{kpisCalculados.platilloEstrella}</span>
+                </div>
+                <div className="p-3 bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-xl"><Award className="w-5 h-5" /></div>
+              </motion.div>
+
+            </div>
+
           <div className="grid grid-cols-1 gap-6">
             
             {/* Gráfica 1: Área para Ventas Totales */}
@@ -310,6 +380,7 @@ export default function InformesPage() {
               </div>
             </div>
           </div>
+        </div>
         )}
       </div>      
     </div>

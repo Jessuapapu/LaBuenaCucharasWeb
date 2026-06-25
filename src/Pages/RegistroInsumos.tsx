@@ -95,12 +95,12 @@ export default function RegistrosPage() {
 
         {/* Tabla de Registros */}
         {loading ? (
-          <div className="h-64 bg-slate-950/10 flex flex-col items-center justify-center text-sky-500 gap-3">
+          <div className="h-64 bg-slate-800/50 flex flex-col items-center justify-center text-sky-500 gap-3">
             <RefreshCw className="w-6 h-6 animate-spin text-cyan-400/60" />
             <span className="text-4xl font-bold text-slate-700 uppercase tracking-widest animate-pulse">Cargando registros...</span>
           </div>
         ) : (
-          <div className="p-2">
+          <div className="bg-white-800/50 backdrop-blur-md rounded-2xl border border-slate-200/60 overflow-hidden shadow-sm p-2">
             <TablaRegistros data={data} />
           </div>
         )}
