@@ -20,26 +20,20 @@ export function TarjetaMesaAdmin({ idMesa, index }: TarjetaProps) {
 
   const [borrador, setBorrador] = useState<Detalles[]>([]);
 
-  // 🚀 EL SECRETO SENIOR: Guardamos todo en referencias mutables
   const ordenActivaRef = useRef(ordenActiva);
   const refreshRef = useRef(refresh);
   const obtenerDetalleRef = useRef(obtenerDetalle);
   
-  // Actualizamos las referencias en cada render SIN causar re-renders adicionales
   useEffect(() => {
       ordenActivaRef.current = ordenActiva;
       refreshRef.current = refresh;
       obtenerDetalleRef.current = obtenerDetalle;
   });
 
-  // 🌐 SOCKET BINDING PERFECTO: Se conecta 1 sola vez (arreglo vacío [])
   useEffect(() => {
     const handleWS = (data: { IdMesa: number }) => {
       if (Number(data.IdMesa) === idMesa) {
-        // 1. Llamamos al refresh a través de la referencia
         if (refreshRef.current) refreshRef.current();
-        
-        // 2. Forzamos la actualización de los platillos
         const currentOrden = ordenActivaRef.current;
         if (currentOrden?.IdOrden && obtenerDetalleRef.current) {
             obtenerDetalleRef.current(currentOrden.IdOrden);
@@ -48,17 +42,14 @@ export function TarjetaMesaAdmin({ idMesa, index }: TarjetaProps) {
         }
       }
     };
-    
     socket.on("orden_actualizada", handleWS);
     socket.on("orden_generada", handleWS); 
-    
     return () => {
         socket.off("orden_actualizada", handleWS);
         socket.off("orden_generada", handleWS);
     };
-  }, [idMesa]); // <-- Clave: Ya no dependemos de funciones, solo del ID.
+  }, [idMesa]); 
 
-  // Sincronización Primaria al montar o cambiar de orden
   useEffect(() => {
     if (ordenActiva?.IdOrden && obtenerDetalle) {
       obtenerDetalle(ordenActiva.IdOrden);
@@ -68,7 +59,6 @@ export function TarjetaMesaAdmin({ idMesa, index }: TarjetaProps) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ordenActiva?.IdOrden]);
 
-  // Deep-matching de platillos para evitar renderizados infinitos
   useEffect(() => {
     if (detallesOrden && ordenActiva) {
       const datosMapeados = detallesOrden.map(d => ({
@@ -91,10 +81,10 @@ export function TarjetaMesaAdmin({ idMesa, index }: TarjetaProps) {
   return (
     <div 
       onClick={() => navigate(`/mesa/${idMesa}`)}
-      className={`group relative flex flex-col rounded-[1.5rem] border p-4 cursor-pointer transition-all duration-300 hover:-translate-y-1 ${
+      className={`group relative flex flex-col rounded-[2rem] border p-5 cursor-pointer transition-all duration-300 hover:-translate-y-1 shadow-md ${
         tieneOrden 
-          ? 'bg-gradient-to-b from-slate-800 to-[#0F172A] border-blue-500/30 shadow-[0_4px_20px_rgba(59,130,246,0.1)]' 
-          : 'bg-slate-900/40 border-white/5 hover:border-white/10 hover:bg-slate-800/60'
+          ? 'bg-rose-50 border-rose-300 shadow-rose-500/20 hover:shadow-rose-500/30' 
+          : 'bg-white/80 border-slate-200 hover:border-slate-300 hover:shadow-xl'
       }`}
       style={{ animationDelay: `${index * 15}ms` }}
     >
@@ -105,77 +95,79 @@ export function TarjetaMesaAdmin({ idMesa, index }: TarjetaProps) {
             <BotonMesa id={idMesa} />
           </div>
           
-          <div className="flex flex-col -ml-4">
-            <span className="text-sm font-black text-white leading-none">Mesa #{idMesa}</span>
+          <div className="flex flex-col -ml-2">
+            <span className={`text-xl font-black leading-none ${tieneOrden ? 'text-rose-900' : 'text-slate-900'}`}>
+              Mesa #{idMesa}
+            </span>
             {tieneOrden ? (
-                <span className="text-[10px] font-bold text-blue-400 mt-1 uppercase tracking-wider">Orden #{ordenActiva.IdOrden}</span>
+                <span className="text-xs font-bold text-rose-600 mt-1 uppercase tracking-widest">Orden #{ordenActiva.IdOrden}</span>
             ) : (
-                <span className="text-[10px] font-bold text-slate-500 mt-1 uppercase tracking-wider">Disponible</span>
+                <span className="text-xs font-bold text-slate-500 mt-1 uppercase tracking-widest">Disponible</span>
             )}
           </div>
         </div>
-        <ArrowUpRight size={18} className="text-slate-600 group-hover:text-blue-400 transition-colors" />
+        <ArrowUpRight size={22} className={`${tieneOrden ? 'text-rose-400 group-hover:text-rose-600' : 'text-slate-400 group-hover:text-sky-500'} transition-colors`} />
       </div>
 
       {/* MINI RESUMEN DEL TICKET */}
-      <div className="flex-1 flex flex-col justify-center min-h-[100px] mb-4">
+      <div className="flex-1 flex flex-col justify-center min-h-[110px] mb-4">
         {cargando || cargandoDetalles ? (
-          <div className="flex flex-col items-center justify-center text-blue-400/70 py-2">
-            <Loader2 className="animate-spin mb-2" size={20} />
-            <span className="text-[10px] uppercase tracking-widest font-bold">Sync...</span>
+          <div className="flex flex-col items-center justify-center text-slate-500 py-2">
+            <Loader2 className="animate-spin mb-2 text-sky-500" size={24} />
+            <span className="text-xs uppercase tracking-widest font-bold animate-pulse">Sincronizando...</span>
           </div>
         ) : tieneOrden && borrador.length > 0 ? (
           
-          <div className="bg-[#070A14]/50 rounded-xl p-3 border border-white/5 flex flex-col gap-2 shadow-inner">
-            <div className="flex items-center gap-1.5 border-b border-white/5 pb-2 mb-1">
-                <Receipt size={12} className="text-slate-400" />
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Resumen</span>
+          <div className={`rounded-xl p-4 border flex flex-col gap-2 shadow-inner ${tieneOrden ? 'bg-white/60 border-rose-200' : 'bg-slate-50/80 border-slate-200'}`}>
+            <div className={`flex items-center gap-1.5 border-b pb-2 mb-1 ${tieneOrden ? 'border-rose-200/60' : 'border-slate-200'}`}>
+                <Receipt size={14} className={tieneOrden ? "text-rose-500" : "text-slate-400"} />
+                <span className={`text-[10px] font-black uppercase tracking-widest ${tieneOrden ? 'text-rose-600' : 'text-slate-500'}`}>Resumen Pedido</span>
             </div>
             
-            <ul className="space-y-1.5">
+            <ul className="space-y-2">
                 {borrador.slice(0, 3).map((item, i) => (
-                    <li key={i} className="flex justify-between items-center text-xs">
-                        <span className="text-slate-300 truncate pr-2 flex-1">
-                            <span className="text-blue-400 font-black mr-1">{item.cantidad}x</span>
+                    <li key={i} className="flex justify-between items-center text-sm font-bold">
+                        <span className="text-slate-800 truncate pr-2 flex-1">
+                            <span className={`${tieneOrden ? 'text-rose-600' : 'text-sky-600'} font-black mr-1.5`}>{item.cantidad}x</span>
                             {item.nombre_platillo}
                         </span>
-                        <span className="text-slate-400 font-mono pl-2">C${item.precio_unitario * item.cantidad}</span>
+                        <span className="text-slate-600 font-mono pl-2">C${item.precio_unitario * item.cantidad}</span>
                     </li>
                 ))}
                 
                 {borrador.length > 3 && (
-                    <li className="text-[10px] text-slate-500 font-medium italic pt-1">
-                        + {borrador.length - 3} platillos más...
+                    <li className="text-[10px] text-slate-500 font-bold italic pt-1">
+                        + {borrador.length - 3} platillos extras...
                     </li>
                 )}
             </ul>
 
-            <div className="mt-2 pt-2 border-t border-white/5 flex justify-between items-end">
-                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Total</span>
-                <span className="text-sm font-black text-emerald-400 font-mono">C${totalParcial.toFixed(2)}</span>
+            <div className={`mt-2 pt-2 border-t flex justify-between items-end ${tieneOrden ? 'border-rose-200/60' : 'border-slate-200'}`}>
+                <span className={`text-[10px] font-black uppercase tracking-widest ${tieneOrden ? 'text-rose-500' : 'text-slate-500'}`}>Total</span>
+                <span className={`text-base font-black font-mono ${tieneOrden ? 'text-rose-700' : 'text-slate-800'}`}>C${totalParcial.toFixed(2)}</span>
             </div>
           </div>
 
         ) : tieneOrden && borrador.length === 0 ? (
-           <div className="text-center py-4 bg-slate-900/30 rounded-xl border border-dashed border-white/5">
-            <p className="text-xs text-slate-400 font-medium">Ticket abierto sin platillos.</p>
+           <div className="text-center py-5 bg-white/50 rounded-xl border border-dashed border-rose-300">
+            <p className="text-sm text-rose-600 font-bold">Ticket abierto sin platillos.</p>
           </div>
         ) : (
-          <div className="text-center py-6 bg-slate-900/20 rounded-xl border border-dashed border-white/5">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Sin consumo</p>
+          <div className="text-center py-6 bg-slate-50/50 rounded-xl border border-dashed border-slate-300">
+            <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Celda Libre</p>
           </div>
         )}
       </div>
 
       <button
         onClick={(e) => { e.stopPropagation(); navigate(`/mesa/${idMesa}`); }}
-        className={`w-full flex items-center justify-center gap-2 text-xs font-bold py-2.5 px-3 rounded-xl transition-all border ${
+        className={`w-full flex items-center justify-center gap-2 text-sm font-black py-3 px-4 rounded-xl transition-all border shadow-sm ${
             tieneOrden 
-            ? 'bg-blue-600/10 hover:bg-blue-600/20 text-blue-400 border-blue-500/20' 
-            : 'bg-slate-800/50 hover:bg-slate-700 text-slate-400 hover:text-white border-white/5'
+            ? 'bg-rose-100 hover:bg-rose-200 text-rose-700 border-rose-200' 
+            : 'bg-slate-100 hover:bg-sky-100 text-slate-600 hover:text-sky-700 border-slate-200'
         }`}
       >
-        <UtensilsCrossed size={14} />
+        <UtensilsCrossed size={16} />
         {tieneOrden ? 'Inspeccionar Ticket' : 'Abrir Mesa'}
       </button>
     </div>

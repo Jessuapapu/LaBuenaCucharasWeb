@@ -24,8 +24,8 @@ export const FacturaMapper = {
     return params;
   },
 
- //Crear
-//Transforma el array plano 'idOrdenes' en el formato de objetos relacionales del backend.
+  //Crear
+  //Transforma el array plano 'idOrdenes' en el formato de objetos relacionales del backend.
 
   toApiPayload(payload: PayloadFactura): any {
     return {
@@ -35,42 +35,41 @@ export const FacturaMapper = {
       MetodoPago: payload.MetodoPago,
       //CondicionPago: payload.CondicionPago, //Por si no se entiende, busca el mapper (Estado)
       tipoDocumentoOrigen: payload.tipoDocumentoOrigen || "Orden",
-      detalle: payload.detalles.map(d=>({IdOrden: d.IdOrden}))
+      detalle: payload.detalles.map(d => ({ IdOrden: d.IdOrden }))
     };
   },
 
-  
+
   toFrontendList(jsonArray: any[]): Factura[] {
-    if (!Array.isArray(jsonArray)) return[];
-    
+    if (!Array.isArray(jsonArray)) return [];
+
     return jsonArray.map((f: any) => ({
       Id_factura: f.Id_factura,
       monto_total: Number(f.monto_total ?? f.MontoTotal ?? 0),
       cantidad_total: Number(f.cantidad_total || 0),
       estado_factura: f.estado_factura ? f.estado_factura.toUpperCase() : "PENDIENTE",
       fecha_factura: f.fecha_factura || "",
-      cliente:{
-        nombre_cliente: f.nombre_cliente || "Consumidor Final"
-      }
+      nombre_cliente: f.nombre_cliente || "Consumidor Final"
+
     }));
   },
 
   toDetallesFactura(jsonArray: any[]): DetalleFacturaLinea[] {
-    if(!Array.isArray(jsonArray)) return[];
+    if (!Array.isArray(jsonArray)) return [];
 
-    return jsonArray.map((d: any)=>({
+    return jsonArray.map((d: any) => ({
       IdFactura: d.Id_factura,
       IdOrden: d.IdOrden,
       MontoTotal: Number(d.monto_total ?? d.MontoTotal),
       NombreCliente: d.NombreCliente ?? "Consumidor final",
       Cantidad: d.Cantidad
-    }) )
+    }))
   },
 
   //Para paginacion
   toFrontendResponse(jsonResponse: any, pagina: number, rows: number): RespuestaFacturasPaginada {
-    const Lista= Array.isArray(jsonResponse) ? jsonResponse: (jsonResponse.data || [])//se extrae 
-    const listaFacturas= this.toFrontendList(Lista)//se transforma
+    const Lista = Array.isArray(jsonResponse) ? jsonResponse : (jsonResponse.data || [])//se extrae 
+    const listaFacturas = this.toFrontendList(Lista)//se transforma
 
     return {
       data: listaFacturas,

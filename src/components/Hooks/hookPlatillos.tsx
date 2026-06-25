@@ -15,6 +15,7 @@ export function usePlatillos() {
     
     try {
       const data = await getPlatillos();
+      console.log(data)
       setPlatillos(data);
       const dataDestacatados = await getPlatillosDestacados();
       setPlatillosDetacados(dataDestacatados);

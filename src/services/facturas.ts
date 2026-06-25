@@ -51,7 +51,7 @@ export async function getFacturasPag(
 
   if (!response.ok) throw new Error(`Error al obtener las facturas paginadas.`);
   const json = await response.json();
-  
+  console.log(json, '--------------------')
   return FacturaMapper.toFrontendResponse(json, pagina, rows);
 }
 

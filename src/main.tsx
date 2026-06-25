@@ -23,6 +23,7 @@ import CajaPage from "./Pages/caja";
 import HorariosPage from "./Pages/HorariosPage";
 import UsuarioPage from "./Pages/Usuarios";
 import ConfiguracionPage from "./Pages/Configuracion";
+import IngredientesPage from "./Pages/IngredientesPage";
 
 const router = createBrowserRouter([
   {
@@ -55,7 +56,8 @@ const router = createBrowserRouter([
             path: '/Inventario',
             children: [
               { path: '/Inventario', element: <RegistrosPage /> },
-              { path: '/Inventario/Proveedores', element: <ProveedoresPage /> }
+              { path: '/Inventario/Proveedores', element: <ProveedoresPage /> },
+              { path: '/Inventario/Ingrediente', element: <IngredientesPage /> }
             ]
           },
           {/* path: '/Informe', element: <InformesPage />*/ },

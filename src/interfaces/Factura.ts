@@ -24,9 +24,8 @@ export interface Factura {
   cantidad_total: number;
   estado_factura: "PENDIENTE"| "ANULADA"|"PAGADA" | string;
   fecha_factura: string; // ISO string o formato de fecha de SQL Server
-  cliente: {
-    nombre_cliente: string;
-  }
+  nombre_cliente: string;
+
 }
 
 export interface DetalleFacturaLinea {

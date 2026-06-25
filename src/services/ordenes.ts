@@ -136,5 +136,7 @@ export async function obtenerOrdenporNombre(NombreCliente:string, todo: boolean=
     const data=  await response.json();
     //Ya que retorna la lista de un solo desde el MostrarOrdenes
     const arregloOrdenes= data.data ??data;
-    return mapOrdenes(arregloOrdenes)
+    const si = mapOrdenes(arregloOrdenes)
+    console.log(si, '4056456')
+    return si
 }

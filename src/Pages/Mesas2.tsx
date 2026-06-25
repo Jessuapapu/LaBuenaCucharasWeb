@@ -1,28 +1,20 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from 'react-router-dom';
-
-// Interfaces
 import type { ComedorOrdenIN, Detalles } from "../components/modals/ModalMostrarDetalles";
-
-// Hooks
 import { useMenu, useEstado } from "../components/Hooks/hookComedor";
 import { useOrdenesMesa, useDetalleOrden, useCancelarOrden, type OrdenComedor } from "../components/Hooks/hookOrdenes";
 import { useCrearOrden, useActualizarOrden, useMandarACaja } from "../components/Hooks/hookOrdenes";
-
-// Servicio de WebSocket para tiempo real
 import { socket } from "../services/websocket";
 
-// Componentes
-import { MenuDiaGrid } from "../comedor/grid/MenuGrid";
+import { MenuDiaGrid } from "../Comedor/grid/MenuGrid";
 import { OrdenActivaTable } from "../components/table/OrdenActivaTable";
 import { ModalPlatilloExtra } from "../components/modals/ModalDetallesExtra";
 import { ModalDetalleOrden } from "../components/modals/ModalMostrarDetalles";
 import { ModalDialogo } from "../components/modals/ModalDialogo";
 
-// Iconos UI Premium
-import { ArrowLeft, Receipt, ChefHat, History, Search, Loader2, ChevronRight, AlertCircle, Power } from 'lucide-react';
+import { ArrowLeft, Receipt, ChefHat, History, Search, Loader2, AlertCircle, Power, ChevronRight } from 'lucide-react';
 
-export function MenuMesas() {
+export default   function MenuMesas() {
     
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
@@ -32,10 +24,9 @@ export function MenuMesas() {
     const menu = useMenu();
     const { detallesOrden, cargandoDetalles, obtenerDetalle } = useDetalleOrden();
 
-    // Hooks de Mutación
     const { crear, cargando: creando } = useCrearOrden();
     const { actualizar, cargando: actualizando } = useActualizarOrden();
-    const { mandarACaja, cargando: enviandoCaja } = useMandarACaja(); // 🆕 Nuevo Hook
+    const { mandarACaja, cargando: enviandoCaja } = useMandarACaja(); 
     const { cancelar, cargando: cancelando } = useCancelarOrden();
     
     const cargandoAccionWebsocket = creando || actualizando || enviandoCaja || cancelando;
@@ -143,7 +134,6 @@ export function MenuMesas() {
         }
     };
 
-    // 🆕 NUEVA LÓGICA: Mandar a Caja en lugar de cerrar directamente
     const manejarMandarACaja = () => {
         if (!ordenActiva) return;
         mostrarConfirmacion(
@@ -168,66 +158,63 @@ export function MenuMesas() {
         );
     };
 
-    // --- VISTA DE ERROR / CERRADO ---
     if (estadoComedor.error != null || estadoComedor.estado?.status === false || menu.error != null) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-screen bg-[#090D1A] p-4 relative">
-                <div className="absolute w-[400px] h-[400px] bg-red-600/5 blur-[120px] rounded-full pointer-events-none"></div>
-                <div className="bg-slate-900 border border-white/5 px-6 py-10 rounded-3xl shadow-2xl text-center w-full max-w-sm relative z-10">
-                    <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-red-500/20">
-                        <Power className="text-red-500" size={32} />
+            <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 p-4 relative">
+                <div className="bg-white border border-slate-200 px-6 py-10 rounded-3xl shadow-2xl text-center w-full max-w-sm relative z-10">
+                    <div className="w-20 h-20 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-6 border border-rose-200">
+                        <Power className="text-rose-600" size={32} />
                     </div>
-                    <h1 className="text-2xl font-black text-white mb-2 tracking-tight">Comedor Cerrado</h1>
-                    <p className="text-slate-400 text-sm mb-8 font-medium">El sistema de mesas no está operando.</p>
-                    <button onClick={() => navigate('/Mesas')} className="w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 px-5 rounded-xl transition-all border border-white/5 shadow-md active:scale-95">
-                        <ArrowLeft size={18} /> Volver al Tablero
+                    <h1 className="text-3xl font-black text-slate-900 mb-2 tracking-tight">Comedor Cerrado</h1>
+                    <p className="text-slate-600 text-base mb-8 font-medium">El sistema de mesas no está operando.</p>
+                    <button onClick={() => navigate('/Mesas')} className="w-full flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-black py-4 px-5 rounded-xl transition-all border border-slate-300 shadow-sm active:scale-95">
+                        <ArrowLeft size={20} /> Volver al Tablero
                     </button>
                 </div>
             </div>
         );
     }
 
-    // --- VISTA DE CARGA ---
     if (cargando) {
         return (
-            <div className="min-h-[100dvh] flex flex-col items-center justify-center bg-[#090D1A]">
-                <Loader2 className="w-12 h-12 text-blue-500 animate-spin mb-4" />
-                <div className="text-slate-400 font-bold uppercase tracking-widest animate-pulse text-sm">Escaneando Mesa...</div>
+            <div className="min-h-[100dvh] flex flex-col items-center justify-center bg-slate-50">
+                <Loader2 className="w-16 h-16 text-sky-500 animate-spin mb-4" />
+                <div className="text-slate-500 font-black uppercase tracking-widest animate-pulse text-sm">Escaneando Mesa...</div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-[100dvh] bg-[#090D1A] text-slate-200 p-4 md:p-6 lg:p-8 font-sans antialiased">
-            <div className="max-w-[1200px] mx-auto animate-[fade-in_0.3s_ease-out] pb-24">
+        <div className="min-h-[100dvh] bg-slate-50/50 text-slate-800 p-4 md:p-6 lg:p-8 font-sans antialiased">
+            <div className="max-w-[1200px] mx-auto animate-in fade-in duration-500 pb-24">
 
-                <div className="flex items-center gap-4 mb-8 bg-[#0F172A] p-4 rounded-2xl border border-white/5 shadow-lg">
+                <div className="flex items-center gap-4 mb-8 bg-white/80 backdrop-blur-md p-5 rounded-2xl border border-slate-200/60 shadow-xl">
                     <button 
                         onClick={() => navigate('/Mesas')} 
-                        className="p-3 bg-slate-800/80 border border-white/5 rounded-xl shadow-sm hover:bg-slate-700 hover:text-white transition-all text-slate-400 group"
+                        className="p-3 bg-slate-100 border border-slate-200 rounded-xl shadow-sm hover:bg-slate-200 hover:text-slate-900 transition-all text-slate-600 group"
                     >
-                        <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+                        <ArrowLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
                     </button>
                     <div className="flex flex-col">
-                        <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight flex items-center gap-2">
-                            Mesa <span className="text-blue-500">#{id}</span>
+                        <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+                            Mesa <span className="text-sky-500">#{id}</span>
                         </h1>
-                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Gestión de Consumo</span>
+                        <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Gestión de Consumo</span>
                     </div>
                 </div>
 
                 {/* ORDEN ACTIVA */}
-                <section className="bg-[#0F172A] rounded-3xl border border-white/5 shadow-xl mb-8 overflow-hidden">
-                    <div className="p-5 md:p-6 border-b border-white/5 bg-slate-900/30 flex items-center gap-3">
-                        <div className="p-2.5 bg-blue-500/10 text-blue-400 rounded-xl border border-blue-500/20"><Receipt size={20} /></div>
-                        <h2 className="text-lg font-black text-white tracking-wide">Ticket en Curso</h2>
+                <section className="bg-white/80 backdrop-blur-md rounded-3xl border border-slate-200/60 shadow-xl mb-8 overflow-hidden">
+                    <div className="p-5 md:p-6 border-b border-slate-200/60 bg-slate-50/50 flex items-center gap-3">
+                        <div className="p-3 bg-sky-50 text-sky-600 rounded-xl border border-sky-200 shadow-sm"><Receipt size={24} /></div>
+                        <h2 className="text-xl font-black text-slate-900 tracking-wide">Ticket en Curso</h2>
                     </div>
                     
                     <div className="p-5 md:p-6">
                         {cargandoDetalles ? (
-                            <div className="flex flex-col items-center justify-center py-12 bg-slate-900/20 rounded-2xl border border-dashed border-white/5">
-                                <Loader2 className="w-8 h-8 text-blue-500 animate-spin mb-3" />
-                                <span className="text-xs font-bold uppercase tracking-widest text-slate-500">Extrayendo Datos...</span>
+                            <div className="flex flex-col items-center justify-center py-12 bg-slate-50 rounded-2xl border border-dashed border-slate-300">
+                                <Loader2 className="w-10 h-10 text-sky-500 animate-spin mb-3" />
+                                <span className="text-sm font-black uppercase tracking-widest text-slate-500">Extrayendo Datos...</span>
                             </div>
                         ) : (
                             <OrdenActivaTable 
@@ -236,7 +223,6 @@ export function MenuMesas() {
                                 cargandoAccion={cargandoAccionWebsocket}
                                 alModificarCantidad={modificarCantidadBorrador}
                                 alCrearOActualizar={manejarCrearOActualizar}
-                                // 🆕 Pasamos el nuevo Handler
                                 alTerminarOrden={manejarMandarACaja} 
                                 alCancelarOrden={manejarCancelarOrden}
                             />
@@ -245,17 +231,17 @@ export function MenuMesas() {
                 </section>
 
                 {/* MENÚ DEL DÍA */}
-                <section className="bg-[#0F172A] rounded-3xl border border-white/5 shadow-xl mb-8 overflow-hidden">
-                    <div className="p-5 md:p-6 border-b border-white/5 bg-slate-900/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <section className="bg-white/80 backdrop-blur-md rounded-3xl border border-slate-200/60 shadow-xl mb-8 overflow-hidden">
+                    <div className="p-5 md:p-6 border-b border-slate-200/60 bg-slate-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div className="flex items-center gap-3">
-                            <div className="p-2.5 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20"><ChefHat size={20} /></div>
-                            <h2 className="text-lg font-black text-white tracking-wide">Menú del Día</h2>
+                            <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl border border-emerald-200 shadow-sm"><ChefHat size={24} /></div>
+                            <h2 className="text-xl font-black text-slate-900 tracking-wide">Menú del Día</h2>
                         </div>
                         <button 
                             onClick={() => setModalExtraAbierto(true)}
-                            className="bg-slate-800/80 border border-white/5 text-slate-300 hover:text-white hover:bg-slate-700 font-bold py-2.5 px-4 rounded-xl text-xs transition-all shadow-sm flex items-center justify-center gap-2"
+                            className="bg-slate-100 border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-200 font-bold py-3 px-5 rounded-xl text-sm transition-all shadow-sm flex items-center justify-center gap-2"
                         >
-                            <Search size={16} /> Buscar Platillo Extra
+                            <Search size={18} /> Buscar Platillo Extra
                         </button>
                     </div>
 
@@ -269,15 +255,15 @@ export function MenuMesas() {
                 </section>
 
                 {/* HISTORIAL */}
-                <section className="bg-[#0F172A] rounded-3xl border border-white/5 shadow-xl overflow-hidden">
-                    <div className="p-5 md:p-6 border-b border-white/5 bg-slate-900/30 flex items-center gap-3">
-                        <div className="p-2.5 bg-purple-500/10 text-purple-400 rounded-xl border border-purple-500/20"><History size={20} /></div>
-                        <h2 className="text-lg font-black text-white tracking-wide">Historial de la Mesa</h2>
+                <section className="bg-white/80 backdrop-blur-md rounded-3xl border border-slate-200/60 shadow-xl overflow-hidden">
+                    <div className="p-5 md:p-6 border-b border-slate-200/60 bg-slate-50/50 flex items-center gap-3">
+                        <div className="p-3 bg-purple-50 text-purple-600 rounded-xl border border-purple-200 shadow-sm"><History size={24} /></div>
+                        <h2 className="text-xl font-black text-slate-900 tracking-wide">Historial de la Mesa</h2>
                     </div>
 
                     <div className="p-5 md:p-6">
                         {historial && historial.length > 0 ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                                 {historial.map((orden: OrdenComedor) => (
                                     <div 
                                         key={orden.IdOrden}
@@ -286,31 +272,30 @@ export function MenuMesas() {
                                             setModalHistorialAbierto(true);
                                             if (obtenerDetalle) obtenerDetalle(orden.IdOrden);
                                         }}
-                                        className="group flex items-center justify-between bg-slate-900/50 border border-white/5 p-4 rounded-2xl cursor-pointer transition-all hover:bg-slate-800 hover:border-blue-500/30 shadow-sm"
+                                        className="group flex items-center justify-between bg-slate-50 border border-slate-200 p-5 rounded-2xl cursor-pointer transition-all hover:bg-white hover:border-sky-300 hover:shadow-md shadow-sm"
                                     >
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center border border-white/5 group-hover:bg-blue-500/10 group-hover:text-blue-400 group-hover:border-blue-500/20 transition-colors">
-                                                <Receipt size={16} className="text-slate-500 group-hover:text-blue-400"/>
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-12 h-12 rounded-full bg-slate-200 flex items-center justify-center border border-slate-300 group-hover:bg-sky-100 group-hover:text-sky-600 group-hover:border-sky-200 transition-colors">
+                                                <Receipt size={20} className="text-slate-600 group-hover:text-sky-600"/>
                                             </div>
                                             <div>
-                                                <h3 className="font-black text-sm text-slate-200 group-hover:text-white">Pedido #{orden.IdOrden}</h3>
-                                                <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-500">Procesado</p>
+                                                <h3 className="font-black text-base text-slate-900">Pedido #{orden.IdOrden}</h3>
+                                                <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600 mt-0.5">Procesado</p>
                                             </div>
                                         </div>
-                                        <ChevronRight size={18} className="text-slate-600 group-hover:text-blue-400 transition-transform group-hover:translate-x-1" />
+                                        <ChevronRight size={22} className="text-slate-400 group-hover:text-sky-500 transition-transform group-hover:translate-x-1" />
                                     </div>
                                 ))}
                             </div>
                         ) : (
-                            <div className="flex flex-col items-center justify-center py-10 bg-slate-900/20 rounded-2xl border border-dashed border-white/5">
-                                <AlertCircle className="text-slate-600 mb-3" size={28} />
-                                <p className="text-slate-400 text-sm font-medium">No hay registros previos en esta mesa hoy.</p>
+                            <div className="flex flex-col items-center justify-center py-12 bg-slate-50 rounded-2xl border border-dashed border-slate-300">
+                                <AlertCircle className="text-slate-400 mb-3" size={32} />
+                                <p className="text-slate-500 text-sm font-bold">No hay registros previos en esta mesa hoy.</p>
                             </div>
                         )}
                     </div>
                 </section>
                 
-                {/* MODALES EXTERNOS */}
                 <ModalPlatilloExtra 
                     abierto={modalExtraAbierto}
                     alCerrar={() => setModalExtraAbierto(false)}
@@ -340,5 +325,3 @@ export function MenuMesas() {
         </div>
     );
 }
-
-export default MenuMesas;

@@ -10,16 +10,108 @@ import { obtenerOrdenporNombre } from "../../services/ordenes";
 //import { useSoloClientes, useCliente } from "./hookClientes";
 
 
-//Crear y editar
-export function useFactura( idFactura?: number) {
+export function useFacturaPaginacion(initialPage = 1, initialRows = 10) {
+    const [data, setData] = useState<Factura[]>([]);
+    const [total, setTotal] = useState(0);
+    const [pagina, setPagina] = useState(initialPage);
+    const [rows, setRows] = useState(initialRows);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [filtros, setFiltros] = useState<Record<string, any>>({});
+
+    // Convertimos a string para usarlo como dependencia segura y evitar loops infinitos
+    const stringificadoFilter = JSON.stringify(filtros);
+
+    const fetchFacturas = useCallback(async (signal?: AbortSignal) => {
+        setLoading(true);
+        setError(null);
+        try {
+            // Parseamos los filtros de vuelta a objeto de forma segura
+            const currentFiltros = JSON.parse(stringificadoFilter);
+            const respuesta = await getFacturasPag(pagina, rows, currentFiltros, signal);
+            
+            // CORRECCIÓN CRÍTICA: Validamos si la respuesta es un array directo (FastAPI) o un objeto { data, total }
+            const datosSeguros = Array.isArray(respuesta) ? respuesta : (respuesta?.data || []);
+            
+            setData(datosSeguros);
+            
+            // Fallback para el total si el backend no lo envía
+            setTotal(respuesta?.total !== undefined ? respuesta.total : datosSeguros.length);
+            
+        } catch (err: any) {
+            if (err.name !== 'AbortError') {
+                setError(err.message || "Error al cargar facturas");
+                setData([]); // Limpieza segura en caso de error
+            }
+        } finally {
+            setLoading(false);
+        }
+    }, [pagina, rows, stringificadoFilter]);
+
+    useEffect(() => {
+        const controller = new AbortController();
+        fetchFacturas(controller.signal);
+        return () => controller.abort();
+    }, [fetchFacturas]);
+
+    // CORRECCIÓN: Memorizamos estas funciones para evitar bucles infinitos en los useEffects hijos
+    const cambiarPagina = useCallback((nuevaPagina: number) => setPagina(nuevaPagina), []);
+    
+    const cambiarRows = useCallback((nuevasRows: number) => { 
+        setRows(nuevasRows); 
+        setPagina(1); 
+    }, []);
+    
+    const aplicarFiltros = useCallback((nuevosFiltros: Record<string, any>) => { 
+        setFiltros(nuevosFiltros); 
+        setPagina(1); 
+    }, []);
+
+    const refetch = useCallback(() => {
+        fetchFacturas();
+    }, [fetchFacturas]);
+
+    // Sincronización de KPIs en base al set paginado visible o filtrado
+    const stats = useMemo(() => {
+        if (!data || data.length === 0) return { total: 0, pagadas: 0, pendiente: 0 };
+        
+        return {
+            total: data.reduce((acc, curr) => acc + (Number(curr.monto_total) || 0), 0),
+            pagadas: data
+                .filter((f: Factura) => f.estado_factura?.toString().toUpperCase() === 'PAGADA')
+                .reduce((acc, curr) => acc + (Number(curr.monto_total) || 0), 0),
+            pendiente: data.filter((f: Factura) => {
+                const est = f.estado_factura?.toString().toUpperCase();
+                return est === 'GENERADA' || est === 'PENDIENTE';
+            }).length
+        };
+    }, [data]);
+
+    return {
+        data,
+        total,
+        pagina,
+        rows,
+        loading,
+        error,
+        stats, 
+        cambiarPagina,
+        cambiarRows,
+        aplicarFiltros,
+        refetch
+    };
+} 
+
+// Crear y editar
+export function useFactura(idFactura?: number) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
   
-  //Orquestador de persistencia hacia Services (Post/Put)
+  // Orquestador de persistencia hacia Services (Post/Put)
   const guardarFactura = useCallback(async (
     payloadListo: PayloadFactura, 
     onSuccessCallback: (data: any) => void) => {
+        
     if (loading) return; 
 
     setLoading(true);
@@ -40,7 +132,7 @@ export function useFactura( idFactura?: number) {
     }
   }, [idFactura, loading]);
 
-  return {guardarFactura, loading, error};
+  return { guardarFactura, loading, error };
 }
 
 export function useFacturaModal(BusquedaNombre: string, id_factura?: number) {
@@ -196,75 +288,4 @@ export function useFacturasPage() {
     error, 
     refetch: fetchFacturas 
   };
-}
-
-
-export function useFacturaPaginacion(initialPage = 1, initialRows = 10) {
-    const [data, setData] = useState<Factura[]>([]);
-    const [total, setTotal] = useState(0);
-    const [pagina, setPagina] = useState(initialPage);
-    const [rows, setRows] = useState(initialRows);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [filtros, setFiltros] = useState<Record<string, any>>({});
-
-    const stringificadoFilter = JSON.stringify(filtros);
-    const fetchFacturas = useCallback(async (signal?: AbortSignal) => {
-        setLoading(true);
-        setError(null);
-        try {
-            const respuesta = await getFacturasPag(pagina, rows, filtros, signal);
-            setData(respuesta.data);
-            setTotal(respuesta.total);
-        } catch (err: any) {
-            if (err.name !== 'AbortError') {
-                setError(err.message || "Error al cargar facturas");
-            }
-        } finally {
-            setLoading(false);
-        }
-    }, [pagina, rows, stringificadoFilter]);
-
-    useEffect(() => {
-        const controller = new AbortController();
-        fetchFacturas(controller.signal);
-        return () => controller.abort();
-    }, [fetchFacturas]);
-
-    const cambiarPagina = (nuevaPagina: number) => setPagina(nuevaPagina);
-    const cambiarRows = (nuevasRows: number) => { setRows(nuevasRows); setPagina(1); };
-    const aplicarFiltros = (nuevosFiltros: Record<string, any>) => { setFiltros(nuevosFiltros); setPagina(1); };
-
-    const refetch = useCallback(() => {
-    fetchFacturas();
-  }, [fetchFacturas]);
-
-    // Sincronización de KPIs en base al set paginado visible o filtrado
-    const stats = useMemo(() => {
-        if (!data.length) return { total: 0, pagadas: 0, pendiente: 0 };
-        return {
-            total: data.reduce((acc, curr) => acc + (Number(curr.monto_total) || 0), 0),
-            pagadas: data
-                .filter((f: Factura) => f.estado_factura?.toString().toUpperCase() === 'PAGADA')
-                .reduce((acc, curr) => acc + (Number(curr.monto_total) || 0), 0),
-            pendiente: data.filter((f: Factura) => {
-                const est = f.estado_factura?.toString().toUpperCase();
-                return est === 'GENERADA' || est === 'PENDIENTE';
-            }).length
-        };
-    }, [data]);
-
-    return {
-        data,
-        total,
-        pagina,
-        rows,
-        loading,
-        error,
-        stats, 
-        cambiarPagina,
-        cambiarRows,
-        aplicarFiltros,
-        refetch
-    };
 }

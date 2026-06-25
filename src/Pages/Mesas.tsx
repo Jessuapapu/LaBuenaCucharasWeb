@@ -5,13 +5,11 @@ import { useOrdenesMesa } from "../components/Hooks/hookOrdenes";
 import { socket } from '../services/websocket';
 import { LayoutDashboard, Clock, UtensilsCrossed } from 'lucide-react';
 
-// Ajusta las rutas a tu proyecto
-import { GridMetricasAdmin } from "../comedor/grid/GridMetricasAdmin";
-import { BarraHerramientasAdmin } from "../comedor/BarraHerramientaadmin";
-import { TarjetaMesaAdmin } from "../comedor/TarjetaMesaAdmin";
-import { PantallaCerradoAdmin } from "../comedor/PantallaCerrado";
-import { EstadoVacioMesas } from "../comedor/EstadoVacioMesa";
-
+import { GridMetricasAdmin } from "../Comedor/grid/GridMetricasAdmin";
+import { BarraHerramientasAdmin } from "../Comedor/BarraHerramientaadmin";
+import { TarjetaMesaAdmin } from "../Comedor/TarjetaMesaAdmin";
+import { PantallaCerradoAdmin } from "../Comedor/PantallaCerrado";
+import { EstadoVacioMesas } from "../Comedor/EstadoVacioMesa";
 
 export function IndexMesas() {
   const { estado, error, abrirComedor, cerrarComedor, cargandoAccion: procesandoEstado } = useEstado();
@@ -25,8 +23,9 @@ export function IndexMesas() {
   const totalMesas = numeroMesa?.length || 0;
 
   return (
-    <div className="min-h-[100dvh] bg-[#090D1A] text-slate-200 p-3 sm:p-4 md:p-6 lg:p-8 font-sans antialiased selection:bg-blue-500/30">
-      <div className="max-w-[1400px] mx-auto space-y-6 md:space-y-8">
+    // Fondo eliminado: dejamos que respire con el fondo general de la app
+    <div className="min-h-[100dvh] text-slate-900 p-4 md:p-6 lg:p-8 font-sans antialiased bg-transparent">
+      <div className="max-w-[1400px] mx-auto space-y-8 animate-in fade-in duration-500">
         
         {/* BARRA DE HERRAMIENTAS GENERAL */}
         <BarraHerramientasAdmin 
@@ -36,18 +35,20 @@ export function IndexMesas() {
           procesandoMesas={procesandoMesas} cantidadMesas={totalMesas}
         />
 
-        {/* MÉTRICAS DE OPERACIONES DE ADMINISTRACIÓN */}
+        {/* MÉTRICAS DE OPERACIONES */}
         <GridMetricasAdmin cantidadMesas={totalMesas} mesas={numeroMesa || []} />
 
         {/* SECCIÓN DEL RESUMEN DE TARJETAS */}
-        <section className="animate-[fade-in_0.4s_ease-out]">
-          <h2 className="text-sm md:text-base font-black text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
-            <LayoutDashboard size={18} className="md:w-5 md:h-5" /> Estado en Vivo del Salón
-          </h2>
+        <section>
+          <div className="flex items-center gap-2 mb-6 border-b border-slate-200 pb-3">
+            <LayoutDashboard size={22} className="text-sky-500" />
+            <h2 className="text-lg font-black text-slate-800 uppercase tracking-widest">
+              Estado en Vivo del Salón
+            </h2>
+          </div>
           
           {totalMesas > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              
               {
               //@ts-ignore
               numeroMesa.map((mesa: any, index: number) => (
@@ -59,26 +60,29 @@ export function IndexMesas() {
           )}
         </section>
 
-        {/* NUEVA SECCIÓN: TABLA DETALLADA INFERIOR */}
-        <section className="animate-[fade-in_0.5s_ease-out] pt-4 md:pt-6">
-          <h2 className="text-sm md:text-base font-black text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
-            <Clock size={18} className="md:w-5 md:h-5" /> Registro Operativo en Tiempo Real
-          </h2>
+        {/* TABLA DETALLADA INFERIOR */}
+        <section className="pt-4 md:pt-6">
+          <div className="flex items-center gap-2 mb-6 border-b border-slate-200 pb-3">
+            <Clock size={22} className="text-sky-500" />
+            <h2 className="text-lg font-black text-slate-800 uppercase tracking-widest">
+              Registro Operativo en Tiempo Real
+            </h2>
+          </div>
           
           {totalMesas > 0 && (
-            <div className="bg-slate-900/40 backdrop-blur-md border border-slate-800/60 rounded-2xl overflow-hidden shadow-xl w-full">
+            <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm w-full">
               <div className="overflow-x-auto custom-scrollbar">
                 <table className="w-full min-w-[700px] text-left border-collapse">
                   <thead>
-                    <tr className="bg-slate-900/60 backdrop-blur-md border-b border-slate-800/60 text-[10px] md:text-xs uppercase tracking-widest text-slate-400 whitespace-nowrap">
-                      <th className="p-3 md:p-4 font-black">ID Mesa</th>
-                      <th className="p-3 md:p-4 font-black">Estado</th>
-                      <th className="p-3 md:p-4 font-black">N° Orden Activa</th>
-                      <th className="p-3 md:p-4 font-black">Hora Apertura</th>
-                      <th className="p-3 md:p-4 font-black text-right">Acción</th>
+                    <tr className="bg-slate-50 border-b border-slate-200 text-xs uppercase tracking-widest text-slate-500 whitespace-nowrap">
+                      <th className="p-5 font-black">ID Mesa</th>
+                      <th className="p-5 font-black">Estado</th>
+                      <th className="p-5 font-black">N° Orden Activa</th>
+                      <th className="p-5 font-black">Hora Apertura</th>
+                      <th className="p-5 font-black text-right">Acción</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800/40 bg-slate-950/10">
+                  <tbody className="divide-y divide-slate-100 bg-white">
                     {
                     //@ts-ignore
                     numeroMesa.map((mesa: any, index: number) => (
@@ -96,28 +100,21 @@ export function IndexMesas() {
   );
 }
 
-// Subcomponente atómico privado c/ WebSocket blindado
+// Subcomponente de la Fila
 function FilaTablaGlobal({ idMesa }: { idMesa: number }) {
   const stringId = String(idMesa);
   const navigate = useNavigate();
   
-  // Extraemos refresh para forzar recargas
   const { ordenActiva, cargando, refresh } = useOrdenesMesa(stringId) as any;
 
-  // Lógica Robusta de Sockets
   useEffect(() => {
-    // Función que recarga los datos de esta mesa específica
     const recargarMesa = (data: { IdMesa: number }) => {
-      // Verificamos que el evento del servidor corresponda a esta fila
       if (Number(data.IdMesa) === idMesa && refresh) {
-          refresh(); // Pide la info HTTP fresca al backend
+          refresh(); 
       }
     };
-
-    // Escuchamos AMBOS eventos posibles que el backend pueda emitir al modificar una mesa
     socket.on("orden_actualizada", recargarMesa);
     socket.on("orden_generada", recargarMesa);
-
     return () => {
       socket.off("orden_actualizada", recargarMesa);
       socket.off("orden_generada", recargarMesa);
@@ -127,35 +124,39 @@ function FilaTablaGlobal({ idMesa }: { idMesa: number }) {
   const tieneOrden = !!ordenActiva;
 
   return (
-    <tr className="hover:bg-slate-800/50 transition-colors whitespace-nowrap">
-      <td className="p-3 md:p-4 font-bold text-white font-mono text-sm md:text-base">Mesa #{idMesa}</td>
-      <td className="p-3 md:p-4">
+    <tr className={`transition-colors whitespace-nowrap hover:bg-slate-50/50`}>
+      <td className="p-5 font-black text-slate-900 font-mono text-base">Mesa #{idMesa}</td>
+      <td className="p-5">
         {cargando ? (
-          <span className="text-slate-500 animate-pulse text-[10px] md:text-xs">Sincronizando...</span>
+          <span className="text-slate-400 font-bold animate-pulse text-xs uppercase tracking-widest">Sync...</span>
         ) : tieneOrden ? (
-          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[10px] md:text-xs font-bold uppercase">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-100 text-rose-700 text-xs font-black uppercase tracking-widest">
             Ocupada
           </span>
         ) : (
-          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700 text-[10px] md:text-xs font-bold uppercase">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-black uppercase tracking-widest">
             Libre
           </span>
         )}
       </td>
-      <td className="p-3 md:p-4 font-mono text-xs md:text-sm text-slate-300">
-        {tieneOrden ? `#${ordenActiva.IdOrden}` : <span className="text-slate-600">--</span>}
+      <td className={`p-5 font-mono text-sm font-bold ${tieneOrden ? 'text-rose-600' : 'text-slate-400'}`}>
+        {tieneOrden ? `#${ordenActiva.IdOrden}` : '--'}
       </td>
-      <td className="p-3 md:p-4 text-slate-400 text-xs md:text-sm">
+      <td className="p-5 text-slate-600 font-bold text-sm">
         {tieneOrden && ordenActiva.HoraEntrada
           ? new Date(ordenActiva.HoraEntrada).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
           : '--:--'}
       </td>
-      <td className="p-3 md:p-4 text-right">
+      <td className="p-5 text-right">
         <button
           onClick={() => navigate(`/mesa/${idMesa}`)}
-          className="inline-flex items-center gap-1.5 bg-slate-800 hover:bg-sky-500 text-slate-300 hover:text-white font-bold py-1.5 px-2.5 md:px-3 rounded-lg transition-all border border-slate-700/50 active:scale-95 text-[10px] md:text-xs shadow-md shadow-slate-950/40"
+          className={`inline-flex items-center gap-2 font-bold py-2 px-4 rounded-xl transition-all border active:scale-95 text-xs uppercase tracking-widest shadow-sm ${
+            tieneOrden 
+            ? 'bg-white hover:bg-rose-50 text-rose-600 border-rose-200' 
+            : 'bg-white hover:bg-slate-50 text-slate-600 hover:text-sky-600 border-slate-200'
+          }`}
         >
-          <UtensilsCrossed size={14} className="w-3.5 h-3.5 md:w-4 md:h-4" /> Inspeccionar
+          <UtensilsCrossed size={16} /> Inspeccionar
         </button>
       </td>
     </tr>
