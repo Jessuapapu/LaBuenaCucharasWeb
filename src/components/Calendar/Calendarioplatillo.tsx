@@ -1,9 +1,9 @@
 //import { useState, useEffect } from "react";
 import { Calendar as CalendarIcon, UtensilsCrossed, Edit2, Plus } from "lucide-react";
 //import ModalEditarMenu from "../modals/ModalEditarMenu"; ya mo se utiliza
-import ModalNuevoMenu from "../../Menu/modals/ModalNuevoMenu";
-import type { Menu_dario } from "../../interfaces/Platillos";
-import { useMenu_diario } from "../Hooks/hookMenu_diario";
+import ModalNuevoMenu from "../../Features/Menu/modals/ModalNuevoMenu";
+import type { Menu_dario } from "../../context/Interfaces/Platillos";
+import { useMenu_diario } from "../../context/Hooks/hookMenu_diario";
 
 // Agregamos la interfaz de Props para recibir los datos de MenusPage
 interface CalendarioProps {

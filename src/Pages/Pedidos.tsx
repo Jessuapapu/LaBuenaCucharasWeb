@@ -2,17 +2,17 @@ import { useEffect, useState, useMemo } from "react";
 import { TrendingUp, Package, Clock, CheckCircle, DollarSign, Plus, RefreshCw, Layers } from "lucide-react";
 
 // COMPONENTES ORIGINALES
-import CardGraficoLinealSemanal from "../components/cards/CardsLineales/CardGrapLineal";
-import CardPedido from "../components/cards/CardOrden";
-import type { Platillo } from "../interfaces/Platillos";
+import CardGraficoLinealSemanal from "../components/Cards/CardsLineales/CardGrapLineal";
+import CardPedido from "../components/Cards/CardOrden";
+import type { Platillo } from "../context/Interfaces/Platillos";
 
 // HOOKS Y TABLAS COMPATIBLES CON TU PA
-import { useGestionPedidos, type PedidoHistorial } from '../Pedidos/hooks/hookPedi2s';
-import { ModalEditorPedido } from '../Pedidos/Modals/ModalPedidos';
-import { TablaPedidos } from '../Pedidos/tables/TablaPedidos';
+import { useGestionPedidos, type PedidoHistorial } from '../Features/Pedidos/hooks/hookPedi2s';
+import { ModalEditorPedido } from '../Features/Pedidos/Modals/ModalPedidos';
+import { TablaPedidos } from '../Features/Pedidos/tables/TablaPedidos';
 
 // WEBSOCKETS
-import { socket } from '../services/websocket';
+import { socket } from '../context/Services/websocket';
 
 interface DatoGrafico {
     x: string;

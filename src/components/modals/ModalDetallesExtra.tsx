@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-import { usePlatillosExtra } from "../Hooks/hookComedor";
+import { usePlatillosExtra } from "../../context/Hooks/hookComedor";
 
 export interface ModalPlatilloExtraProps {
     abierto: boolean;

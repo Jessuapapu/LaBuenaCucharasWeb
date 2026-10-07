@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { ingredientesService } from "../../services/ingredientesService";
-import type { IngredienteModel, RelacionPayload } from "../../interfaces/ingredientes";
+import { ingredientesService } from "../../context/Services/ingredientesService";
+import type { IngredienteModel, RelacionPayload } from "../../context/Interfaces/ingredientes";
 
 export function useIngredientes() {
   const [ingredientes, setIngredientes] = useState<IngredienteModel[]>([]);

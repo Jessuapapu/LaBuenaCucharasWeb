@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { proveedoresServiceEditar, proveedoresServiceNuevo, bodegaService, obtenerProveedoresServices, actualizarRegistro, getProveedores} from "../../services/proveedor"; // Ajusta la ruta
-import type { Proveedor, NuevoProveedor, PayloadRegistro } from "../../interfaces/Proveedor";
+import { proveedoresServiceEditar, proveedoresServiceNuevo, bodegaService, obtenerProveedoresServices, actualizarRegistro, getProveedores} from "../../context/Services/proveedor"; // Ajusta la ruta
+import type { Proveedor, NuevoProveedor, PayloadRegistro } from "../../context/Interfaces/Proveedor";
 
 interface ProveedorOption {
   IdProveedor: number;

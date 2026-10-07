@@ -1,11 +1,11 @@
 import React from "react";
 //import { useState, useMemo } from "react";
 //import ModalEditarMenu from "../modals/ModalEditarMenu";
-import ModalNuevoMenu from "../../Menu/modals/ModalNuevoMenu";
+import ModalNuevoMenu from "../../Features/Menu/modals/ModalNuevoMenu";
 import { Utensils, Edit2, ChevronLeft, ChevronRight} from "lucide-react";
-import type { Menu_dario } from "../../interfaces/Platillos";
+import type { Menu_dario } from "../../context/Interfaces/Platillos";
 //import type { DetalleOrdenLista } from "../../interfaces/Ordenes";
-import { useMenu_diario } from "../Hooks/hookMenu_diario";
+import { useMenu_diario } from "../../context/Hooks/hookMenu_diario";
 
 const Plus = ({ size }: { size: number }) => (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>

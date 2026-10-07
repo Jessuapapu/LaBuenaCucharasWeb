@@ -1,5 +1,5 @@
 
-import { useImagenPlatillo } from "../Hooks/hookImagenes";
+import { useImagenPlatillo } from "../../context/Hooks/hookImagenes";
 
 export interface Detalles {
     nombre_platillo: string;

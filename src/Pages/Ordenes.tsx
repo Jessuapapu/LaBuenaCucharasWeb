@@ -1,12 +1,12 @@
 import { useState, useCallback, useEffect } from 'react';
-import { useGestionOrdenes, type OrdenHistorial } from '../ordenes/hooks/hookOrdenes';
-import { ModalEditorOrden } from '../ordenes/modales/ModalOrdenes';
-import { TablaOrdenes } from '../ordenes/tables/TableOrdenes';
+import { useGestionOrdenes, type OrdenHistorial } from '../Features/Ordenes/hooks/hookOrdenes';
+import { ModalEditorOrden } from '../Features/Ordenes/modales/ModalOrdenes';
+import { TablaOrdenes } from '../Features/Ordenes/tables/TableOrdenes';
 import { FileText, Plus } from 'lucide-react';
-import { MetricasOrdenes } from '../ordenes/comunes/MetricasOrdenes';
+import { MetricasOrdenes } from '../Features/Ordenes/comunes/MetricasOrdenes';
 
 // IMPORTANTE: Ajusta esta ruta a donde tengas exportada tu instancia de socket
-import { socket } from '../services/websocket'; 
+import { socket } from '../context/Services/websocket'; 
 
 export function OrdenesPage() {
   const [page, setPage] = useState(1);

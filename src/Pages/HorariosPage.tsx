@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Clock, Plus, Pencil, Trash2, RefreshCw, AlertCircle } from "lucide-react";
-import { useHorarios } from "../components/Hooks/useConfigMenu";
-import type { CambioDeHoraModel, CambioDeHoraModelEditar } from "../interfaces/cambiosdehora";
+import { useHorarios } from "../context/Hooks/useConfigMenu";
+import type { CambioDeHoraModel, CambioDeHoraModelEditar } from "../context/Interfaces/cambiosdehora";
 
-import { HorarioModal } from "../Horario_config/modal/HorarioModal";
-import { LineaDeTiempoGlobal } from "../Horario_config/comunes/LineaDeTiempoGlobal";
-import { TimeRangeVisualizer } from "../Horario_config/comunes/TimeRangeVisualizer";
-import { RankingHoras } from "../Horario_config/comunes/RankingHorarios";
+import { HorarioModal } from "../Features/Horario_config/modal/HorarioModal";
+import { LineaDeTiempoGlobal } from "../Features/Horario_config/comunes/LineaDeTiempoGlobal";
+import { TimeRangeVisualizer } from "../Features/Horario_config/comunes/TimeRangeVisualizer";
+import { RankingHoras } from "../Features/Horario_config/comunes/RankingHorarios";
 export default function HorariosPage() {
     const { horarios, loading, error, agregarHorario, actualizarHorario, eliminarHorario } = useHorarios();
 

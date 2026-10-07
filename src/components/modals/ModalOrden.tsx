@@ -1,10 +1,10 @@
 //import { ChartNoAxesColumnIcon } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
-import type { OrdenVisualizar, DetalleOrdenLista, CrearOrden, CrearDetalleOrden } from "../../interfaces/Ordenes";
+import type { OrdenVisualizar, DetalleOrdenLista, CrearOrden, CrearDetalleOrden } from "../../context/Interfaces/Ordenes";
 //import type { cliente } from "../../interfaces/Clientes";
 //import { useCliente } from "../Hooks/hookClientes";
-import type { Platillo } from "../../interfaces/Platillos";
-import { useOrdenes } from "../Hooks/hookOrdenes";
+import type { Platillo } from "../../context/Interfaces/Platillos";
+import { useOrdenes } from "../../context/Hooks/hookOrdenes";
 
 interface ModalPedidoProps {
     Orden?: OrdenVisualizar;

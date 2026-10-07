@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
-import ModalNuevoRegistro from "../modals/ModalNuevoRegistro";
-import ModalEditarRegistro from "../modals/ModalEditarRegistro";
-import { obtenerDetallesBodega } from "../../services/bodega"; // Ajusta la ruta según tu estructura
+import ModalNuevoRegistro from "../Modals/ModalNuevoRegistro";
+import ModalEditarRegistro from "../Modals/ModalEditarRegistro";
+import { obtenerDetallesBodega } from "../../context/Services/bodega"; // Ajusta la ruta según tu estructura
 import { ChevronDown, ChevronUp } from "lucide-react";
 
 interface Registro {

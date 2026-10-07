@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
-import { getPlatillos, getPlatillosDestacados } from "../../services/platillos"; 
-import { getVentasPlatillos } from "../../services/ordenes";
-import type { categoriaPlatillo } from "../../interfaces/Platillos";
+import { getPlatillos, getPlatillosDestacados } from "../../context/Services/platillos"; 
+import { getVentasPlatillos } from "../../context/Services/ordenes";
+import type { categoriaPlatillo } from "../../context/Interfaces/Platillos";
 
 export function usePlatillos() {
   const [platillos, setPlatillos] = useState<any[]>([]);

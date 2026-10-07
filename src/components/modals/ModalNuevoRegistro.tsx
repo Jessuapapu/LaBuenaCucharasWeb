@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNuevoRegistroBodega } from "../Hooks/hookProveedor";
+import { useNuevoRegistroBodega } from "../../context/Hooks/hookProveedor";
 
 interface ModalNuevoRegistroProps {
     onClose: () => void;

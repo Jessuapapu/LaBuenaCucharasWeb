@@ -4,9 +4,9 @@ import { useCallback, useState, useEffect, useMemo } from "react";
 //import type { Contrato } from "../../interfaces/Contratos";
 //import { getContratosByCliente } from "../../services/contratos";
 
-import { getFacturas, getFacturasPag, crearFactura, actualizarFactura } from "../../services/facturas";
-import type { Factura, PayloadFactura  } from "../../interfaces/Factura";
-import { obtenerOrdenporNombre } from "../../services/ordenes";
+import { getFacturas, getFacturasPag, crearFactura, actualizarFactura } from "../../context/Services/facturas";
+import type { Factura, PayloadFactura  } from "../../context/Interfaces/Factura";
+import { obtenerOrdenporNombre } from "../../context/Services/ordenes";
 //import { useSoloClientes, useCliente } from "./hookClientes";
 
 

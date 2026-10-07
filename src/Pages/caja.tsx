@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Lock, Unlock, DollarSign, Receipt, CreditCard, Loader2, Eye, Undo2, MonitorSpeaker } from 'lucide-react';
-import { useCaja } from '../Caja/hook/useCaja'; 
-import { apiCaja } from '../services/caja';
-import { ModalCobro } from '../Caja/modals/ModalCobro';
-import { ModalReembolso } from '../Caja/modals/ModalReembolso';
-import { ModalAdministrarCaja } from '../Caja/modals/ModalAdministrarCaja';
+import { useCaja } from '../Features/Caja/hook/useCaja'; 
+import { apiCaja } from '../context/Services/caja';
+import { ModalCobro } from '../Features/Caja/modals/ModalCobro';
+import { ModalReembolso } from '../Features/Caja/modals/ModalReembolso';
+import { ModalAdministrarCaja } from '../Features/Caja/modals/ModalAdministrarCaja';
 
 export default function CajaPage() {
     const { estadoCaja, datosCaja, cargando, abrirCaja, cerrarCaja, refetch } = useCaja();

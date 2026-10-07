@@ -1,6 +1,6 @@
-import TablaFacturas from "../Facturas/tables/TableFacturas";
+import TablaFacturas from "../Features/Facturas/tables/TableFacturas";
 import { FileText, DollarSign, CreditCard, AlertCircle } from "lucide-react";
-import { useFacturasPage } from "../components/Hooks/hookFacturas";
+import { useFacturasPage } from "../context/Hooks/hookFacturas";
 
 export default function FacturasPage() {
   // Consumimos únicamente la data estructural y de KPIs globales para la cabecera

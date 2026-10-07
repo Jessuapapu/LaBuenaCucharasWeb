@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { useContratos } from "../components/Hooks/hookContratos";
 
 // Componentes
-import TablaContratos from "../Contratos/tables/TableContratos"; // <-- Asegúrate de que la ruta coincida con tu estructura
+import TablaContratos from "../Features/Contratos/tables/TableContratos"; // <-- Asegúrate de que la ruta coincida con tu estructura
 
 // Componente interno para las tarjetas KPI
 const KpiCard = ({ title, value, icon, colorClass, borderClass }: any) => (

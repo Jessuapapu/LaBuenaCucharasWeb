@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
-import type { NuevoContrato } from "../../interfaces/Contratos";
-import { getClientes } from "../../services/clientes";
-import { crearContrato, getContratos } from "../../services/contratos";
-import type { cliente } from "../../interfaces/Clientes";
+import type { NuevoContrato } from "../../context/Interfaces/Contratos";
+import { getClientes } from "../../context/Services/clientes";
+import { crearContrato, getContratos } from "../../context/Services/contratos";
+import type { cliente } from "../../context/Interfaces/Clientes";
 
 export function useNuevoContrato() {
     const [listaClientes, setListaClientes] = useState<cliente[]>([]);

@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { X, User, Search, Calendar, DollarSign, FileText, Loader2, CheckCircle2, Clock } from "lucide-react";
-import { useNuevoContrato } from "../Hooks/hookContratos"; // Ajusta tu ruta
+import { useNuevoContrato } from "../../context/Hooks/hookContratos"; // Ajusta tu ruta
 import { Briefcase } from "lucide-react";
 
 interface ModalNuevoContratoProps {

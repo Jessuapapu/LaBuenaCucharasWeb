@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import type { CrearOrden } from "../../interfaces/Ordenes";
-import { actualizarOrden, crearOrden } from "../../services/ordenes";
-import { getVentasSemanales, obtenerTodasLasOrdenes, obtenerTodosLosPlatillos } from "../../services/ordenes"; 
-import type { Platillo } from "../../interfaces/Platillos";
+import type { CrearOrden } from "../../context/Interfaces/Ordenes";
+import { actualizarOrden, crearOrden } from "../../context/Services/ordenes";
+import { getVentasSemanales, obtenerTodasLasOrdenes, obtenerTodosLosPlatillos } from "../../context/Services/ordenes"; 
+import type { Platillo } from "../../context/Interfaces/Platillos";
 
 export interface OrdenComedor {
   IdOrden: number;
@@ -11,8 +11,8 @@ export interface OrdenComedor {
   fecha: string;
 }
 
-import type { Detalles } from "../modals/ModalMostrarDetalles";
-import { socket } from "../../services/websocket";
+import type { Detalles } from "../Modals/ModalMostrarDetalles";
+import { socket } from "../../context/Services/websocket";
 
 
 const API_URL = import.meta.env.VITE_API_URL;

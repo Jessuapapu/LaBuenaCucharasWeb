@@ -1,7 +1,7 @@
 // src/hooks/useBodega.ts
 import { useState, useEffect, useCallback } from "react";
-import { obtenerRegistrosBodega, obtenerInsumosBodega, obtenerIngredientesBodega } from "../../services/bodega";
-import type { ItemInventario } from "../../interfaces/Bodega";
+import { obtenerRegistrosBodega, obtenerInsumosBodega, obtenerIngredientesBodega } from "../../context/Services/bodega";
+import type { ItemInventario } from "../../context/Interfaces/Bodega";
 //Ingredientes es opcional
 export function useBodega() {
   const [data, setData] = useState<any[]>([]);

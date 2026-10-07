@@ -1,6 +1,6 @@
 ﻿import { useState, useEffect } from 'react';
-import type { Platillos, PlatilloExtraDB } from '../../interfaces/Platillos';
-import { socket } from '../../services/websocket';
+import type { Platillos, PlatilloExtraDB } from '../../context/Interfaces/Platillos';
+import { socket } from '../../context/Services/websocket';
 
 const UrlApi = import.meta.env.VITE_URL_API || 'http://127.0.0.1:8001';
 

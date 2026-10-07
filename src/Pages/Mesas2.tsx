@@ -1,16 +1,16 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from 'react-router-dom';
-import type { ComedorOrdenIN, Detalles } from "../components/modals/ModalMostrarDetalles";
-import { useMenu, useEstado } from "../components/Hooks/hookComedor";
-import { useOrdenesMesa, useDetalleOrden, useCancelarOrden, type OrdenComedor } from "../components/Hooks/hookOrdenes";
-import { useCrearOrden, useActualizarOrden, useMandarACaja } from "../components/Hooks/hookOrdenes";
-import { socket } from "../services/websocket";
+import type { ComedorOrdenIN, Detalles } from "../components/Modals/ModalMostrarDetalles";
+import { useMenu, useEstado } from "../context/Hooks/hookComedor";
+import { useOrdenesMesa, useDetalleOrden, useCancelarOrden, type OrdenComedor } from "../context/Hooks/hookOrdenes";
+import { useCrearOrden, useActualizarOrden, useMandarACaja } from "../context/Hooks/hookOrdenes";
+import { socket } from "../context/Services/websocket";
 
-import { MenuDiaGrid } from "../Comedor/grid/MenuGrid";
-import { OrdenActivaTable } from "../components/table/OrdenActivaTable";
-import { ModalPlatilloExtra } from "../components/modals/ModalDetallesExtra";
-import { ModalDetalleOrden } from "../components/modals/ModalMostrarDetalles";
-import { ModalDialogo } from "../components/modals/ModalDialogo";
+import { MenuDiaGrid } from "../Features/Comedor/grid/MenuGrid";
+import { OrdenActivaTable } from "../components/Table/OrdenActivaTable";
+import { ModalPlatilloExtra } from "../components/Modals/ModalDetallesExtra";
+import { ModalDetalleOrden } from "../components/Modals/ModalMostrarDetalles";
+import { ModalDialogo } from "../components/Modals/ModalDialogo";
 
 import { ArrowLeft, Receipt, ChefHat, History, Search, Loader2, AlertCircle, Power, ChevronRight } from 'lucide-react';
 

@@ -1,7 +1,7 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
-import TablaClientes from "../Clientes/Tables/TableCliente";
+import TablaClientes from "../Features/Clientes/Tables/TableCliente";
 import { Users, FileText, ArrowRight, UserCheck2 } from "lucide-react";
-import { useSoloClientes } from "../components/Hooks/hookClientes";// Ajusta la ruta de tu nuevo hook
+import { useSoloClientes } from "../context/Hooks/hookClientes";// Ajusta la ruta de tu nuevo hook
 
 export default function ClientesPage() {
   // Consumimos el hook. Usamos el alias 'data' para mantener compatibilidad con tu JSX actual.

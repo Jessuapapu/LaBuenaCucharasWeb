@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { horariosService } from "../../services/config";
-import type { CambioDeHoraModel, CambioDeHoraModelEditar } from "../../interfaces/cambiosdehora";
+import { horariosService } from "../../context/Services/config";
+import type { CambioDeHoraModel, CambioDeHoraModelEditar } from "../../context/Interfaces/cambiosdehora";
 
 export const useHorarios = () => {
   const [horarios, setHorarios] = useState<CambioDeHoraModel[]>([]);

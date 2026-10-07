@@ -1,4 +1,4 @@
-import { useImagenPlatillo } from "../Hooks/hookImagenes";// Ajusta la ruta a donde tengas tu hook
+import { useImagenPlatillo } from "../../context/Hooks/hookImagenes";// Ajusta la ruta a donde tengas tu hook
 
 export interface Props {
     idPlatillo: number;

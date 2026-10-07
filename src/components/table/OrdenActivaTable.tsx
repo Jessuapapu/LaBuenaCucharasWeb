@@ -1,5 +1,5 @@
 import { Plus, Minus, Send, Trash2, Save, Utensils } from "lucide-react";
-import type { Detalles } from "../modals/ModalMostrarDetalles";
+import type { Detalles } from "../Modals/ModalMostrarDetalles";
 
 export interface OrdenActivaTableProps {
     detalles: Detalles[];

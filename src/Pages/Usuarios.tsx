@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { useUsuarios } from "../components/Hooks/hookUsuario"; 
-import UsuariosTabla from "../Usuarios/table/usuariotabla";
-import UsuarioModal from "../Usuarios/modals/usuarioModal";
+import { useUsuarios } from "../context/Hooks/hookUsuario"; 
+import UsuariosTabla from "../Features/Usuarios/table/usuariotabla";
+import UsuarioModal from "../Features/Usuarios/modals/usuarioModal";
 import { Users, UserPlus, ShieldCheck, RefreshCw } from "lucide-react";
 import { motion } from "framer-motion";
 

@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
-import { getRankingComedor } from "../../services/analytics";
-import type { PlatilloRanking } from "../../map/analytics";
+import { getRankingComedor } from "../../context/Services/analytics";
+import type { PlatilloRanking } from "../Map/analytics";
 
-import { informesService} from "../../services/analytics";
-import type { RangoHorasData } from "../../interfaces/cambiosdehora";
+import { informesService} from "../../context/Services/analytics";
+import type { RangoHorasData } from "../../context/Interfaces/cambiosdehora";
 
 export function useRankingComedor(fechaInicio?: string, fechaFin?: string) {
   const [data, setData] = useState<PlatilloRanking[]>([]);

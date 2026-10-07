@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { pedidosService } from "../../services/pedidos";
-import type { OrdenVisualizar } from "../../interfaces/Ordenes";
+import { pedidosService } from "../../context/Services/pedidos";
+import type { OrdenVisualizar } from "../../context/Interfaces/Ordenes";
 
 export const usePedidos = (idCliente: number | null) => {
   const [pedidos, setPedidos] = useState<OrdenVisualizar[]>([]);

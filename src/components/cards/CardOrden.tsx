@@ -1,9 +1,9 @@
 import { Calendar, Clock, Settings2, ChevronUp, ChevronDown } from "lucide-react";
-import ModalPedido from "../modals/ModalOrden";
+import ModalPedido from "../Modals/ModalOrden";
 import { useState } from "react";
-import type { CrearOrden, CardPedidoProps, OrdenVisualizar } from "../../interfaces/Ordenes";
-import { useOrdenes } from "../Hooks/hookOrdenes";
-import type { Platillo } from "../../interfaces/Platillos";
+import type { CrearOrden, CardPedidoProps, OrdenVisualizar } from "../../context/Interfaces/Ordenes";
+import { useOrdenes } from "../../context/Hooks/hookOrdenes";
+import type { Platillo } from "../../context/Interfaces/Platillos";
 
 interface Props extends CardPedidoProps {
   Pedido: OrdenVisualizar;

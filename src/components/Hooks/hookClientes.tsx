@@ -1,10 +1,10 @@
 import { useEffect, useState, useCallback  } from "react";
-import { getContratosByCliente } from "../../services/contratos";
-import { getClienteById, crearCliente, actualizarCliente, getClientes} from "../../services/clientes";
-import type { cliente, NuevoCliente} from "../../interfaces/Clientes";
-import type { Contrato } from "../../interfaces/Contratos";
-import { mapClientes } from "../../map/clientes";
-//import { mapContratos } from "../../map/contratos";
+import { getContratosByCliente } from "../../context/Services/contratos";
+import { getClienteById, crearCliente, actualizarCliente, getClientes} from "../../context/Services/clientes";
+import type { cliente, NuevoCliente} from "../../context/Interfaces/Clientes";
+import type { Contrato } from "../../context/Interfaces/Contratos";
+import { mapClientes } from "../Map/clientes";
+//import { mapContratos } from "../Map/contratos";
 
 export function useCliente(id_cliente: number | null){
     const [loading, setloading]= useState(false);

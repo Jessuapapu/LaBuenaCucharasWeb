@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Sidebar from "../components/sidebar/sidebar";
+import Sidebar from "../components/Sidebar/sidebar";
 import NavbarMobile from "../components/NavbarMobiles/NavbarMobile";
 import { Outlet, useLocation, Navigate } from "react-router-dom";
 //import favicon from '../assets/Favicon.png'

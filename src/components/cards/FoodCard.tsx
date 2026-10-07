@@ -1,8 +1,8 @@
 import { TrendingUp } from "lucide-react";
-import ModalEditPlatillo from "../../Platillos/Modals/ModalEditPlatillos";
+import ModalEditPlatillo from "../../Features/Platillos/Modals/ModalEditPlatillos";
 import { useState } from "react";
-import { useImagenesPlatillo } from "../Hooks/hookImagenes";
-import type { FoodCardProps, Platillo } from "../../interfaces/Platillos";
+import { useImagenesPlatillo } from "../../context/Hooks/hookImagenes";
+import type { FoodCardProps, Platillo } from "../../context/Interfaces/Platillos";
 
 export const FoodCard = ({ platillo, onUpdate, ventas }: FoodCardProps) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);

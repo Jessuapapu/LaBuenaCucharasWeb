@@ -1,7 +1,7 @@
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { useVentasPlatillos } from "../components/Hooks/hookPlatillos";
-import { useOrdenes } from "../components/Hooks/hookOrdenes";
-import { useRankingComedor } from "../components/Hooks/hookAnalytics";
+import { useVentasPlatillos } from "../context/Hooks/hookPlatillos";
+import { useOrdenes } from "../context/Hooks/hookOrdenes";
+import { useRankingComedor } from "../context/Hooks/hookAnalytics";
 import jsPDF from "jspdf";
 import html2canvas  from "html2canvas"
 import { Download, Loader2, BarChart3, Calendar, AlertCircle, TrendingUp, DollarSign, 

@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { FileText, ClipboardList, Trash2, Plus, User, Calendar } from "lucide-react";
 //import type { CrearOrden, CrearDetalleOrden } from "../../interfaces/Ordenes";
-import { useNuevoContrato } from "../Hooks/hookContratos";
-import { useMenu_diario } from "../Hooks/hookMenu_diario";
-import type { NuevoContrato } from "../../interfaces/Contratos";
-import { pedidosService } from "../../services/pedidos";
+import { useNuevoContrato } from "../../context/Hooks/hookContratos";
+import { useMenu_diario } from "../../context/Hooks/hookMenu_diario";
+import type { NuevoContrato } from "../../context/Interfaces/Contratos";
+import { pedidosService } from "../../context/Services/pedidos";
 
 interface DetalleItem {
   NombrePlatillo: string;

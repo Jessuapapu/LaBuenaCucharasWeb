@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/Auth";
+import { useAuth } from "../context/Auth/Auth";
 import { Lock, User, Loader2, UtensilsCrossed } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_API_URL;

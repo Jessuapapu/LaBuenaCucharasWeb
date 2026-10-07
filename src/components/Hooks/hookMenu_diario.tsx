@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import type { Menu_dario } from "../../interfaces/Platillos";
+import type { Menu_dario } from "../../context/Interfaces/Platillos";
 
 const API_URL = import.meta.env.VITE_API_URL;
 interface PlatilloOption {

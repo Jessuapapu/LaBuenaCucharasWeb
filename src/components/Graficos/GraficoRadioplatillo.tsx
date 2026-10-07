@@ -1,6 +1,6 @@
 import { useMemo, createContext, useContext, useState } from "react";
 import {RadialBar, RadialBarChart, ResponsiveContainer, Legend, Sector, PolarAngleAxis, Tooltip } from 'recharts';
-import { useVentasPlatillos } from "../Hooks/hookPlatillos";
+import { useVentasPlatillos } from "../../context/Hooks/hookPlatillos";
 import { Loader2 } from "lucide-react";
 
 // Paleta de degradados relacionales de Celestes a Verdes

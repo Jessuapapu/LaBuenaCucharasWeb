@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useEditarRegistro } from "../Hooks/hookProveedor";
-import type { Registro } from "../../interfaces/Proveedor";
+import { useEditarRegistro } from "../../context/Hooks/hookProveedor";
+import type { Registro } from "../../context/Interfaces/Proveedor";
 
 interface ModalEditarRegistroProps {
   registro: Registro;

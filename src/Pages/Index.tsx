@@ -1,18 +1,18 @@
 import { useState, useEffect, /*useMemo,*/ useCallback } from "react";
-import AnimatedKpiCard from "../components/cards/KPICardAnimado";
-import CardGraficoLinealSemanal from "../components/cards/CardsLineales/CardGrapLineal";
+import AnimatedKpiCard from "../components/Cards/KPICardAnimado";
+import CardGraficoLinealSemanal from "../components/Cards/CardsLineales/CardGrapLineal";
 //import GraficoRadioplatillos from "../components/Graficos/GraficoRadioplatillo";
 
 // Importamos los modales necesarios
-import ModalNuevoCliente from "../Clientes/Modals/ModalNuevoCliente";
-import ModalNuevoContrato from "../components/modals/ModalNuevoContrato";
-import FormularioNuevoPedido from "../components/forms/PedidosForms"; 
+import ModalNuevoCliente from "../Features/Clientes/Modals/ModalNuevoCliente";
+import ModalNuevoContrato from "../components/Modals/ModalNuevoContrato";
+import FormularioNuevoPedido from "../components/Forms/PedidosForms"; 
 import { ShoppingCart, Users, FileText, TrendingUp } from "lucide-react";
 
 // Hooks
-import { useClientes } from "../components/Hooks/hookClientes";
-import { useFacturasPage } from "../components/Hooks/hookFacturas";
-import { useOrdenes } from "../components/Hooks/hookOrdenes"; // Cambiamos el hook importado
+import { useClientes } from "../context/Hooks/hookClientes";
+import { useFacturasPage } from "../context/Hooks/hookFacturas";
+import { useOrdenes } from "../context/Hooks/hookOrdenes"; // Cambiamos el hook importado
 import AccionesRapidas from "../components/Filtro/AccionesRapidas";
 
 

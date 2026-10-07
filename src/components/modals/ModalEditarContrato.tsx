@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useNuevoContrato } from "../Hooks/hookContratos";
-import type { Contrato } from "../../interfaces/Contratos";
+import { useNuevoContrato } from "../../context/Hooks/hookContratos";
+import type { Contrato } from "../../context/Interfaces/Contratos";
 
 interface ModalNuevoContratoProps {
     contrato: Contrato & { idContrato?: number; IdContrato?: number };

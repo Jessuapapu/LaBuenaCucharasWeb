@@ -1,15 +1,15 @@
 ﻿import { useState, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
-import { useEstado, useMesas } from '../components/Hooks/hookComedor';
-import { useOrdenesMesa } from "../components/Hooks/hookOrdenes";
-import { socket } from '../services/websocket';
+import { useEstado, useMesas } from '../context/Hooks/hookComedor';
+import { useOrdenesMesa } from "../context/Hooks/hookOrdenes";
+import { socket } from '../context/Services/websocket';
 import { LayoutDashboard, Clock, UtensilsCrossed } from 'lucide-react';
 
-import { GridMetricasAdmin } from "../Comedor/grid/GridMetricasAdmin";
-import { BarraHerramientasAdmin } from "../Comedor/BarraHerramientaadmin";
-import { TarjetaMesaAdmin } from "../Comedor/TarjetaMesaAdmin";
-import { PantallaCerradoAdmin } from "../Comedor/PantallaCerrado";
-import { EstadoVacioMesas } from "../Comedor/EstadoVacioMesa";
+import { GridMetricasAdmin } from "../Features/Comedor/grid/GridMetricasAdmin";
+import { BarraHerramientasAdmin } from "../Features/Comedor/BarraHerramientaadmin";
+import { TarjetaMesaAdmin } from "../Features/Comedor/TarjetaMesaAdmin";
+import { PantallaCerradoAdmin } from "../Features/Comedor/PantallaCerrado";
+import { EstadoVacioMesas } from "../Features/Comedor/EstadoVacioMesa";
 
 export function IndexMesas() {
   const { estado, error, abrirComedor, cerrarComedor, cargandoAccion: procesandoEstado } = useEstado();

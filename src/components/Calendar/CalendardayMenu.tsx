@@ -1,9 +1,9 @@
 
 import React, { useState, useMemo } from "react";
-import ModalMenuDia from "../../Menu/modals/ModalCalendariodia";
+import ModalMenuDia from "../../Features/Menu/modals/ModalCalendariodia";
 import { Utensils, Edit2, Clock, Sunrise, Sun, Moon, FileText, Plus } from "lucide-react";
-import type { Menu_dario } from "../../interfaces/Platillos";
-import { useMenu_diario } from "../Hooks/hookMenu_diario";
+import type { Menu_dario } from "../../context/Interfaces/Platillos";
+import { useMenu_diario } from "../../context/Hooks/hookMenu_diario";
 
 export const CalendarioMenuDia: React.FC = () => {
   const {

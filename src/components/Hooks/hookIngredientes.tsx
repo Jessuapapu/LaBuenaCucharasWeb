@@ -1,6 +1,6 @@
-import { obtenerIngredientes, crearIngrediente, crearRelacionPlatilloIngrediente, actualizarIngrediente } from "../../services/ingredientes";
+import { obtenerIngredientes, crearIngrediente, crearRelacionPlatilloIngrediente, actualizarIngrediente } from "../../context/Services/ingredientes";
 import { useState, useCallback, useEffect } from "react";
-import type { Ingredientes } from "../../interfaces/Platillos";
+import type { Ingredientes } from "../../context/Interfaces/Platillos";
 
 export function useCrearIngredientes(){
     const [ingredientes, setIngredientes] = useState<Ingredientes[]>([]);

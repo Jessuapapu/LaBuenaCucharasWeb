@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Leaf, Plus, AlertCircle, Link as LinkIcon } from "lucide-react";
-import { useIngredientes } from "../components/Hooks/useIngredientes";
-import type { IngredienteModel, RelacionPayload} from "../interfaces/ingredientes";
+import { useIngredientes } from "../context/Hooks/useIngredientes";
+import type { IngredienteModel, RelacionPayload} from "../context/Interfaces/ingredientes";
 
 
-import { IngredienteModal } from "../Ingredientes/modals/IngredienteModal";
-import { AsignarIngredientesModal } from "../Ingredientes/modals/AsignarIngredientesModal";
-import { TablaIngredientes } from "../Ingredientes/table/TablaIngredientes";
+import { IngredienteModal } from "../Features/Ingredientes/modals/IngredienteModal";
+import { AsignarIngredientesModal } from "../Features/Ingredientes/modals/AsignarIngredientesModal";
+import { TablaIngredientes } from "../Features/Ingredientes/table/TablaIngredientes";
 
 export default function IngredientesPage() {
   const { ingredientes, loading, error, agregar, editar, eliminar, vincular } = useIngredientes();

@@ -1,5 +1,5 @@
 import { BarChart } from '@mui/x-charts/BarChart';
-import type { FormatoDatos } from "../../interfaces/graficos"; 
+import type { FormatoDatos } from "../../Interfaces/graficos"; 
 
 // Card de barras semanal usando MUI X Charts
 export default function CardGraficoBarrasSemanal({ datos }: { datos: FormatoDatos[] }) {

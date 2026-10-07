@@ -1,8 +1,8 @@
-import TablaPlatillos from "../Platillos/tables/TablePlatillos";
+import TablaPlatillos from "../Features/Platillos/tables/TablePlatillos";
 import GraficoPlatillosVendidos from "../components/Graficos/GraficoPlatillosVendidos";
 import { Utensils, TrendingUp, Layers, Sparkles, RefreshCw } from "lucide-react";
-import { FoodCard } from "../components/cards/FoodCard";
-import { usePlatillos, useVentasPlatillos } from "../components/Hooks/hookPlatillos";
+import { FoodCard } from "../components/Cards/FoodCard";
+import { usePlatillos, useVentasPlatillos } from "../context/Hooks/hookPlatillos";
 
 
 export default function ComidasPage() {
