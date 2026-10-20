@@ -4,11 +4,11 @@ import {
     ArrowDown, ArrowRight, CalendarDays, FileText, Sparkles,
     ShoppingCart, TrendingUp, Users, UtensilsCrossed,
 } from "lucide-react";
-import AnimatedKpiCard from "../components/Cards/KPICardAnimado";
+import AnimatedKpiCard from "../components/cards/KPICardAnimado";
 import CardGraficoLinealSemanal from "../components/Cards/CardsLineales/CardGrapLineal";
 import ModalNuevoCliente from "../Features/Clientes/Modals/ModalNuevoCliente";
-import ModalNuevoContrato from "../components/Modals/ModalNuevoContrato";
-import FormularioNuevoPedido from "../components/Forms/PedidosForms";
+import ModalNuevoContrato from "../components/modals/ModalNuevoContrato";
+import FormularioNuevoPedido from "../components/forms/PedidosForms";
 import { useClientes } from "../context/Hooks/hookClientes";
 import { useFacturasPage } from "../context/Hooks/hookFacturas";
 import { useOrdenes } from "../context/Hooks/hookOrdenes";

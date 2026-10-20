@@ -1,5 +1,5 @@
 import { Calendar, Clock, Settings2, ChevronUp, ChevronDown } from "lucide-react";
-import ModalPedido from "../Modals/ModalOrden";
+import ModalPedido from "../modals/ModalOrden";
 import { useState } from "react";
 import type { CrearOrden, CardPedidoProps, OrdenVisualizar } from "../../context/Interfaces/Ordenes";
 import { useOrdenes } from "../../context/Hooks/hookOrdenes";
