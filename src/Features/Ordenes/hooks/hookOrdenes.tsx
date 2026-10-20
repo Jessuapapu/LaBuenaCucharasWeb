@@ -69,7 +69,16 @@ export function useMetricasGlobales() {
     const fetchMetricas = useCallback(async () => {
         try {
             const token = localStorage.getItem("access_token");
-            const res = await fetch(`${UrlApi}/ordenes/?todo=true`, {
+            
+            // 1. Calcular primer y último día del mes actual
+            const hoy = new Date();
+            const primerDia = new Date(hoy.getFullYear(), hoy.getMonth(), 1).toISOString().split('T')[0];
+            const ultimoDia = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0).toISOString().split('T')[0];
+
+            // 2. Añadir parámetros de fecha y todo=true a la URL
+            const url = `${UrlApi}/ordenes/?todo=true&fechaInicio=${primerDia}&fechaFinal=${ultimoDia}`;
+
+            const res = await fetch(url, {
                 headers: {
                     "Content-Type": "application/json",
                     ...(token ? { "Authorization": `Bearer ${token}` } : {})
@@ -77,25 +86,20 @@ export function useMetricasGlobales() {
             });
             
             if (!res.ok) return;
-            const data: OrdenHistorial[] = await res.json();
+            const data = await res.json();
             
-            let pen = 0, ent = 0, anu = 0, ing = 0, totalMes = 0;
-            const fechaActual = new Date();
-            const mesActual = fechaActual.getMonth();
-            const anioActual = fechaActual.getFullYear();
+            let pen = 0, ent = 0, anu = 0, ing = 0;
 
-            data.forEach(o => {
-                const fechaOrden = new Date(o.fecha);
-                if (fechaOrden.getMonth() === mesActual && fechaOrden.getFullYear() === anioActual) {
-                    totalMes++;
-                    if (o.estado_pedido === 'PENDIENTE') pen++;
-                    if (o.estado_pedido === 'ENTREGADO') ent++;
-                    if (o.estado_pedido === 'ANULADO') anu++;
-                    if (o.estado_pedido !== 'ANULADO') ing += (o.monto_total || 0);
-                }
+            // 3. El backend ya filtró por fecha, solo iteramos para sumar
+            data.forEach((o: OrdenHistorial) => {
+                if (o.estado_pedido === 'PENDIENTE') pen++;
+                else if (o.estado_pedido === 'ENTREGADO') ent++;
+                else if (o.estado_pedido === 'ANULADO') anu++;
+                
+                if (o.estado_pedido !== 'ANULADO') ing += (o.monto_total || 0);
             });
             
-            setMetricas({ pendientes: pen, entregados: ent, anulados: anu, ingresos: ing, total: totalMes });
+            setMetricas({ pendientes: pen, entregados: ent, anulados: anu, ingresos: ing, total: data.length });
         } catch (error) {
             console.error("Error obteniendo métricas mensuales:", error);
         } finally {

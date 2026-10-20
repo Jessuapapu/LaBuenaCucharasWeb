@@ -2,7 +2,7 @@ import { Briefcase, TrendingUp, ShieldCheck, FileText, Loader2, ArrowLeft } from
 import { Link } from "react-router-dom";
 
 // Hooks
-import { useContratos } from "../components/Hooks/hookContratos";
+import { useContratos } from "../context/Hooks/hookContratos";
 
 // Componentes
 import TablaContratos from "../Features/Contratos/tables/TableContratos"; // <-- Asegúrate de que la ruta coincida con tu estructura

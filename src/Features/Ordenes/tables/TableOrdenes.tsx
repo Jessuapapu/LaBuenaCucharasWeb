@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Edit, Calendar, Loader2, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, MapPin, Receipt, Search, Filter } from 'lucide-react';
-import type { OrdenHistorial, DetalleOrden } from '../hooks/hookOrdenes';
+import type { OrdenHistorial, DetalleOrden } from '../modales/hooks/hookOrdenes';
 import { useImagenPlatillo } from "../../../context/Hooks/hookImagenes";
 
 interface TablaOrdenesProps {

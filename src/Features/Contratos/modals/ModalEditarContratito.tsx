@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { X, User, FileText, Loader2, Briefcase, Activity, ShieldAlert } from "lucide-react";
-import { useEditarContrato } from "../../../components/Hooks/hookContratos";
+import { useEditarContrato } from "../../../context/Hooks/hookContratos";
 
 interface ModalEditarContratoProps {
     contrato: any; 

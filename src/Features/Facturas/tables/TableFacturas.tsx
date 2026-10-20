@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import ModalNuevaFactura from "../modals/ModalNuevaFactura";
-import { useFacturaPaginacion } from "../../../components/Hooks/hookFacturas";
+import { useFacturaPaginacion } from "../../../context/Hooks/hookFacturas";
 import type { Factura } from "../../../context/Interfaces/Factura";
 
 type SortKey = "Id_factura" | "monto_total" | "fecha_factura" | "estado_factura" | "";

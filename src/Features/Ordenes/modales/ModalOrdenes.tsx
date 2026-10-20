@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X, Plus, Trash2, Loader2, Save, ChefHat } from 'lucide-react';
-import type { DetalleOrden, OrdenHistorial } from '../hooks/hookOrdenes';
+import type { DetalleOrden , OrdenHistorial } from '../hooks/hookOrdenes';
 import { useMutarOrden } from '../hooks/hookOrdenes';
 
 // Importa tus nuevos hooks (ajusta la ruta según donde los guardaste)
