@@ -130,7 +130,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, logoSrc, business
                         <motion.aside
                             initial={{ x: -300 }} animate={{ x: 0 }} exit={{ x: -300 }}
                             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                            className="fixed top-0 left-0 w-64 h-screen text-white z-50 p-4 lg:hidden shadow-2xl flex flex-col"
+                            className="fixed top-0 left-0 w-64 h-screen bg-gradient-to-br from-[#d9edf2] via-[#e5efe8] to-[#f5e5d4] text-slate-800 z-50 p-4 lg:hidden shadow-2xl flex flex-col border-r border-sky-200"
                             //style={{ backgroundColor: '#004aad' }} // COLOR EXACTO DEL LOGO
                         >
                             <div className="flex justify-between items-center mb-4">
@@ -150,7 +150,10 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, logoSrc, business
                                 <Link to="/ordenes" onClick={() => setSidebarOpen(false)} className={getLinkClass("/ordenes")}>🧾 Ordenes</Link>
                                 <Link to="/Facturas" onClick={() => setSidebarOpen(false)} className={getLinkClass("/Facturas")}>🧾 Facturas</Link>
                                 <Link to="/Clientes" onClick={() => setSidebarOpen(false)} className={getLinkClass("/Clientes")}>👤 Clientes</Link>
-                                {/* Añade el resto de enlaces si son necesarios */}
+                                <Link to="/Inventario" onClick={() => setSidebarOpen(false)} className={getLinkClass("/Inventario")}>📦 Inventario</Link>
+                                <Link to="/Mesas" onClick={() => setSidebarOpen(false)} className={getLinkClass("/Mesas")}>🪑 Mesas</Link>
+                                <Link to="/Caja" onClick={() => setSidebarOpen(false)} className={getLinkClass("/Caja")}>💵 Caja</Link>
+                                <Link to="/Configuracion" onClick={() => setSidebarOpen(false)} className={getLinkClass("/Configuracion")}>⚙️ Configuración</Link>
                             </nav>
                         </motion.aside>
                     </div>

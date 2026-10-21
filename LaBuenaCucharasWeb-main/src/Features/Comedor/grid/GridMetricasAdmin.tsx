@@ -15,8 +15,8 @@ export function GridMetricasAdmin({ cantidadMesas, mesas }: MetricasProps) {
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 animate-[fade-in_0.3s_ease-out]">
       
-      <div className="bg-gradient-to-br from-[#d1e9ef] to-[#c5e3e9] border border-sky-300/70 p-4 rounded-2xl flex items-center gap-4 shadow-sm">
-        <div className="p-3 bg-[#b2dce7] text-sky-900 rounded-xl border border-sky-300">
+      <div className="bg-gradient-to-br from-[#d1e9ef]/60 to-[#c5e3e9]/60 border border-sky-300/70 p-4 rounded-2xl flex items-center gap-4 shadow-sm">
+        <div className="p-3 bg-[#b2dce7]/70 text-sky-900 rounded-xl border border-sky-300">
           <LayoutDashboard size={20} />
         </div>
         <div>
@@ -25,8 +25,8 @@ export function GridMetricasAdmin({ cantidadMesas, mesas }: MetricasProps) {
         </div>
       </div>
 
-      <div className="bg-gradient-to-br from-[#f4e6c9] to-[#f0dcaf] border border-amber-300/80 p-4 rounded-2xl flex items-center gap-4 shadow-sm">
-        <div className="p-3 bg-[#f2d89f] text-amber-950 rounded-xl border border-amber-300">
+      <div className="bg-gradient-to-br from-[#f4e6c9]/60 to-[#f0dcaf]/60 border border-amber-300/80 p-4 rounded-2xl flex items-center gap-4 shadow-sm">
+        <div className="p-3 bg-[#f2d89f]/70 text-amber-950 rounded-xl border border-amber-300">
           <Users size={20} />
         </div>
         <div>
@@ -35,8 +35,8 @@ export function GridMetricasAdmin({ cantidadMesas, mesas }: MetricasProps) {
         </div>
       </div>
 
-      <div className="bg-gradient-to-br from-[#d8ebd8] to-[#c8e3ca] border border-emerald-300/80 p-4 rounded-2xl flex items-center gap-4 shadow-sm">
-        <div className="p-3 bg-[#bfe0c2] text-emerald-950 rounded-xl border border-emerald-300">
+      <div className="bg-gradient-to-br from-[#d8ebd8]/60 to-[#c8e3ca]/60 border border-emerald-300/80 p-4 rounded-2xl flex items-center gap-4 shadow-sm">
+        <div className="p-3 bg-[#bfe0c2]/70 text-emerald-950 rounded-xl border border-emerald-300">
           <CheckCircle2 size={20} />
         </div>
         <div>
@@ -45,8 +45,8 @@ export function GridMetricasAdmin({ cantidadMesas, mesas }: MetricasProps) {
         </div>
       </div>
 
-      <div className="bg-gradient-to-br from-[#e7ddf1] to-[#d9cbea] border border-violet-300/80 p-4 rounded-2xl flex items-center gap-4 shadow-sm">
-        <div className="p-3 bg-[#d0bce7] text-violet-950 rounded-xl border border-violet-300">
+      <div className="bg-gradient-to-br from-[#e7ddf1]/60 to-[#d9cbea]/60 border border-violet-300/80 p-4 rounded-2xl flex items-center gap-4 shadow-sm">
+        <div className="p-3 bg-[#d0bce7]/70 text-violet-950 rounded-xl border border-violet-300">
           <Percent size={20} />
         </div>
         <div>
