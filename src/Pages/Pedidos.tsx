@@ -2,8 +2,8 @@ import { useEffect, useState, useMemo } from "react";
 import { TrendingUp, Package, Clock, CheckCircle, DollarSign, Plus, RefreshCw, Layers } from "lucide-react";
 
 // COMPONENTES ORIGINALES
-import CardGraficoLinealSemanal from "../components/Cards/CardsLineales/CardGrapLineal";
-import CardPedido from "../components/Cards/CardOrden";
+import CardGraficoLinealSemanal from "../components/cards/CardsLineales/CardGrapLineal";
+import CardPedido from "../components/cards/CardOrden";
 import type { Platillo } from "../context/Interfaces/Platillos";
 
 // HOOKS Y TABLAS COMPATIBLES CON TU PA
