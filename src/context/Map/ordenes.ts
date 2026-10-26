@@ -1,4 +1,4 @@
-import type { Orden, OrdenVisualizar,DetalleOrdenLista, ClienteOrden } from "../interfaces/Ordenes";
+import type { Orden, OrdenVisualizar,DetalleOrdenLista, ClienteOrden } from "../Interfaces/Ordenes";
 
 export function mapOrden(raw: any): Orden {
   return {

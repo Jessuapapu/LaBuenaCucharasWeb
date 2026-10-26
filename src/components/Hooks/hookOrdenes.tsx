@@ -11,7 +11,7 @@ export interface OrdenComedor {
   fecha: string;
 }
 
-import type { Detalles } from "../Modals/ModalMostrarDetalles";
+import type { Detalles } from "../modals/ModalMostrarDetalles";
 import { socket } from "../../context/Services/websocket";
 
 

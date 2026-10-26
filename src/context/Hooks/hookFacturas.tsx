@@ -6,7 +6,7 @@ import { useCallback, useState, useEffect, useMemo } from "react";
 
 import { getFacturas, getFacturasPag, crearFactura, actualizarFactura } from "../Services/facturas";
 import type { Factura, PayloadFactura  } from "../Interfaces/Factura";
-import { obtenerOrdenporNombre } from "../Services/ordenes";
+import { obtenerOrdenesFacturables } from "../Services/facturas";
 //import { useSoloClientes, useCliente } from "./hookClientes";
 
 
@@ -161,11 +161,13 @@ export function useFacturaModal(BusquedaNombre: string, id_factura?: number) {
       setFetching(true);
       setError(null);
       try {
-        const datos = await obtenerOrdenporNombre(BusquedaNombre);
-        const datosNormalizados = datos.map((orden: any) => ({
-          IdOrden: orden.IdOrdenes ?? orden.IdOrden ?? orden.id_orden ?? 0,
-          MontoTotal: Number(orden.CostoTotal ?? orden.MontoTotal ?? orden.monto_total ?? 0),
-          IdCliente: orden.IdCliente ?? orden.id_cliente ?? 0
+        const datos = await obtenerOrdenesFacturables(BusquedaNombre);
+        const datosNormalizados = (Array.isArray(datos) ? datos : []).map((o: any) => ({
+          IdOrden: o.id_orden,
+          IdCliente: o.id_cliente,
+          NombreCliente: o.nombre_cliente,
+          MontoTotal: Number(o.monto_total ?? 0),
+          fecha: o.fecha,
         }));
 
         setPedidosPendientes(datosNormalizados);
