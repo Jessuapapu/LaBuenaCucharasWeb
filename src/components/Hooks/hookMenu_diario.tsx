@@ -21,7 +21,14 @@ export function useMenu_diario(dataInicial: any[] = []) {
     const cargarMenus = async () => {
         try {
             setCargando(true);
-            const response = await fetch(`${API_URL}/menu/`);
+            const response = await fetch(`${API_URL}/menu/`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    // Inyección de seguridad
+                    ...(token ? { "Authorization": `Bearer ${token}` } : {})
+                }
+            });
             if (!response.ok) throw new Error("Error en la petición");
 
             const data = await response.json();
