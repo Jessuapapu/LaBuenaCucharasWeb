@@ -1,14 +1,10 @@
 import { Briefcase, TrendingUp, ShieldCheck, FileText, Loader2, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
-<<<<<<< HEAD
 
 // Hooks
 import { useContratos } from "../context/Hooks/hookContratos";
-=======
 import type { ReactNode } from "react";
-import { useContratos } from "../components/Hooks/hookContratos";
 import TablaContratos from "../Features/Contratos/tables/TableContratos";
->>>>>>> master
 
 const KpiCard = ({ title, value, icon, tone }: { title: string; value: string | number; icon: ReactNode; tone: "cyan" | "emerald" | "amber" }) => {
     const tones = {

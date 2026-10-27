@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { useState, useEffect, /*useMemo,*/ useCallback } from "react";
 import AnimatedKpiCard from "../components/cards/KPICardAnimado";
 import CardGraficoLinealSemanal from "../components/cards/CardsLineales/CardGrapLineal";
@@ -9,21 +8,12 @@ import ModalNuevoCliente from "../Features/Clientes/Modals/ModalNuevoCliente";
 import ModalNuevoContrato from "../components/modals/ModalNuevoContrato";
 import FormularioNuevoPedido from "../components/forms/PedidosForms"; 
 import { ShoppingCart, Users, FileText, TrendingUp } from "lucide-react";
-
-// Hooks
-=======
-import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import {
-    ArrowDown, ArrowRight, CalendarDays, FileText, Sparkles,
-    ShoppingCart, TrendingUp, Users, UtensilsCrossed,
+    ArrowDown, ArrowRight, CalendarDays, Sparkles,
+     UtensilsCrossed,
 } from "lucide-react";
-import AnimatedKpiCard from "../components/cards/KPICardAnimado";
-import CardGraficoLinealSemanal from "../components/Cards/CardsLineales/CardGrapLineal";
-import ModalNuevoCliente from "../Features/Clientes/Modals/ModalNuevoCliente";
-import ModalNuevoContrato from "../components/modals/ModalNuevoContrato";
-import FormularioNuevoPedido from "../components/forms/PedidosForms";
->>>>>>> master
+
 import { useClientes } from "../context/Hooks/hookClientes";
 import { useFacturasPage } from "../context/Hooks/hookFacturas";
 import { useOrdenes } from "../context/Hooks/hookOrdenes";

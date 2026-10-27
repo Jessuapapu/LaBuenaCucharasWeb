@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { DollarSign, Clock, CheckCircle2, Ban, Loader2 } from 'lucide-react';
-import { useMetricasGlobales } from '../modales/hooks/hookOrdenes';
+import { useMetricasGlobales } from '../hooks/hookOrdenes';
 import { socket } from '../../../context/Services/websocket';
 
 export function MetricasOrdenes() {

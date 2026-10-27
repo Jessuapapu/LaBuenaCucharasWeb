@@ -1,15 +1,9 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
-<<<<<<< HEAD
 import TablaRegistros from "../components/table/TableRegistro";
-import { ArrowDownCircle, Truck, ArrowRight, DollarSign,/* AlertTriangle,*/ RefreshCw } from "lucide-react";
+import { ArrowDownCircle, Truck, ArrowRight, DollarSign,/* AlertTriangle,*/ RefreshCw, Leaf } from "lucide-react";
 import { useBodega/*, useinsumoseIngredientes */} from "../context/Hooks/hookBodega";
 //import { Cardstockmin } from "../components/cards/CardBar";
-=======
-import TablaRegistros from "../components/Table/TableRegistro";
-import { ArrowDownCircle, Truck, ArrowRight, DollarSign, RefreshCw, Leaf } from "lucide-react";
-import { useBodega } from "../context/Hooks/hookBodega";
->>>>>>> master
 
 export default function RegistrosPage() {
   const { data, loading } = useBodega();
