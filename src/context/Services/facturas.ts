@@ -24,7 +24,7 @@ export async function crearFactura(payload: PayloadFactura): Promise<{ message: 
 }
 
 export async function getFacturas(signal?: AbortSignal): Promise<Factura[]> {
-  const response = await fetch(`${API_URL}/facturas/`, {
+  const response = await fetch(`${API_URL}/facturas/?todo=true`, {
     method: "GET",
     headers: getHeaders(),
     signal
@@ -33,6 +33,16 @@ export async function getFacturas(signal?: AbortSignal): Promise<Factura[]> {
   if (!response.ok) throw new Error(`Error al obtener las facturas. Estado: ${response.status}`);
   const data = await response.json();
   return FacturaMapper.toFrontendList(data);
+}
+
+export async function obtenerOrdenesFacturables(nombre: string): Promise<any[]> {
+  const response = await fetch(
+    `${API_URL}/facturas/ordenes-facturables?nombre=${encodeURIComponent(nombre)}`,
+    { method: "GET", headers: getHeaders() }
+  );
+  if (!response.ok) throw new Error("No se pudieron buscar las órdenes");
+  const data = await response.json();
+  return Array.isArray(data) ? data : (data.data ?? []);
 }
 
 export async function getFacturasPag(

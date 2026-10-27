@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
-import TablaRegistros from "../components/Table/TableRegistro";
+import TablaRegistros from "../components/table/TableRegistro";
 import { ArrowDownCircle, Truck, ArrowRight, DollarSign,/* AlertTriangle,*/ RefreshCw } from "lucide-react";
 import { useBodega/*, useinsumoseIngredientes */} from "../context/Hooks/hookBodega";
 //import { Cardstockmin } from "../components/cards/CardBar";

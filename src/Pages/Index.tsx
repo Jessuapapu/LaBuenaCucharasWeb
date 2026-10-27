@@ -1,12 +1,12 @@
 import { useState, useEffect, /*useMemo,*/ useCallback } from "react";
-import AnimatedKpiCard from "../components/Cards/KPICardAnimado";
-import CardGraficoLinealSemanal from "../components/Cards/CardsLineales/CardGrapLineal";
+import AnimatedKpiCard from "../components/cards/KPICardAnimado";
+import CardGraficoLinealSemanal from "../components/cards/CardsLineales/CardGrapLineal";
 //import GraficoRadioplatillos from "../components/Graficos/GraficoRadioplatillo";
 
 // Importamos los modales necesarios
 import ModalNuevoCliente from "../Features/Clientes/Modals/ModalNuevoCliente";
-import ModalNuevoContrato from "../components/Modals/ModalNuevoContrato";
-import FormularioNuevoPedido from "../components/Forms/PedidosForms"; 
+import ModalNuevoContrato from "../components/modals/ModalNuevoContrato";
+import FormularioNuevoPedido from "../components/forms/PedidosForms"; 
 import { ShoppingCart, Users, FileText, TrendingUp } from "lucide-react";
 
 // Hooks
