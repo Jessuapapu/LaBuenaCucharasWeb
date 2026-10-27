@@ -83,8 +83,8 @@ export function TarjetaMesaAdmin({ idMesa, index }: TarjetaProps) {
       onClick={() => navigate(`/mesa/${idMesa}`)}
       className={`group relative flex flex-col rounded-[2rem] border p-5 cursor-pointer transition-all duration-300 hover:-translate-y-1 shadow-md ${
         tieneOrden 
-          ? 'bg-gradient-to-br from-[#f8e1dc] to-[#f4d4ce] border-rose-300 shadow-rose-500/20 hover:shadow-rose-500/30' 
-          : 'bg-gradient-to-br from-[#e2f0e8] to-[#d6e9e8] border-teal-200 hover:border-teal-300 hover:shadow-xl'
+          ? 'bg-gradient-to-br from-[#f8e1dc]/65 to-[#f4d4ce]/65 border-rose-300 shadow-rose-500/20 hover:shadow-rose-500/30' 
+          : 'bg-gradient-to-br from-[#e2f0e8]/65 to-[#d6e9e8]/65 border-teal-200 hover:border-teal-300 hover:shadow-xl'
       }`}
       style={{ animationDelay: `${index * 15}ms` }}
     >
@@ -118,7 +118,7 @@ export function TarjetaMesaAdmin({ idMesa, index }: TarjetaProps) {
           </div>
         ) : tieneOrden && borrador.length > 0 ? (
           
-          <div className={`rounded-xl p-4 border flex flex-col gap-2 shadow-inner ${tieneOrden ? 'bg-[#f9ebe7] border-rose-200' : 'bg-[#eaf3eb] border-emerald-200'}`}>
+          <div className={`rounded-xl p-4 border flex flex-col gap-2 shadow-inner ${tieneOrden ? 'bg-[#f9ebe7]/65 border-rose-200' : 'bg-[#eaf3eb]/65 border-emerald-200'}`}>
             <div className={`flex items-center gap-1.5 border-b pb-2 mb-1 ${tieneOrden ? 'border-rose-200/60' : 'border-slate-200'}`}>
                 <Receipt size={14} className={tieneOrden ? "text-rose-500" : "text-slate-400"} />
                 <span className={`text-[10px] font-black uppercase tracking-widest ${tieneOrden ? 'text-rose-600' : 'text-slate-500'}`}>Resumen Pedido</span>
@@ -149,11 +149,11 @@ export function TarjetaMesaAdmin({ idMesa, index }: TarjetaProps) {
           </div>
 
         ) : tieneOrden && borrador.length === 0 ? (
-           <div className="text-center py-5 bg-white/50 rounded-xl border border-dashed border-rose-300">
+           <div className="text-center py-5 bg-rose-50/45 rounded-xl border border-dashed border-rose-300">
             <p className="text-sm text-rose-600 font-bold">Ticket abierto sin platillos.</p>
           </div>
         ) : (
-          <div className="text-center py-6 bg-[#e9f2e7] rounded-xl border border-dashed border-emerald-300">
+          <div className="text-center py-6 bg-[#e9f2e7]/55 rounded-xl border border-dashed border-emerald-300">
             <p className="text-xs font-bold uppercase tracking-widest text-emerald-800">Mesa Libre</p>
           </div>
         )}
@@ -163,8 +163,8 @@ export function TarjetaMesaAdmin({ idMesa, index }: TarjetaProps) {
         onClick={(e) => { e.stopPropagation(); navigate(`/mesa/${idMesa}`); }}
         className={`w-full flex items-center justify-center gap-2 text-sm font-black py-3 px-4 rounded-xl transition-all border shadow-sm ${
             tieneOrden 
-            ? 'bg-rose-100 hover:bg-rose-200 text-rose-700 border-rose-200' 
-            : 'bg-[#dceee3] hover:bg-[#c9e6d3] text-emerald-900 hover:text-emerald-950 border-emerald-200'
+            ? 'bg-rose-100/70 hover:bg-rose-200/85 text-rose-700 border-rose-200' 
+            : 'bg-[#dceee3]/65 hover:bg-[#c9e6d3]/85 text-emerald-900 hover:text-emerald-950 border-emerald-200'
         }`}
       >
         <UtensilsCrossed size={16} />
