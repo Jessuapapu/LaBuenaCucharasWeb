@@ -1,91 +1,67 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
 import TablaClientes from "../Features/Clientes/Tables/TableCliente";
-import { Users, FileText, ArrowRight, UserCheck2 } from "lucide-react";
-import { useSoloClientes } from "../context/Hooks/hookClientes";// Ajusta la ruta de tu nuevo hook
+import { Users, FileText, ArrowRight, UserRoundCheck } from "lucide-react";
+import { useSoloClientes } from "../context/Hooks/hookClientes";
 
 export default function ClientesPage() {
-  // Consumimos el hook. Usamos el alias 'data' para mantener compatibilidad con tu JSX actual.
   const { clientes: data, loading, error } = useSoloClientes();
   const location = useLocation();
-
   const isRoot = location.pathname === "/Clientes" || location.pathname === "/Clientes/";
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
-      
-      {/* Manejo de errores visual (opcional pero recomendado) */}
-      {error && (
-        <div className="bg-red-900/50 border border-red-500 p-4 rounded-xl text-red-200 text-sm">
-          ⚠️ {error}
-        </div>
-      )}
+    <div className="space-y-6 pb-8 animate-in fade-in duration-500">
+      {error && <div className="rounded-2xl border border-rose-200 bg-rose-100/90 p-4 text-sm text-rose-800">⚠️ {error}</div>}
 
-      {/* 1. Encabezado */}
-      <div className="flex flex items-center gap-4 bg-white-800 backdrop-blur-md p-6 rounded-xl border border-slate-200/60 shadow-sm shadow-slate-900/5">
-        <div className="p-3 bg-gradient-to-br from-blue-500 to-sky-600 rounded-xl text-white-400 shadow-lg shadow-blue-500/20">
-          <UserCheck2 className="w-6 h-6" />
+      <header className="flex items-center gap-4 rounded-3xl border border-sky-200/80 bg-gradient-to-r from-[#d2eaf0] via-[#e2eee4] to-[#f2e4d2] p-5 shadow-lg shadow-slate-900/5 sm:p-6">
+        <div className="rounded-2xl bg-gradient-to-br from-sky-700 via-cyan-700 to-teal-700 p-3.5 text-white shadow-lg shadow-cyan-900/15">
+          <UserRoundCheck className="h-6 w-6" />
         </div>
         <div>
-          <h1 className="text-4xl font-black text-slate-800 tracking-tight">Directorio de Clientes</h1>
-          <p className="text-slate-500 mt-1 text-lg font-medium">Gestiona la información de contacto y direcciones.</p>
-        
+          <p className="mb-1 text-xs font-bold uppercase tracking-[0.18em] text-teal-900">Relaciones y acuerdos</p>
+          <h1 className="text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">Directorio de clientes</h1>
+          <p className="mt-1 text-sm font-medium text-slate-600 sm:text-base">Administra la información de contacto y sus contratos.</p>
         </div>
-        
-      </div>
+      </header>
 
-      {/* 2. Grid de Resumen y Navegación */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        
-        {/* Card 1: Métrica de Clientes */}
-        <div className="bg-gradient-to-br from-blue-400 via-blue-200 to-blue-600/60 p-6 rounded-2xl border border-blue-500/30 shadow-lg shadow-blue-900/10 flex items-center justify-between transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-900/15">
-            <div>
-                <p className="text-slate-600 text-lg font-medium uppercase tracking-wider">Total Clientes</p>
-                <h3 className="text-3xl font-black text-slate-800 mt-1.5 tracking-tigth">
-                    {loading ?(
-                      <span className="inline-block w-12 h-9 bg-white/20 animate-pulse rounded-lg" />
-                    ) : (
-                      data.length
-                    )}
-                </h3>
-            </div>
-            <div className="p-3.5 bg-white/10 backdrop-blur-md text-white rounded-xl border border-white/10 shadow-inner group-hover:scale-105 transition-transform duration-300">
-                <Users className="w-8 h-8" />
-            </div>
-        </div>
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+        <section className="flex items-center justify-between rounded-3xl border border-amber-300/80 bg-gradient-to-br from-[#f3e8d0] to-[#f1ddd4] p-5 shadow-sm sm:p-6">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-amber-950/80">Total de clientes</p>
+            <h2 className="mt-2 text-3xl font-black tracking-tight text-amber-950">
+              {loading ? <span className="inline-block h-9 w-12 animate-pulse rounded-lg bg-amber-300" /> : data.length}
+            </h2>
+          </div>
+          <div className="rounded-2xl border border-amber-300 bg-[#ecd29b] p-3.5 text-amber-950"><Users className="h-7 w-7" /></div>
+        </section>
 
-        {/* Card 2: Acceso a Contratos */}
-        <Link 
-            to="/Clientes/Contratos" 
-            className="group relative bg-gradient-to-br from-blue-400 via-blue-200 to-blue-600/60 p-6 rounded-2xl border border-slate-800 shadow-lg shadow-slate-950/10 flex items-center justify-between transition-all duration-300 hover:-translate-y-1 hover:border-blue-500/60 hover:shadow-xl hover:shadow-blue-950/20"
+        <Link
+          to="/Clientes/Contratos"
+          className="group relative flex items-center justify-between overflow-hidden rounded-3xl border border-emerald-700 bg-gradient-to-br from-emerald-800 via-teal-800 to-sky-900 p-5 text-white shadow-lg shadow-emerald-900/20 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-emerald-900/25 focus:outline-none focus:ring-4 focus:ring-emerald-700/25 sm:p-6"
         >
-            <div>
-                <h3 className="text-3xl font-bold text-black group-hover:text-blue-400 transition-colors flex items-center gap-2">
-                    Gestión de Contratos
-                    <ArrowRight className="w-5 h-5 opacity-0 group-hover:opacity-100 transform -translate-x-2 group-hover:translate-x-0 transition-all duration-300" />
-                </h3>
-                <p className="text-slate-500 text-ld font-medium mt-1">Administrar acuerdos, vigencias y presupuestos.</p>
-            </div>
-            <div className="p-3 bg-slate-50 text-slate-400 group-hover:bg-sky-500 group-hover:text-white rounded-xl border border-slate-700/60 group-hover:border-sky-400 shadow-sm transition-all duration-300 shrink-0 group-hover:scale-105">
-                <FileText className="w-6 h-6" />
-            </div>
+          <div className="pointer-events-none absolute -right-8 -top-12 h-40 w-40 rounded-full bg-amber-200/20 blur-2xl transition-transform group-hover:scale-125" />
+          <div className="relative z-10">
+            <p className="mb-1 text-xs font-bold uppercase tracking-[0.16em] text-emerald-100">Acceso directo</p>
+            <h2 className="flex items-center gap-2 text-2xl font-extrabold tracking-tight sm:text-3xl">
+              Contratos <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+            </h2>
+            <p className="mt-1 max-w-sm text-sm text-emerald-50/90">Consulta acuerdos, vigencias y presupuestos.</p>
+          </div>
+          <div className="relative z-10 ml-3 rounded-2xl border border-amber-100/30 bg-amber-200/15 p-3 text-amber-100 shadow-inner transition-transform group-hover:scale-105">
+            <FileText className="h-7 w-7" />
+          </div>
         </Link>
       </div>
 
-      {/* 3. Renderizado de Contenido */}
       <Outlet />
 
-      {/* 4. Tabla de Clientes */}
-      <div className="mt-2">
+      <section className="mt-2 rounded-3xl border border-teal-200/80 bg-gradient-to-br from-[#e1efea] to-[#dceaf0] p-3 shadow-lg shadow-slate-900/5 sm:p-5">
         {loading ? (
-            <div className="h-64 bg-white/60 rounded-2xl backdrop-blur-md border border-slate-200/60 flex items-center justify-center text-blue-600 gap-3 shadow-inner">
-              <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-widest animate-pulse">Cargando directorio...</span>
-            </div>
-        ) : (
-            isRoot && (<div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm shadow-slate-900/5 overflow-hidden"> <TablaClientes data={data} /> </div> ) 
-        )}
-      </div>
-
+          <div className="flex h-56 items-center justify-center gap-3 rounded-2xl border border-teal-300 bg-[#d4e9df] text-teal-900">
+            <div className="h-6 w-6 animate-spin rounded-full border-2 border-teal-700 border-t-transparent" />
+            <span className="animate-pulse text-xs font-bold uppercase tracking-widest text-slate-600">Cargando directorio...</span>
+          </div>
+        ) : isRoot ? <TablaClientes data={data} /> : null}
+      </section>
     </div>
   );
 }

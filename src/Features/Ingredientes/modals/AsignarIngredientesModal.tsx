@@ -1,5 +1,6 @@
 import { X, Link as LinkIcon, Utensils } from "lucide-react";
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import type { IngredienteModel, RelacionPayload } from "../../../context/Interfaces/ingredientes";
 import { usePlatillos } from "../../../context/Hooks/hookPlatillos";
 
@@ -34,41 +35,42 @@ export function AsignarIngredientesModal({ isOpen, ingredientesGlobales, onSubmi
     });
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md animate-in fade-in duration-200">
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/55 p-3 backdrop-blur-sm animate-in fade-in duration-200 sm:p-5">
       
-      <div className="w-full max-w-2xl bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-slate-800/60 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div role="dialog" aria-modal="true" aria-labelledby="ensamblar-receta-titulo" className="flex max-h-[calc(100dvh-1.5rem)] w-full max-w-2xl flex-col overflow-hidden rounded-3xl border border-sky-200 bg-[#e6eef2] text-slate-800 shadow-2xl shadow-slate-950/25 sm:max-h-[calc(100dvh-2.5rem)]">
         
-        <div className="p-5 border-b border-slate-800/50 bg-slate-900/40 flex justify-between items-center shrink-0">
-          <h2 className="text-xl font-bold text-white flex items-center gap-2">
-            <div className="p-2 bg-blue-500/20 rounded-lg text-blue-500">
+        <div className="flex shrink-0 items-center justify-between border-b border-slate-300/80 bg-[#dbe8ed] p-5">
+          <h2 id="ensamblar-receta-titulo" className="flex items-center gap-3 text-xl font-extrabold text-slate-800">
+            <div className="rounded-xl bg-cyan-100 p-2 text-cyan-800">
                 <Utensils className="w-5 h-5" />
             </div>
             Ensamblar Receta
           </h2>
-          <button type="button" onClick={onClose} className="p-2 text-slate-500 hover:text-rose-400 hover:bg-slate-800/50 rounded-lg transition-all">
+          <button type="button" onClick={onClose} aria-label="Cerrar formulario" className="rounded-lg p-2 text-slate-500 transition-all hover:bg-slate-200 hover:text-slate-800">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-6 overflow-y-auto">
+        <form onSubmit={handleSubmit} className="min-h-0 flex-1 overflow-y-auto p-5 custom-scrollbar sm:p-6">
+          <div className="flex flex-col gap-6">
           
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-bold text-slate-500 uppercase tracking-wider">
-              Seleccionar Platillo
+            <label className="text-sm font-semibold text-slate-700">
+              Seleccionar platillo
             </label>
             <select 
               required
               value={selectedPlatillo}
               onChange={(e) => setSelectedPlatillo(e.target.value)}
-              className="w-full bg-slate-950/20 border border-slate-800/60 rounded-xl p-4 text-white text-lg font-medium focus:ring-2 focus:ring-blue-500 outline-none shadow-inner appearance-none"
+              className="w-full appearance-none rounded-xl border border-slate-300 bg-[#f3f7f8] p-4 text-base font-medium text-slate-800 outline-none focus:border-cyan-700 focus:ring-2 focus:ring-cyan-700/20 sm:text-lg"
             >
-              <option value="" disabled className="text-slate-600">-- Selecciona un platillo del menú --</option>
+                <option value="" disabled className="text-slate-500">-- Selecciona un platillo del menú --</option>
               {loadingPlatillos ? (
                  <option disabled>Cargando catálogo...</option>
               ) : (
                  platillos.map(p => (
-                   <option key={p.id} value={p.id} className="bg-slate-900 text-white">{p.nombre_platillo}</option>
+                   <option key={p.id} value={p.id}>{p.nombre_platillo}</option>
                  ))
               )}
             </select>
@@ -76,12 +78,12 @@ export function AsignarIngredientesModal({ isOpen, ingredientesGlobales, onSubmi
 
           <div className="flex flex-col gap-3">
             <div className="flex justify-between items-end">
-              <label className="text-sm font-bold text-slate-500 uppercase tracking-wider">
-                Ingredientes Requeridos ({selectedIngredientes.length})
+              <label className="text-sm font-semibold text-slate-700">
+                Ingredientes requeridos <span className="text-cyan-800">({selectedIngredientes.length})</span>
               </label>
             </div>
             
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 p-4 bg-slate-950/20 rounded-xl border border-slate-800/50 shadow-inner max-h-60 overflow-y-auto">
+            <div className="grid max-h-60 grid-cols-1 gap-3 overflow-y-auto rounded-2xl border border-slate-300 bg-[#dce7eb] p-4 shadow-inner sm:grid-cols-2 lg:grid-cols-3">
               {ingredientesGlobales.length === 0 ? (
                 <p className="col-span-full text-slate-500 text-center py-4">No hay ingredientes en el inventario.</p>
               ) : (
@@ -92,10 +94,10 @@ export function AsignarIngredientesModal({ isOpen, ingredientesGlobales, onSubmi
                       type="button"
                       key={ing.id}
                       onClick={() => toggleIngrediente(ing.id)}
-                      className={`p-3 rounded-xl border text-sm font-bold text-left transition-all ${
+                      className={`rounded-xl border p-3 text-left text-sm font-bold transition-all ${
                         isSelected 
-                          ? 'bg-blue-500/20 border-blue-500/50 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.15)]' 
-                          : 'bg-slate-900/40 border-slate-800/60 text-slate-400 hover:bg-slate-800/60 hover:text-white'
+                          ? 'bg-cyan-100 border-cyan-300 text-cyan-950 shadow-sm' 
+                          : 'bg-[#edf3f5] border-slate-200 text-slate-700 hover:bg-white/70 hover:border-cyan-300'
                       }`}
                     >
                       {ing.Nombre}
@@ -106,21 +108,23 @@ export function AsignarIngredientesModal({ isOpen, ingredientesGlobales, onSubmi
             </div>
           </div>
 
-          <div className="flex items-center gap-4 pt-2 mt-auto">
-            <button type="button" onClick={onClose} className="flex-1 py-3 px-4 bg-slate-900/40 hover:bg-slate-800/60 text-slate-300 rounded-xl font-bold transition-all border border-slate-800/50">
+          <div className="mt-auto flex items-center gap-3 border-t border-slate-300 pt-5">
+            <button type="button" onClick={onClose} className="flex-1 rounded-xl border border-slate-300 bg-slate-200 px-4 py-3 font-semibold text-slate-700 transition-all hover:bg-slate-300">
               Cancelar
             </button>
             <button 
               type="submit" 
               disabled={!selectedPlatillo || selectedIngredientes.length === 0}
-              className="flex-[2] flex items-center justify-center gap-2 py-3 px-4 bg-blue-500 hover:bg-blue-600 disabled:opacity-50 disabled:hover:bg-blue-500 text-white rounded-xl font-bold transition-all shadow-md shadow-blue-500/20"
+              className="flex flex-[2] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-700 to-blue-700 px-4 py-3 font-bold text-white shadow-md shadow-cyan-900/15 transition-all hover:from-cyan-600 hover:to-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <LinkIcon className="w-5 h-5" />
               Vincular a Receta
             </button>
           </div>
+          </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

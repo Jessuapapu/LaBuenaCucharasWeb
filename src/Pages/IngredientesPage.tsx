@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Leaf, Plus, AlertCircle, Link as LinkIcon } from "lucide-react";
+import { Leaf, Plus, AlertCircle, Link as LinkIcon, ArrowLeft } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useIngredientes } from "../context/Hooks/useIngredientes";
 import type { IngredienteModel, RelacionPayload} from "../context/Interfaces/ingredientes";
 
@@ -47,50 +48,55 @@ export default function IngredientesPage() {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
+    <div className="space-y-6 pb-8 animate-in fade-in duration-500">
       
       {error && (
-        <div className="bg-red-900/50 border border-red-500 p-4 rounded-xl text-red-200 flex items-center gap-3">
-          <AlertCircle className="w-5 h-5" />
+        <div className="flex items-center gap-3 rounded-2xl border border-rose-200 bg-rose-100/90 p-4 text-rose-800">
+          <AlertCircle className="h-5 w-5" />
           {error}
         </div>
       )}
 
       {/* Encabezado */}
-      <div className="bg-white-800 backdrop-blur-md p-6 rounded-xl border border-slate-200/60 shadow-sm shadow-slate-900/5 flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <header className="flex flex-col justify-between gap-5 rounded-3xl border border-sky-200/80 bg-[#e3edf2]/90 p-5 shadow-lg shadow-slate-900/5 backdrop-blur-md lg:flex-row lg:items-center sm:p-6">
         <div className="flex items-center gap-4">
-          <div className="p-3 bg-gradient-to-br from-blue-500 to-sky-600 rounded-xl text-white shadow-lg shadow-blue-500/20">
-            <Leaf className="w-6 h-6" />
+          <div className="rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 p-3.5 text-white shadow-lg shadow-emerald-900/15">
+            <Leaf className="h-6 w-6" />
           </div>
           <div>
-            <h1 className="text-4xl font-black text-slate-800 tracking-tight">Inventario de Ingredientes</h1>
-            <p className="text-slate-800 mt-0.5 text-2xl font-medium">Administra la materia prima y arma las recetas.</p>
+            <p className="mb-1 text-xs font-bold uppercase tracking-[0.18em] text-emerald-800">Materia prima y recetas</p>
+            <h1 className="text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">Ingredientes</h1>
+            <p className="mt-1 text-sm font-medium text-slate-600 sm:text-base">Administra la materia prima y arma las recetas del menú.</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 self-start md:self-auto w-full md:w-auto">
+        <div className="flex w-full flex-col gap-3 sm:flex-row lg:w-auto">
+          <Link to="/Inventario" className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-[#edf3f5] px-4 py-3 font-semibold text-slate-700 shadow-sm transition-colors hover:bg-slate-200 hover:text-slate-900">
+            <ArrowLeft className="h-4 w-4" /> Volver a inventario
+          </Link>
           <button 
             onClick={() => setIsAsignarOpen(true)}
-            className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-slate-100 border border-slate-200/60 hover:bg-slate-200 hover:border-sky-500/50 text-slate-800 px-5 py-3 rounded-xl font-bold transition-all shadow-sm"
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-cyan-300 bg-cyan-100 px-5 py-3 font-bold text-cyan-950 shadow-sm transition-all hover:-translate-y-0.5 hover:bg-cyan-200 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-cyan-700/30"
           >
-            <LinkIcon className="w-5 h-5 text-blue-500" />
-            <span className="hidden sm:inline">Ensamblar Receta</span>
+            <LinkIcon className="h-5 w-5 text-cyan-800" />
+            <span>Ensamblar receta</span>
           </button>
           
           <button 
             onClick={openNew}
-            className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-sky-500 hover:bg-sky-600 text-white px-5 py-3 rounded-xl font-bold transition-all shadow-md shadow-sky-500/20"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-700 to-teal-700 px-5 py-3 font-bold text-white shadow-md shadow-emerald-900/15 transition-all hover:-translate-y-0.5 hover:from-emerald-600 hover:to-teal-600 focus:outline-none focus:ring-2 focus:ring-emerald-700/35"
           >
-            <Plus className="w-5 h-5" />
-            <span className="hidden sm:inline">Nuevo Ingrediente</span>
+            <Plus className="h-5 w-5" />
+            <span>Nuevo ingrediente</span>
           </button>
         </div>
-      </div>
+      </header>
 
       {/* Contenedor de la Tabla */}
-      <div className="bg-white-800 backdrop-blur-md p-6 rounded-xl border border-slate-200/60 shadow-sm shadow-slate-900/5 overflow-hidden shadow-2xl">
-        <div className="p-5 border-b border-slate-800/50 bg-slate-900/40 rounded-t-xl mb-2">
-          <h3 className="text-2xl font-bold text-slate-900">Listado de Ingredientes</h3>
+      <section className="overflow-hidden rounded-3xl border border-sky-200/80 bg-[#e3edf2]/90 p-3 shadow-lg shadow-slate-900/5 backdrop-blur-md sm:p-5">
+        <div className="mb-2 rounded-t-2xl border-b border-slate-300/80 bg-[#dbe7ec] p-5">
+          <p className="mb-1 text-xs font-bold uppercase tracking-[0.14em] text-emerald-800">Catálogo de bodega</p>
+          <h2 className="text-xl font-extrabold text-slate-800 sm:text-2xl">Listado de ingredientes</h2>
         </div>
 
         {/* Consumo del componente separado */}
@@ -100,7 +106,7 @@ export default function IngredientesPage() {
           onEdit={openEdit} 
           onDelete={handleEliminar} 
         />
-      </div>
+      </section>
 
       <IngredienteModal 
         isOpen={isModalOpen}

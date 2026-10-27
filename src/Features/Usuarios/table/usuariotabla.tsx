@@ -28,11 +28,11 @@ export default function UsuariosTabla({ usuariosIniciales, onEditar, onDesactiva
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+    <div className="bg-[#e8f1ed] rounded-2xl border border-teal-200 shadow-sm overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-slate-50/70 border-b border-slate-200 text-slate-500 text-[11px] font-bold uppercase tracking-wider">
+            <tr className="bg-gradient-to-r from-[#d0e7e8] to-[#dcebdc] border-b border-teal-200 text-teal-950 text-[11px] font-bold uppercase tracking-wider">
               <th className="py-4 px-6">Usuario</th>
               <th className="py-4 px-6">Rol asignado</th>
               <th className="py-4 px-6">Fecha Registro</th>
@@ -40,26 +40,26 @@ export default function UsuariosTabla({ usuariosIniciales, onEditar, onDesactiva
               <th className="py-4 px-6 text-center">Acciones</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 text-slate-700 text-sm">
+          <tbody className="divide-y divide-teal-100 text-slate-800 text-sm">
             {usuarios.length === 0 ? (
               <tr>
-                <td colSpan={5} className="py-10 text-center text-slate-400 italic font-medium">
+                <td colSpan={5} className="py-10 text-center text-teal-900 italic font-medium">
                   No hay usuarios registrados en el sistema.
                 </td>
               </tr>
             ) : (
               usuarios.map((user) => (
-                <tr key={user.Username} className="hover:bg-slate-50/50 transition-colors duration-150">
+                <tr key={user.Username} className="odd:bg-[#eaf2e9] even:bg-[#e3efed] hover:bg-[#d4e9e7] transition-colors duration-150">
                   <td className="py-3.5 px-6 font-semibold text-slate-900">
                     {user.Username}
                   </td>
                   <td className="py-3.5 px-6">
                     <span className="inline-flex items-center gap-1.5 font-medium">
-                      <Shield size={14} className="text-slate-400" />
+                      <Shield size={14} className="text-sky-800" />
                       {user.rol}
                     </span>
                   </td>
-                  <td className="py-3.5 px-6 text-slate-500 font-mono text-xs">
+                  <td className="py-3.5 px-6 text-slate-700 font-mono text-xs">
                     {new Date(user.fecha_creacion).toLocaleDateString('es-NI', {
                       year: 'numeric',
                       month: 'short',
@@ -80,7 +80,7 @@ export default function UsuariosTabla({ usuariosIniciales, onEditar, onDesactiva
                     <div className="flex items-center justify-center gap-2">
                       <button
                         onClick={() => onEditar(user)}
-                        className="p-1.5 hover:bg-slate-100 text-slate-600 hover:text-blue-600 rounded-lg transition-colors duration-150"
+                        className="p-1.5 hover:bg-sky-100 text-sky-900 hover:text-sky-700 rounded-lg transition-colors duration-150"
                         title="Editar Usuario/Rol"
                       >
                         <Edit2 size={16} />
@@ -88,7 +88,7 @@ export default function UsuariosTabla({ usuariosIniciales, onEditar, onDesactiva
                       {user.activo && (
                         <button
                           onClick={() => handleDesactivarUsuario(user.Username)} // 👈 Corregido para llamar a la lógica con confirmación
-                          className="p-1.5 hover:bg-rose-50 text-slate-600 hover:text-rose-600 rounded-lg transition-colors duration-150"
+                          className="p-1.5 hover:bg-rose-100 text-slate-700 hover:text-rose-700 rounded-lg transition-colors duration-150"
                           title="Desactivar acceso"
                         >
                           <UserX size={16} />

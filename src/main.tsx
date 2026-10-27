@@ -60,7 +60,7 @@ const router = createBrowserRouter([
               { path: '/Inventario/Ingrediente', element: <IngredientesPage /> }
             ]
           },
-          {/* path: '/Informe', element: <InformesPage />*/ },
+          { path: '/Informe', element: <InformesPage /> },
           { path: '/caja', element: <CajaPage /> },
           {
             path: '/Configuracion',

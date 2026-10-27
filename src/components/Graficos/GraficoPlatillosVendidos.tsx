@@ -15,7 +15,7 @@ export default function GraficoPlatillosVendidos({ data }: GraficoPlatillosVendi
   
   if (!data || data.length === 0) {
     return (
-        <div className="h-full w-full flex items-center justify-center text-gray-500 text-sm">
+        <div className="h-full w-full flex items-center justify-center text-slate-600 text-sm">
             No hay datos de ventas disponibles.
         </div>
     );
@@ -63,10 +63,10 @@ export default function GraficoPlatillosVendidos({ data }: GraficoPlatillosVendi
         theme={{
             axis: { 
                 // Tamaño y color del texto en el eje Y (los nombres de los platillos)
-                ticks: { text: { fill: "#bfcde7", fontSize: 16 } }, 
-                legend: { text: { fill: "#bfcde7", fontSize: 20 } } 
+                ticks: { text: { fill: "#475569", fontSize: 14 } }, 
+                legend: { text: { fill: "#334155", fontSize: 16, fontWeight: 600 } } 
             },
-            grid: { line: { stroke: "#374151", strokeWidth: 1, strokeDasharray: "4 4" } },
+            grid: { line: { stroke: "#cbd5e1", strokeWidth: 1, strokeDasharray: "4 4" } },
             tooltip: { container: { background: "#1f2937", color: "#fff", borderRadius: "8px" } },
             
             // 2. Aquí agrandamos el número de ventas dentro de las barras
@@ -74,10 +74,10 @@ export default function GraficoPlatillosVendidos({ data }: GraficoPlatillosVendi
                 text: { 
                     fontSize: 16, // Aumenta este valor si lo quieres más grande
                     fontWeight: "bold", 
-                    fill: "#1f2937" 
+                    fill: "#0f172a" 
                 } 
             },
-            text: { fill: "#fff" }
+            text: { fill: "#334155" }
         }}
         
         borderColor={{ from: 'color', modifiers: [ [ 'darker', 1.6 ] ] }}

@@ -3,104 +3,59 @@ import { FileText, DollarSign, CreditCard, AlertCircle } from "lucide-react";
 import { useFacturasPage } from "../context/Hooks/hookFacturas";
 
 export default function FacturasPage() {
-  // Consumimos únicamente la data estructural y de KPIs globales para la cabecera
-  const { stats, loading, error} = useFacturasPage();
-
-  // Formateador oficial de moneda legal (NIO) con precisión de centavos para auditorías fiscales
-  const formatMoney = (val: number) => 
-    new Intl.NumberFormat('es-NI', { 
-      style: 'currency', 
-      currency: 'NIO', 
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2 
-    }).format(val);
+  const { stats, loading, error } = useFacturasPage();
+  const formatMoney = (val: number) => new Intl.NumberFormat("es-NI", {
+    style: "currency", currency: "NIO", minimumFractionDigits: 2, maximumFractionDigits: 2,
+  }).format(val);
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
-      
-      {/* Alerta de Error de Red o Servidor */}
+    <div className="space-y-6 pb-8 animate-in fade-in duration-500">
       {error && (
-        <div className="bg-red-900/40 border border-red-500/50 p-4 rounded-2xl text-red-200 text-xs font-semibold flex items-center gap-2 animate-bounce">
-          <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
-          <span>Ocurrió un problema al sincronizar los KPIs globales: {error}</span>
+        <div className="flex items-center gap-2 rounded-2xl border border-rose-200 bg-rose-100/80 p-4 text-xs font-semibold text-rose-800">
+          <AlertCircle className="h-4 w-4 shrink-0 text-rose-700" />
+          <span>No se pudieron sincronizar los indicadores: {error}</span>
         </div>
       )}
 
-      {/* Encabezado Principal del Módulo */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white-800 backdrop-blur-md p-6 rounded-xl border border-slate-200/60 shadow-sm shadow-slate-900/5 ">
+      <header className="flex flex-col justify-between gap-5 rounded-3xl border border-sky-200/80 bg-[#e3edf2]/95 p-5 shadow-[0_16px_45px_-34px_rgba(15,70,100,0.4)] backdrop-blur-sm sm:flex-row sm:items-center sm:p-7">
         <div className="flex items-center gap-4">
-          <div className="p-3 bg-gradient-to-br from-blue-500 to-sky-600 backdrop-blur-md rounded-xl text-white shadow-md shadow-blue-500/20">
-            <FileText className="w-6 h-6" />
-          </div>
+          <div className="rounded-2xl bg-gradient-to-br from-[#3b5bc6] to-[#5db8c3] p-3.5 text-white shadow-lg shadow-sky-900/15"><FileText className="h-6 w-6" /></div>
           <div>
-            <h1 className="text-4xl font-black text-slate-800 tracking-tight uppercase">Control de Facturación</h1>
-            <p className="text-slate-500 mt-0.5 text-lg font-medium">Monitoreo de ingresos y estados de cuenta para La Buena Cuchara.</p>
+            <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-[#147e9d]">Administración financiera</p>
+            <h1 className="mt-1 text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">Facturación</h1>
+            <p className="mt-1 text-sm text-slate-600 sm:text-base">Emite comprobantes y consulta el estado de las cuentas.</p>
           </div>
         </div>
+      </header>
 
-        {/* Botón de Sincronización Manual Forzada */}
-      
-      </div>
-
-      {/* Panel de Indicadores Clave de Rendimiento (KPIs) */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        {loading && !stats ? (
-          <>
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-24 bg-white/50 backdrop-blur-md rounded-2xl border border-slate-200/60 animate-pulse" />
-            ))}
-          </>
-        ) : (
-          stats && (
+      <section className="space-y-3">
+        <div className="px-1"><h2 className="text-lg font-extrabold text-slate-800">Resumen de facturación</h2><p className="text-sm text-slate-500">Ingresos y saldos de las facturas registradas.</p></div>
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+          {loading && !stats ? (
+            [1, 2, 3].map((i) => <div key={i} className="h-28 animate-pulse rounded-2xl border border-slate-200 bg-slate-100" />)
+          ) : stats && (
             <>
-              {/* KPI 1: Total Facturado Histórico */}
-              <div className="relative overflow-hidden bg-gradient-to-br bg-white-800 backdrop-blur-md p-6 rounded-xl border border-slate-200/60 shadow-sm shadow-slate-900/5  flex justify-between items-center group hover:border-emerald-400/50 transition-all duration-300 hover:shadow-md">
-                <div className="space-y-1">
-                  <p className="text-lg text-slate-600 font-bold uppercase tracking-wider">Total Facturado</p>
-                  <h3 className="text-xl font-black text-slate-800 tracking-tight group-hover:text-emerald-700 transition-colors">
-                    {formatMoney(stats.total)}
-                  </h3>
-                </div>
-                <div className="p-3 bg-slate-800/20 text-emerald-700 rounded-xl border border-slate-200/60 shadow-inner group-hover:bg-slate-900/20 group-hover:emerald-700 transition-all duration-300">
-                  <DollarSign className="w-5 h-5" />
-                </div>
-              </div>
-
-              {/* KPI 2: Capital Líquido Cobrado */}
-              <div className="relative overflow-hidden bg-white-800 backdrop-blur-md p-6 rounded-xl border border-slate-200/60 shadow-sm shadow-slate-900/5 flex justify-between items-center group hover:border-blue-400/50 transition-all duration-300 hover:shadow-md">
-                <div className="space-y-1">
-                  <p className="text-lg text-slate-600 font-bold uppercase tracking-wider">Ingresos Cobrados</p>
-                  <h3 className="text-xl font-black text-black tracking-tight group-hover:text-blue-600  transition-colors">
-                    {formatMoney(stats.pagadas)}
-                  </h3>
-                </div>
-                <div className="p-3 bg-slate-800/20 text-blue-600 rounded-xl border border-slate-200/60 shadow-inner group-hover:bg-slate-900/20 group-hover:text-blue-600 transition-all duration-300">
-                  <CreditCard className="w-5 h-5" />
-                </div>
-              </div>
-
-              {/* KPI 3: Cuentas por Cobrar Pendientes */}
-              <div className="relative overflow-hidden bg-white-800 backdrop-blur-md p-6 rounded-xl border border-slate-200/60 shadow-sm shadow-slate-900/5 flex justify-between items-center group hover:border-amber-400/50 transition-all duration-300 hover:shadow-md">
-                <div className="space-y-1">
-                  <p className="text-lg text-slate-600 font-bold uppercase tracking-wider">Facturas Pendientes</p>
-                  <h3 className="text-2xl font-black text-black  group-hover:text-amber-600 tracking-tight">
-                    {stats.pendiente}
-                  </h3>
-                </div>
-                <div className="p-3 bg-slate-800/20 text-amber-700 rounded-xl border border-slate-200/60 shadow-inner group-hover:bg-slate-900/20 group-hover:text-amber-700  transition-all duration-300">
-                  <AlertCircle className="w-5 h-5" />
-                </div>
-              </div>
+              <article className="flex min-h-28 items-center justify-between gap-4 rounded-2xl border border-sky-200 bg-gradient-to-br from-sky-100 to-cyan-50 p-5 shadow-sm shadow-sky-900/5">
+                <div><p className="text-xs font-extrabold uppercase tracking-widest text-slate-600">Total facturado</p><h3 className="mt-1 text-xl font-black tracking-tight text-sky-950">{formatMoney(stats.total)}</h3></div>
+                <span className="rounded-xl border border-sky-200 bg-sky-200/70 p-3 text-[#147e9d]"><DollarSign className="h-5 w-5" /></span>
+              </article>
+              <article className="flex min-h-28 items-center justify-between gap-4 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-teal-50 p-5 shadow-sm shadow-emerald-900/5">
+                <div><p className="text-xs font-extrabold uppercase tracking-widest text-slate-600">Ingresos cobrados</p><h3 className="mt-1 text-xl font-black tracking-tight text-emerald-950">{formatMoney(stats.pagadas)}</h3></div>
+                <span className="rounded-xl border border-emerald-200 bg-emerald-200/70 p-3 text-emerald-800"><CreditCard className="h-5 w-5" /></span>
+              </article>
+              <article className="flex min-h-28 items-center justify-between gap-4 rounded-2xl border border-amber-200 bg-gradient-to-br from-amber-100 to-yellow-50 p-5 shadow-sm shadow-amber-900/5">
+                <div><p className="text-xs font-extrabold uppercase tracking-widest text-slate-600">Facturas pendientes</p><h3 className="mt-1 text-2xl font-black tracking-tight text-amber-950">{stats.pendiente}</h3></div>
+                <span className="rounded-xl border border-amber-200 bg-amber-200/70 p-3 text-amber-800"><AlertCircle className="h-5 w-5" /></span>
+              </article>
             </>
-          )
-        )}
-      </div>
+          )}
+        </div>
+      </section>
 
-      {/* Zona Autónoma de la Grid de Datos */}
-      <div className="mt-2">
+      <section className="overflow-hidden rounded-3xl border border-slate-200 bg-[#e2ebf0]/95 p-3 shadow-[0_20px_55px_-40px_rgba(15,55,80,0.5)] backdrop-blur-sm sm:p-5">
+        <div className="mb-3 px-1"><h2 className="text-xl font-extrabold text-slate-800">Facturas emitidas</h2><p className="mt-1 text-sm text-slate-500">Busca, revisa y administra los comprobantes.</p></div>
         <TablaFacturas />
-      </div>
-
+      </section>
     </div>
   );
 }

@@ -84,7 +84,7 @@ export default function TablaClientes({ data }: TablaClientesProps) {
   };
 
   const HeaderCell = ({ label, sKey }: { label: string, sKey: SortKey }) => (
-    <th className="px-6 py-4 cursor-pointer select-none hover:bg-sky-50/50 transition-colors" onClick={() => handleSort(sKey)}>
+    <th className="px-6 py-4 cursor-pointer select-none hover:bg-[#d5e7ed] transition-colors" onClick={() => handleSort(sKey)}>
       <div className="flex items-center gap-2 text-slate-600 font-bold text-xs uppercase tracking-wider">
         {label}
         {sKey && sortKey === sKey ? (sortOrder === "asc" ? <IconSortUp /> : <IconSortDown />) : <IconSort />}
@@ -96,26 +96,26 @@ export default function TablaClientes({ data }: TablaClientesProps) {
     <div className="w-full space-y-4 animate-in fade-in duration-500">
 
       {/* Barra de Control */}
-      <div className="bg-white/80 backdrop-blur-md p-4 rounded-2xl shadow-sm border border-sky-100/80 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div className="bg-gradient-to-r from-[#d8edf0] to-[#e4eddf] p-4 rounded-2xl shadow-sm border border-teal-200/80 flex flex-col md:flex-row justify-between items-center gap-4">
         <input
           type="text"
           placeholder="🔍 Buscar cliente, correo o teléfono..."
-          className="bg-slate-50/80 border border-slate-200 text-slate-800 text-sm rounded-xl px-4 py-2.5 outline-none focus:border-sky-500 focus:bg-white transition-all placeholder-slate-400 font-medium"
+          className="w-full md:flex-1 bg-[#edf4ed] border border-emerald-300 text-slate-800 text-sm rounded-xl px-4 py-2.5 outline-none focus:border-emerald-700 focus:bg-[#f4f8f0] transition-all placeholder-slate-500 font-medium"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
         <button
           onClick={() => setShowCreate(true)}
-          className="w-full md:w-auto bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-500 hover:to-blue-500 text-white px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-md shadow-sky-600/10 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+          className="w-full md:w-auto bg-gradient-to-r from-sky-700 to-indigo-700 hover:from-sky-600 hover:to-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md shadow-sky-900/15 flex items-center justify-center gap-2 transition-all hover:-translate-y-0.5 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-sky-700/40"
         >
           <span>+</span> Nuevo cliente
         </button>
       </div>
 
       {/* Tabla */}
-      <div className="relative overflow-x-auto shadow-md rounded-2xl border border-skyy-100 bg-white">
+      <div className="relative overflow-x-auto shadow-sm rounded-2xl border border-sky-200/80 bg-[#e6efec]">
         <table className="w-full text-sm text-left text-slate-600">
-          <thead className="bg-slate-50/70 border-b border-sky-100">
+          <thead className="bg-gradient-to-r from-[#cde5ed] via-[#d8e9e4] to-[#e8e0ef] border-b border-sky-200">
             <tr>
               <HeaderCell label="Nombre" sKey="NombreCliente" />
               <HeaderCell label="Dirección" sKey="dirreccion" />
@@ -124,40 +124,40 @@ export default function TablaClientes({ data }: TablaClientesProps) {
               <th className="px-6 py-4 text-center text-slate-500 font-bold text-xs uppercase tracking-wider">Acciones</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-teal-200/70">
             {paginatedRows.length > 0 ? (
               paginatedRows.map((c, i) => (
-                <tr key={i} className="hover:bg-sky-50/30 transition-colors">
+                <tr key={i} className={`${i % 2 === 0 ? "bg-[#e9f1ed]" : "bg-[#e4eef0]"} hover:bg-[#d4e8e9] transition-colors`}>
                   <td className="px-6 py-4 font-black text-slate-800 text-base">{c.NombreCliente}</td>
-                  <td className="px-6 py-4 text-slate-500 text-lg truncate max-w-xs" title={c.dirreccion}>{c.dirreccion}</td>
-                  <td className="px-6 py-4 text-sky-600 font-semibold font-mono text-lg">{c.correo}</td>
+                  <td className="px-6 py-4 text-slate-700 text-base truncate max-w-xs" title={c.dirreccion}>{c.dirreccion}</td>
+                  <td className="px-6 py-4 text-sky-900 font-semibold font-mono text-sm">{c.correo}</td>
                   <td className="px-6 py-4 text-slate-600 font-medium font-mono text-base">{c.telefono}</td>
                   <td className="px-6 py-4 text-center">
-                    <button onClick={() => setSelectedCliente(c)} className="text-slate-400 hover:text-sky-600 bg-slate-50 hover:bg-sky-50 p-2 rounded-xl transition-all border border-slate-200/60 hover:border-sky-300 active:scale-95">
+                    <button onClick={() => setSelectedCliente(c)} className="text-emerald-900 hover:text-white bg-[#d8eadf] hover:bg-emerald-700 p-2 rounded-xl transition-all border border-emerald-300 hover:border-emerald-700 active:scale-95">
                       <IconEdit />
                     </button>
                   </td>
                 </tr>
               ))
             ) : (
-              <tr><td colSpan={5} className="text-center py-14 text-slate-400">No se encontraron clientes.</td></tr>
+              <tr><td colSpan={5} className="text-center py-14 text-slate-600">No se encontraron clientes.</td></tr>
             )}
           </tbody>
         </table>
 
         {/* Paginación */}
-        <div className="flex flex-col md:flex-row justify-between items-center p-4 border-t border-sky-100 bg-slate-50/50 gap-4 text-xs font-medium text-slate-500">
+        <div className="flex flex-col md:flex-row justify-between items-center p-4 border-t border-teal-200 bg-gradient-to-r from-[#d8e9e8] to-[#e5ecdf] gap-4 text-xs font-medium text-slate-700">
           <div className="flex items-center gap-2">
             <span>Mostrar</span>
-            <select className="bg-white border border-slate-200 text-slate-700 rounded-lg px-2 py-1 outline-none font-bold" value={itemsPerPage} onChange={(e) => setItemsPerPage(Number(e.target.value))}>
+            <select className="bg-[#f1f5e9] border border-emerald-300 text-slate-800 rounded-lg px-2 py-1.5 outline-none font-bold" value={itemsPerPage} onChange={(e) => setItemsPerPage(Number(e.target.value))}>
               <option value={10}>10</option><option value={20}>20</option><option value={-1}>Todos</option>
             </select>
           </div>
           <span className="font-semibold">{paginatedRows.length} de {processedData.length} registros</span>
           {itemsPerPage !== -1 && (
             <div className="flex gap-2 w-full sm:w-auto justify-end">
-              <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold disabled:opacity-40 transition-colors shadow-sm">Anterior</button>
-              <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="px-3 py-1.5 rounded bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold disabled:opacity-40 transition-colors shadow-sm">Siguiente</button>
+              <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="px-3 py-1.5 rounded-lg bg-[#e4eff0] border border-sky-300 hover:bg-[#d3e7e9] text-sky-950 font-bold disabled:opacity-40 transition-colors shadow-sm">Anterior</button>
+              <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="px-3 py-1.5 rounded-lg bg-[#e4eff0] border border-sky-300 hover:bg-[#d3e7e9] text-sky-950 font-bold disabled:opacity-40 transition-colors shadow-sm">Siguiente</button>
             </div>
           )}
         </div>

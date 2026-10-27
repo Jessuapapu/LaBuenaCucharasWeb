@@ -23,17 +23,17 @@ export function LineaDeTiempoGlobal({ horarios }: LineaDeTiempoGlobalProps) {
   ];
 
   return (
-    <div className="w-full bg-slate-900/40 backdrop-blur-md p-6 sm:p-8 rounded-2xl border border-slate-800/60 shadow-xl mb-6">
-      <h3 className="text-xl font-bold text-white uppercase tracking-wider">
+    <div className="w-full bg-gradient-to-br from-[#d9edf0] to-[#e4eddf] p-6 sm:p-8 rounded-2xl border border-sky-200 shadow-sm mb-6">
+      <h3 className="text-xl font-bold text-slate-900 uppercase tracking-wider">
         Panorama del Día
       </h3>
       
       {/* Margen top de 14 (mt-14) para que los tooltips no se choquen con el título */}
-      <div className="relative h-10 bg-slate-950/60 rounded-xl border border-slate-800/80 shadow-inner w-full mt-14 mb-10">
+      <div className="relative h-10 bg-[#c9dedd] rounded-xl border border-teal-200 shadow-inner w-full mt-14 mb-10">
         
         {/* Marcadores de hora: Más grandes y brillantes (text-slate-300) */}
         {[0, 6, 12, 18, 24].map((hora) => (
-          <div key={hora} className="absolute top-full mt-3 text-sm font-black text-slate-300" style={{ left: `${(hora / 24) * 100}%`, transform: 'translateX(-50%)' }}>
+          <div key={hora} className="absolute top-full mt-3 text-sm font-black text-slate-700" style={{ left: `${(hora / 24) * 100}%`, transform: 'translateX(-50%)' }}>
             {hora}:00
           </div>
         ))}

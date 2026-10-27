@@ -1,41 +1,31 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Users, Sparkles, FileSignature, ShoppingCart, BarChart3, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
 
 // Interfaces de ejemplo para las funciones de tus modales
 export default function AccionesRapidas() {
 
-  const [alHover, setalHover]=useState<string | null>(null)
   // Configuración de los accesos directos para recorrerlos limpiamente
   const rutasNavegacion = [
     {
       titulo: "Módulo Clientes",
       to: "/Clientes",
       icon: <Users size={18} />,
-      colorBg: "bg-gradient-to-r from-blue-400 to-cyan-400 text-white border-blue-100",
-      hoverBorder: "hover:border-blue-400"
     },
     {
       titulo: "Gestión de Contratos",
       to: "/contratos", 
       icon: <FileSignature size={18} />,
-      colorBg: "bg-gradient-to-r from-blue-400 to-cyan-400 hover:from-blue-500 hover:to-cyan-500 text-white border-blue-100",
-      hoverBorder: "hover:border-blue-400"
     },
     {
       titulo: "Control de Órdenes",
       to: "/ordenes",
       icon: <ShoppingCart size={18} />,
-      colorBg: "bg-gradient-to-r from-blue-400 to-cyan-400 hover:from-blue-500 hover:to-cyan-500 text-white border-blue-100",
-      hoverBorder: "hover:border-blue-400"
     },
     {
       titulo: "Informes y Auditoría",
       to: "/informes",
       icon: <BarChart3 size={18} />,
-      colorBg: "bg-gradient-to-r from-blue-400 to-cyan-400 hover:from-blue-500 hover:to-cyan-500 text-white border-blue-100",
-      hoverBorder: "hover:border-blue-400"
     }
   ];
   
@@ -53,58 +43,27 @@ export default function AccionesRapidas() {
       </div>
 
       {/* Contenedor Vertical de Botones de Navegación */}
-      <div className="flex flex-col gap-6 flex-1 justify-center items-center py-2">
+      <div className="flex flex-1 flex-col justify-center gap-3 py-2">
         {rutasNavegacion.map((ruta) => (
-          <div
-            key={ruta.to}
-            className="relative flex items-center justify-center"
-            onMouseEnter={()=> setalHover(ruta.to)}
-            onMouseLeave={()=> setalHover(null)}
-          >
-            {/* Mensaje flotante */}
-            <AnimatePresence>
-              {alHover === ruta.to && (
-                <motion.div
-                  initial={{ opacity: 0, y: 4, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 4, scale: 0.95 }}
-                  transition={{ duration: 0.15, ease: "easeOut" }}
-                  className="absolute bottom-full mb-2.5 z-30 pointer-events-none flex flex-col items-center"
-                >
-                  {/* Caja de texto del Tooltip */}
-                  <div className="bg-white/70 text-cyan-500 text-[11px] font-black tracking-wide py-1.5 px-3 rounded-lg shadow-xl shadow-slate-950/20 whitespace-nowrap uppercase">
-                    {ruta.titulo}
-                  </div>
-                  {/* Pequeño triángulo de guía */}
-                  <div className="w-2 h-2 bg-white/70 rotate-45 -mt-1 shadow-sm" />
-                </motion.div>
-              )}
-            </AnimatePresence>
-
           <motion.div
             key={ruta.to}
-            whileHover={{ scale: 1.12 }}
-            whileTap={{ scale: 0.92 }}
-            className="shrink-0"
+            whileHover={{ y: -1 }}
+            whileTap={{ scale: 0.98 }}
+            className="w-full"
           >
             <Link
               to={ruta.to}
-              className={`w-12 h-12 rounded-full bg-gradient-to-br ${ruta.colorBg} text-white flex items-center justify-center shadow-md border border-white/20 transition-all duration-200 hover:brightness-105`}
+              className="group flex w-full items-center gap-3 rounded-xl border border-sky-100 bg-gradient-to-r from-sky-50 to-cyan-50 px-3 py-2.5 text-slate-700 shadow-sm transition-all hover:border-cyan-200 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
             >
-                {ruta.icon}
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-[#3b5bc6] to-[#5db8c3] text-white shadow-sm">
+                  {ruta.icon}
+                </span>
+                <span className="min-w-0 flex-1 text-left text-sm font-bold leading-tight text-slate-700 transition-colors group-hover:text-[#147e9d]">
+                  {ruta.titulo}
+                </span>
+                <ArrowRight size={16} className="shrink-0 text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:text-[#147e9d]" />
               </Link>
-            </motion.div>
-
-            {/* El texto */}
-            {/*<div className="flex flex-col truncate">
-              <Link 
-                to={ruta.to} 
-                className="text-xs font-bold text-slate-600 hover:text-blue-600 group-hover:text-slate-900 transition-colors tracking-tight truncate cursor-pointer"
-              >
-                {ruta.titulo}
-              </Link>
-            </div>*/}
-          </div>
+          </motion.div>
         ))}
       </div>
 

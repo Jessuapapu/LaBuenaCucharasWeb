@@ -160,14 +160,14 @@ export default   function MenuMesas() {
 
     if (estadoComedor.error != null || estadoComedor.estado?.status === false || menu.error != null) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 p-4 relative">
-                <div className="bg-white border border-slate-200 px-6 py-10 rounded-3xl shadow-2xl text-center w-full max-w-sm relative z-10">
+            <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-[#edf4f2] via-[#e5f0f2] to-[#f5ead9] p-4 relative">
+                <div className="bg-[#e3eff0] border border-sky-200 px-6 py-10 rounded-3xl shadow-2xl text-center w-full max-w-sm relative z-10">
                     <div className="w-20 h-20 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-6 border border-rose-200">
                         <Power className="text-rose-600" size={32} />
                     </div>
                     <h1 className="text-3xl font-black text-slate-900 mb-2 tracking-tight">Comedor Cerrado</h1>
                     <p className="text-slate-600 text-base mb-8 font-medium">El sistema de mesas no está operando.</p>
-                    <button onClick={() => navigate('/Mesas')} className="w-full flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-black py-4 px-5 rounded-xl transition-all border border-slate-300 shadow-sm active:scale-95">
+                    <button onClick={() => navigate('/Mesas')} className="w-full flex items-center justify-center gap-2 bg-[#d5e9eb] hover:bg-[#c4e1e5] text-sky-950 font-black py-4 px-5 rounded-xl transition-all border border-sky-300 shadow-sm active:scale-95">
                         <ArrowLeft size={20} /> Volver al Tablero
                     </button>
                 </div>
@@ -177,44 +177,44 @@ export default   function MenuMesas() {
 
     if (cargando) {
         return (
-            <div className="min-h-[100dvh] flex flex-col items-center justify-center bg-slate-50">
-                <Loader2 className="w-16 h-16 text-sky-500 animate-spin mb-4" />
-                <div className="text-slate-500 font-black uppercase tracking-widest animate-pulse text-sm">Escaneando Mesa...</div>
+            <div className="min-h-[100dvh] flex flex-col items-center justify-center bg-gradient-to-br from-[#edf4f2] to-[#e5f0f2]">
+                <Loader2 className="w-16 h-16 text-teal-600 animate-spin mb-4" />
+                <div className="text-teal-900 font-black uppercase tracking-widest animate-pulse text-sm">Escaneando Mesa...</div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-[100dvh] bg-slate-50/50 text-slate-800 p-4 md:p-6 lg:p-8 font-sans antialiased">
+        <div className="min-h-[100dvh] bg-gradient-to-br from-[#edf4f2] via-[#e5f0f2] to-[#f5ead9] text-slate-800 p-4 md:p-6 lg:p-8 font-sans antialiased">
             <div className="max-w-[1200px] mx-auto animate-in fade-in duration-500 pb-24">
 
-                <div className="flex items-center gap-4 mb-8 bg-white/80 backdrop-blur-md p-5 rounded-2xl border border-slate-200/60 shadow-xl">
+                <div className="flex items-center gap-4 mb-8 bg-gradient-to-r from-[#d4eaf0] to-[#e6eedf] p-5 rounded-2xl border border-sky-200 shadow-lg shadow-sky-900/5">
                     <button 
                         onClick={() => navigate('/Mesas')} 
-                        className="p-3 bg-slate-100 border border-slate-200 rounded-xl shadow-sm hover:bg-slate-200 hover:text-slate-900 transition-all text-slate-600 group"
+                        className="p-3 bg-[#c8e4e9] border border-sky-300 rounded-xl shadow-sm hover:bg-[#b6dce3] hover:text-sky-950 transition-all text-sky-900 group"
                     >
                         <ArrowLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
                     </button>
                     <div className="flex flex-col">
                         <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-                            Mesa <span className="text-sky-500">#{id}</span>
+                            Mesa <span className="text-teal-700">#{id}</span>
                         </h1>
-                        <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Gestión de Consumo</span>
+                        <span className="text-xs font-bold text-teal-900 uppercase tracking-widest">Gestión de Consumo</span>
                     </div>
                 </div>
 
                 {/* ORDEN ACTIVA */}
-                <section className="bg-white/80 backdrop-blur-md rounded-3xl border border-slate-200/60 shadow-xl mb-8 overflow-hidden">
-                    <div className="p-5 md:p-6 border-b border-slate-200/60 bg-slate-50/50 flex items-center gap-3">
-                        <div className="p-3 bg-sky-50 text-sky-600 rounded-xl border border-sky-200 shadow-sm"><Receipt size={24} /></div>
+                <section className="bg-[#e3eff0] rounded-3xl border border-sky-200 shadow-lg shadow-sky-900/5 mb-8 overflow-hidden">
+                    <div className="p-5 md:p-6 border-b border-sky-200 bg-gradient-to-r from-[#cce6eb] to-[#d9ebdf] flex items-center gap-3">
+                        <div className="p-3 bg-[#b6dce5] text-sky-900 rounded-xl border border-sky-300 shadow-sm"><Receipt size={24} /></div>
                         <h2 className="text-xl font-black text-slate-900 tracking-wide">Ticket en Curso</h2>
                     </div>
                     
                     <div className="p-5 md:p-6">
                         {cargandoDetalles ? (
-                            <div className="flex flex-col items-center justify-center py-12 bg-slate-50 rounded-2xl border border-dashed border-slate-300">
-                                <Loader2 className="w-10 h-10 text-sky-500 animate-spin mb-3" />
-                                <span className="text-sm font-black uppercase tracking-widest text-slate-500">Extrayendo Datos...</span>
+                            <div className="flex flex-col items-center justify-center py-12 bg-[#dcecef] rounded-2xl border border-dashed border-sky-300">
+                                <Loader2 className="w-10 h-10 text-teal-700 animate-spin mb-3" />
+                                <span className="text-sm font-black uppercase tracking-widest text-teal-900">Extrayendo Datos...</span>
                             </div>
                         ) : (
                             <OrdenActivaTable 
@@ -231,15 +231,15 @@ export default   function MenuMesas() {
                 </section>
 
                 {/* MENÚ DEL DÍA */}
-                <section className="bg-white/80 backdrop-blur-md rounded-3xl border border-slate-200/60 shadow-xl mb-8 overflow-hidden">
-                    <div className="p-5 md:p-6 border-b border-slate-200/60 bg-slate-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <section className="bg-[#e7efe5] rounded-3xl border border-emerald-200 shadow-lg shadow-emerald-900/5 mb-8 overflow-hidden">
+                    <div className="p-5 md:p-6 border-b border-emerald-200 bg-gradient-to-r from-[#d2e9da] to-[#d9edf0] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div className="flex items-center gap-3">
-                            <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl border border-emerald-200 shadow-sm"><ChefHat size={24} /></div>
+                            <div className="p-3 bg-[#c5e4cb] text-emerald-900 rounded-xl border border-emerald-300 shadow-sm"><ChefHat size={24} /></div>
                             <h2 className="text-xl font-black text-slate-900 tracking-wide">Menú del Día</h2>
                         </div>
                         <button 
                             onClick={() => setModalExtraAbierto(true)}
-                            className="bg-slate-100 border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-200 font-bold py-3 px-5 rounded-xl text-sm transition-all shadow-sm flex items-center justify-center gap-2"
+                            className="bg-[#d7e9e9] border border-sky-300 text-sky-950 hover:bg-[#c4e2e2] font-bold py-3 px-5 rounded-xl text-sm transition-all shadow-sm flex items-center justify-center gap-2"
                         >
                             <Search size={18} /> Buscar Platillo Extra
                         </button>
@@ -255,9 +255,9 @@ export default   function MenuMesas() {
                 </section>
 
                 {/* HISTORIAL */}
-                <section className="bg-white/80 backdrop-blur-md rounded-3xl border border-slate-200/60 shadow-xl overflow-hidden">
-                    <div className="p-5 md:p-6 border-b border-slate-200/60 bg-slate-50/50 flex items-center gap-3">
-                        <div className="p-3 bg-purple-50 text-purple-600 rounded-xl border border-purple-200 shadow-sm"><History size={24} /></div>
+                <section className="bg-[#eee8f3] rounded-3xl border border-violet-200 shadow-lg shadow-violet-900/5 overflow-hidden">
+                    <div className="p-5 md:p-6 border-b border-violet-200 bg-gradient-to-r from-[#e4d9ee] to-[#e8e2ef] flex items-center gap-3">
+                        <div className="p-3 bg-[#d5c2e6] text-violet-950 rounded-xl border border-violet-300 shadow-sm"><History size={24} /></div>
                         <h2 className="text-xl font-black text-slate-900 tracking-wide">Historial de la Mesa</h2>
                     </div>
 
@@ -272,25 +272,25 @@ export default   function MenuMesas() {
                                             setModalHistorialAbierto(true);
                                             if (obtenerDetalle) obtenerDetalle(orden.IdOrden);
                                         }}
-                                        className="group flex items-center justify-between bg-slate-50 border border-slate-200 p-5 rounded-2xl cursor-pointer transition-all hover:bg-white hover:border-sky-300 hover:shadow-md shadow-sm"
+                                        className="group flex items-center justify-between bg-[#e5dff0] border border-violet-200 p-5 rounded-2xl cursor-pointer transition-all hover:bg-[#d8c9e9] hover:border-violet-300 hover:shadow-md shadow-sm"
                                     >
                                         <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 rounded-full bg-slate-200 flex items-center justify-center border border-slate-300 group-hover:bg-sky-100 group-hover:text-sky-600 group-hover:border-sky-200 transition-colors">
-                                                <Receipt size={20} className="text-slate-600 group-hover:text-sky-600"/>
+                                            <div className="w-12 h-12 rounded-full bg-[#d4c8e5] flex items-center justify-center border border-violet-300 group-hover:bg-[#bfe0e6] group-hover:border-sky-300 transition-colors">
+                                                <Receipt size={20} className="text-violet-900 group-hover:text-sky-900"/>
                                             </div>
                                             <div>
                                                 <h3 className="font-black text-base text-slate-900">Pedido #{orden.IdOrden}</h3>
                                                 <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600 mt-0.5">Procesado</p>
                                             </div>
                                         </div>
-                                        <ChevronRight size={22} className="text-slate-400 group-hover:text-sky-500 transition-transform group-hover:translate-x-1" />
+                                        <ChevronRight size={22} className="text-violet-700 group-hover:text-sky-700 transition-transform group-hover:translate-x-1" />
                                     </div>
                                 ))}
                             </div>
                         ) : (
-                            <div className="flex flex-col items-center justify-center py-12 bg-slate-50 rounded-2xl border border-dashed border-slate-300">
-                                <AlertCircle className="text-slate-400 mb-3" size={32} />
-                                <p className="text-slate-500 text-sm font-bold">No hay registros previos en esta mesa hoy.</p>
+                            <div className="flex flex-col items-center justify-center py-12 bg-[#e7e0ef] rounded-2xl border border-dashed border-violet-300">
+                                <AlertCircle className="text-violet-700 mb-3" size={32} />
+                                <p className="text-violet-950 text-sm font-bold">No hay registros previos en esta mesa hoy.</p>
                             </div>
                         )}
                     </div>

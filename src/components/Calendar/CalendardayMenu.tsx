@@ -74,33 +74,33 @@ export const CalendarioMenuDia: React.FC = () => {
 
   const nombreDiaActual = useMemo(() => {
     const fecha = new Date(Anio, meses, diaSeleccionado);
-    return fecha.toLocaleDateString('en-US', { weekday: 'long' });
+    return fecha.toLocaleDateString('es-NI', { weekday: 'long' });
   }, [diaSeleccionado, meses, Anio]);
 
   const fechaHeaderTexto = useMemo(() => {
     const fecha = new Date(Anio, meses, diaSeleccionado);
-    return fecha.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    return fecha.toLocaleDateString('es-NI', { month: 'long', day: 'numeric', year: 'numeric' });
   }, [diaSeleccionado, meses, Anio]);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 bg-gray-800 rounded-2xl border border-slate-200 shadow-sm overflow-hidden min-h-[750px]">
+    <div className="grid grid-cols-1 lg:grid-cols-12 overflow-hidden rounded-2xl border border-sky-200/80 bg-[#e1ebef] shadow-sm min-h-[750px]">
       
       {/* ================= COLUMNA IZQUIERDA: TIMELINE DIARIO (8 Columnas) ================= */}
-      <div className="lg:col-span-8 border-r border-gray-800 flex flex-col h-[750px] bg-gray-900">
+      <div className="lg:col-span-8 border-r border-slate-300/80 flex flex-col h-[750px] bg-[#e8f0f3]">
         
         {/* Header de la Agenda */}
-        <div className="p-5 border-b border-gray-800 flex justify-between items-center bg-gray-950/40">
+        <div className="p-5 border-b border-slate-300/80 flex flex-wrap justify-between items-center gap-4 bg-[#dbe7ec]">
           <div>
-            <h1 className="text-xl font-black text-white tracking-tight">{fechaHeaderTexto}</h1>
-            <p className="text-xs font-semibold text-gray-500 mt-0.5">{nombreDiaActual}</p>
+            <h1 className="text-xl font-black text-slate-800 tracking-tight capitalize">{fechaHeaderTexto}</h1>
+            <p className="text-xs font-semibold text-slate-600 mt-0.5 capitalize">{nombreDiaActual}</p>
           </div>
           <div className="flex items-center gap-3">
-            <div className="flex bg-gray-950 p-0.5 rounded-xl border border-gray-800">
-              <span className="px-3 py-1 bg-gray-800 text-blue-400 text-xs font-bold rounded-lg shadow-sm cursor-default">Day view</span>
+            <div className="flex bg-[#edf3f5] p-0.5 rounded-xl border border-slate-300">
+              <span className="px-3 py-1 bg-cyan-100 text-cyan-900 text-xs font-bold rounded-lg shadow-sm cursor-default">Vista diaria</span>
             </div>
             <button
               onClick={abrirModalNuevoPlatillo}
-              className="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-black text-xs rounded-xl transition-all shadow-lg hover:shadow-blue-600/10 active:scale-98 uppercase flex items-center gap-1.5"
+              className="px-4 py-2 bg-gradient-to-r from-cyan-700 to-blue-700 hover:from-cyan-600 hover:to-blue-600 text-white font-bold text-xs rounded-xl transition-all shadow-md shadow-cyan-900/15 active:scale-98 uppercase flex items-center gap-1.5"
             >
               <Plus className="w-3.5 h-3.5" /> Agregar Menu
             </button>
@@ -108,7 +108,7 @@ export const CalendarioMenuDia: React.FC = () => {
         </div>
 
         {/* Lista de horas con scroll */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar relative divide-y divide-gray-800/60">
+        <div className="flex-1 overflow-y-auto custom-scrollbar relative divide-y divide-slate-200/80">
           {horasDelDia.map((hora) => {
             //Evaluamos los registros segun hora
             const platillosDelBloque = platillosDelDia.filter((p: any) => {
@@ -121,27 +121,27 @@ export const CalendarioMenuDia: React.FC = () => {
             });
 
             return (
-              <div key={hora.valor24} className="flex min-h-[68px] group/row relative hover:bg-gray-950/30 transition-colors">
+              <div key={hora.valor24} className="flex min-h-[68px] group/row relative hover:bg-sky-100/50 transition-colors">
                 {/* Reloj indicador a la izquierda */}
-                <div className="w-16 text-right pr-4 py-2 text-[10px] font-black text-gray-500 select-none uppercase tracking-wider">
+                <div className="w-16 text-right pr-4 py-2 text-[10px] font-black text-slate-500 select-none uppercase tracking-wider">
                   {hora.etiqueta}
                 </div>
                 
                 {/* Contenedor de celdas horarias */}
-                <div className="flex-1 p-1.5 relative border-l border-gray-800/80 flex flex-col gap-1 justify-center">
+                <div className="flex-1 p-1.5 relative border-l border-slate-300/80 flex flex-col gap-1 justify-center">
                   {hora.valor24 === 6 && (
-                    <span className="absolute top-1 left-3 text-[9px] font-black uppercase tracking-wider text-gray-600">Apertura y Preparación</span>
+                    <span className="absolute top-1 left-3 text-[9px] font-black uppercase tracking-wider text-slate-500">Apertura y preparación</span>
                   )}
                   
                   {/* Divisores de turnos operativos */}
                   {((hora.valor24 === 7 && hora.tipo === 'desayuno') || 
                     (hora.valor24 === 12 && hora.tipo === 'almuerzo') || 
                     (hora.valor24 === 18 && hora.tipo === 'cena')) && (
-                      <div className="absolute right-3 top-2 flex items-center gap-1 opacity-30 group-hover/row:opacity-100 transition-opacity">
-                        {hora.tipo === 'desayuno' && <Sunrise className="w-3 h-3 text-amber-500" />}
-                        {hora.tipo === 'almuerzo' && <Sun className="w-3 h-3 text-sky-400" />}
-                        {hora.tipo === 'cena' && <Moon className="w-3 h-3 text-indigo-400" />}
-                        <span className="text-[9px] font-black uppercase text-gray-400 tracking-wider">{hora.tipo}</span>
+                      <div className="absolute right-3 top-2 flex items-center gap-1 opacity-60 group-hover/row:opacity-100 transition-opacity">
+                        {hora.tipo === 'desayuno' && <Sunrise className="w-3 h-3 text-amber-700" />}
+                        {hora.tipo === 'almuerzo' && <Sun className="w-3 h-3 text-cyan-700" />}
+                        {hora.tipo === 'cena' && <Moon className="w-3 h-3 text-indigo-700" />}
+                        <span className="text-[9px] font-black uppercase text-slate-600 tracking-wider">{hora.tipo}</span>
                       </div>
                   )}
 
@@ -154,20 +154,20 @@ export const CalendarioMenuDia: React.FC = () => {
                           onClick={() => setPlatilloSeleccionado(platillo)}
                           className={`p-2.5 rounded-xl border text-left cursor-pointer transition-all flex items-center justify-between group/item
                             ${platilloSeleccionado?.id === platillo.id
-                              ? 'bg-gray-800 border-blue-500 text-white shadow-md'
-                              : 'bg-gray-950/50 hover:bg-gray-800/60 border-gray-800 hover:border-gray-700 text-gray-300'
+                              ? 'bg-cyan-100 border-cyan-400 text-cyan-950 shadow-sm'
+                              : 'bg-[#f1f6f7] hover:bg-white/80 border-slate-200 hover:border-cyan-300 text-slate-700'
                             }
                           `}
                         >
                           <div className="flex items-center gap-2 truncate">
-                            <Utensils className={`w-3.5 h-3.5 shrink-0 ${platilloSeleccionado?.id === platillo.id ? 'text-blue-400' : 'text-gray-500'}`} />
+                            <Utensils className={`w-3.5 h-3.5 shrink-0 ${platilloSeleccionado?.id === platillo.id ? 'text-cyan-800' : 'text-slate-500'}`} />
                             <span className="text-xs font-bold truncate">{platillo.NombrePlatillo}</span>
                           </div>
                           {platillo.Monto !== undefined && (
                             <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded border shadow-inner transition-colors
                               ${platilloSeleccionado?.id === platillo.id 
-                                ? 'bg-gray-900 text-emerald-400 border-gray-700' 
-                                : 'bg-gray-900 text-gray-400 border-gray-800'
+                                ? 'bg-emerald-100 text-emerald-900 border-emerald-200' 
+                                : 'bg-slate-100 text-slate-600 border-slate-200'
                               }
                             `}>
                               {formatCordobas(platillo.Monto)}
@@ -185,27 +185,27 @@ export const CalendarioMenuDia: React.FC = () => {
       </div>
 
       {/* ================= COLUMNA DERECHA: SECCIÓN DETALLE (4 Columnas) ================= */}
-      <div className="lg:col-span-4 bg-gray-950/40 p-6 flex flex-col h-[750px] justify-between">
+      <div className="lg:col-span-4 bg-[#dce7eb] p-4 sm:p-6 flex flex-col h-[750px] justify-between">
         
-        <div className="bg-gray-900 p-6 rounded-2xl border border-gray-800 shadow-sm flex-1 flex flex-col justify-between">
+        <div className="bg-[#e8f0f3] p-5 sm:p-6 rounded-2xl border border-slate-300/80 shadow-sm flex-1 flex flex-col justify-between">
           <div className="space-y-5">
-            <div className="border-b border-gray-800/80 pb-3 flex items-center gap-2 text-white">
-              <FileText className="w-4 h-4 text-blue-500" />
-              <h3 className="text-xs font-black uppercase tracking-wider text-gray-400">Ficha del Menú Diario</h3>
+            <div className="border-b border-slate-300/80 pb-3 flex items-center gap-2 text-slate-800">
+              <FileText className="w-4 h-4 text-cyan-800" />
+              <h3 className="text-xs font-black uppercase tracking-wider text-slate-600">Ficha del menú diario</h3>
             </div>
 
             {platilloSeleccionado ? (
               <div className="space-y-4 animate-in fade-in duration-200">
                 <div className="space-y-4">
                   <div>
-                    <span className="text-[9px] font-black uppercase tracking-widest text-blue-400 block">Nombre Comercial</span>
-                    <h4 className="text-base font-black text-white leading-tight mt-1">{platilloSeleccionado.NombrePlatillo}</h4>
+                    <span className="text-[9px] font-black uppercase tracking-widest text-cyan-800 block">Nombre comercial</span>
+                    <h4 className="text-base font-black text-slate-800 leading-tight mt-1">{platilloSeleccionado.NombrePlatillo}</h4>
                   </div>
                   
                   {platilloSeleccionado.Monto !== undefined && (
                     <div>
-                      <span className="text-[9px] font-black uppercase tracking-widest text-gray-500 block">Monto Establecido del Día</span>
-                      <p className="text-base font-black text-emerald-400 mt-0.5 font-mono">
+                      <span className="text-[9px] font-black uppercase tracking-widest text-slate-500 block">Monto establecido del día</span>
+                      <p className="text-base font-black text-emerald-800 mt-0.5 font-mono">
                         {formatCordobas(platilloSeleccionado.Monto)}
                       </p>
                     </div>
@@ -213,9 +213,9 @@ export const CalendarioMenuDia: React.FC = () => {
 
                   {platilloSeleccionado.Hora && (
                     <div>
-                      <span className="text-[9px] font-black uppercase tracking-widest text-gray-500 block">Hora de Servicio Registrada</span>
-                      <div className="flex items-center gap-1.5 mt-1 text-gray-300 text-xs font-bold bg-gray-950 p-2 rounded-lg border border-gray-800/60 w-fit font-mono">
-                        <Clock className="w-3.5 h-3.5 text-blue-400" />
+                      <span className="text-[9px] font-black uppercase tracking-widest text-slate-500 block">Hora de servicio registrada</span>
+                      <div className="flex items-center gap-1.5 mt-1 text-slate-700 text-xs font-bold bg-[#f0f5f7] p-2 rounded-lg border border-slate-300 w-fit font-mono">
+                        <Clock className="w-3.5 h-3.5 text-cyan-800" />
                         <span>{platilloSeleccionado.Hora}</span>
                       </div>
                     </div>
@@ -223,9 +223,9 @@ export const CalendarioMenuDia: React.FC = () => {
                 </div>
               </div>
             ) : (
-              <div className="h-64 border border-dashed border-gray-800 rounded-2xl flex flex-col items-center justify-center p-6 text-center text-gray-500 gap-2.5 bg-gray-950/20">
-                <Utensils className="w-8 h-8 text-gray-700 animate-pulse" />
-                <p className="text-xs font-semibold text-gray-500 max-w-[200px]">
+              <div className="h-64 border border-dashed border-slate-300 rounded-2xl flex flex-col items-center justify-center p-6 text-center text-slate-500 gap-2.5 bg-[#dfe9ed]/70">
+                <Utensils className="w-8 h-8 text-slate-400 animate-pulse" />
+                <p className="text-xs font-semibold text-slate-600 max-w-[200px]">
                   Presiona sobre cualquier platillo de la agenda para inspeccionar el monto y la hora asignados.
                 </p>
               </div>
@@ -236,7 +236,7 @@ export const CalendarioMenuDia: React.FC = () => {
             <button
               type="button"
               onClick={() => setmodalDta(platilloSeleccionado)}
-              className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-black rounded-xl shadow-md hover:shadow-blue-600/10 transition-colors uppercase tracking-wider"
+              className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-700 to-blue-700 hover:from-cyan-600 hover:to-blue-600 text-white text-xs font-bold rounded-xl shadow-md shadow-cyan-900/15 transition-colors uppercase tracking-wider"
             >
               <Edit2 size={13} /> Modificar Asignación
             </button>

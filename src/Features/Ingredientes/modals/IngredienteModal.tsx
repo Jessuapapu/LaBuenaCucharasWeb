@@ -1,5 +1,6 @@
 import { Pencil, Plus, Save, X } from "lucide-react";
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import type { IngredienteModel } from "../../../context/Interfaces/ingredientes";
 
 interface IngredienteModalProps {
@@ -29,49 +30,50 @@ export function IngredienteModal({ isOpen, ingredienteEdit, onSubmit, onClose }:
 
   const isEditing = !!ingredienteEdit;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md animate-in fade-in duration-200">
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/55 p-3 backdrop-blur-sm animate-in fade-in duration-200 sm:p-5">
       
       {/* Contenedor principal con tu clase exacta */}
-      <div className="w-full max-w-md bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-slate-800/60 shadow-2xl overflow-hidden flex flex-col">
+      <div role="dialog" aria-modal="true" aria-labelledby="ingrediente-modal-titulo" className="w-full max-w-lg overflow-hidden rounded-3xl border border-sky-200 bg-[#e6eef2] text-slate-800 shadow-2xl shadow-slate-950/25">
         
         {/* Header con tu clase exacta de la tabla */}
-        <div className="p-5 border-b border-slate-800/50 bg-slate-900/40 flex justify-between items-center">
-          <h2 className="text-xl font-bold text-white flex items-center gap-2">
-            <div className="p-2 bg-sky-500/20 rounded-lg text-sky-400">
+        <div className="flex items-center justify-between border-b border-slate-300/80 bg-[#dbe8ed] p-5">
+          <h2 id="ingrediente-modal-titulo" className="flex items-center gap-3 text-xl font-extrabold text-slate-800">
+            <div className="rounded-xl bg-emerald-100 p-2 text-emerald-800">
                 {isEditing ? <Pencil className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
             </div>
-            {isEditing ? "Editar Ingrediente" : "Nuevo Ingrediente"}
+            {isEditing ? "Editar ingrediente" : "Nuevo ingrediente"}
           </h2>
-          <button type="button" onClick={onClose} className="p-2 text-slate-500 hover:text-rose-400 hover:bg-slate-800/50 rounded-lg transition-colors">
+          <button type="button" onClick={onClose} aria-label="Cerrar formulario" className="rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-200 hover:text-slate-800">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6 p-5 sm:p-6">
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-bold text-slate-500 uppercase tracking-wider">
-              Nombre del Ingrediente
+            <label className="text-sm font-semibold text-slate-700">
+              Nombre del ingrediente
             </label>
             <input 
               type="text" required placeholder="Ej: Tomate, Harina, Pollo..."
-              className="w-full bg-slate-950/20 border border-slate-800/60 rounded-xl p-4 text-white text-lg font-medium focus:ring-2 focus:ring-sky-500 outline-none transition-all shadow-inner placeholder:text-slate-600"
+              className="w-full rounded-xl border border-slate-300 bg-[#f3f7f8] p-4 text-lg font-medium text-slate-800 outline-none transition-all placeholder:text-slate-400 focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20"
               value={nombre}
               onChange={(e) => setNombre(e.target.value)}
             />
           </div>
 
-          <div className="flex items-center gap-4 pt-2">
-            <button type="button" onClick={onClose} className="flex-1 py-3 px-4 bg-slate-900/40 hover:bg-slate-800/60 text-slate-300 rounded-xl font-bold transition-all border border-slate-800/50">
+          <div className="flex items-center gap-3 border-t border-slate-300 pt-5">
+            <button type="button" onClick={onClose} className="flex-1 rounded-xl border border-slate-300 bg-slate-200 px-4 py-3 font-semibold text-slate-700 transition-all hover:bg-slate-300">
               Cancelar
             </button>
-            <button type="submit" className="flex-[2] flex items-center justify-center gap-2 py-3 px-4 bg-sky-500 hover:bg-sky-600 text-white rounded-xl font-bold transition-all shadow-md shadow-sky-500/20">
+            <button type="submit" className="flex flex-[2] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-700 to-teal-700 px-4 py-3 font-bold text-white shadow-md shadow-emerald-900/15 transition-all hover:from-emerald-600 hover:to-teal-600">
               <Save className="w-5 h-5" />
               {isEditing ? "Guardar" : "Crear"}
             </button>
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

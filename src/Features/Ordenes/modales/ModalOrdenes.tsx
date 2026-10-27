@@ -85,21 +85,24 @@ export function ModalEditorOrden({ abierto, alCerrar, alCompletar, ordenEdicion 
     const totalCalculado = detalles.reduce((acc, d) => acc + (d.cantidad * (d.precio_unitario || 0)), 0);
 
     return (
-        <div className="fixed inset-0 bg-[#090D1A]/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4 backdrop-blur-sm">
             {/* Modal más grande: max-w-4xl */}
-            <div className="bg-[#0F172A] border border-slate-800 w-full max-w-4xl rounded-[2rem] shadow-2xl flex flex-col max-h-[90vh]">
+            <div className="flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-[2rem] border border-sky-100 bg-[#edf3f6] shadow-2xl shadow-slate-950/25">
                 
                 {/* HEADER MODAL */}
-                <div className="flex justify-between items-center p-6 lg:p-8 border-b border-white/5 bg-slate-900/30 rounded-t-[2rem]">
-                    <div>
-                        <h2 className="text-2xl font-black text-white tracking-tight">
+                <div className="flex items-center justify-between gap-4 border-b border-sky-100 bg-gradient-to-r from-sky-100/80 to-slate-100 p-5 sm:p-6 lg:p-8">
+                    <div className="flex items-center gap-3">
+                        <span className="rounded-2xl bg-gradient-to-br from-[#147e9d] to-[#3b5bc6] p-3 text-white shadow-md shadow-sky-900/15"><ChefHat size={22} /></span>
+                        <div>
+                        <h2 className="text-xl font-black tracking-tight text-slate-900 sm:text-2xl">
                             {ordenEdicion ? `Gestión de Orden #${ordenEdicion.id_pedido}` : "Nueva Orden de Consumo"}
                         </h2>
-                        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">
-                            Control Operativo
+                        <p className="mt-1 text-xs font-bold uppercase tracking-widest text-slate-500">
+                            {ordenEdicion ? "Actualiza los datos de esta orden" : "Registra cliente y platillos"}
                         </p>
+                        </div>
                     </div>
-                    <button onClick={alCerrar} className="text-slate-400 hover:text-white transition-colors bg-white/5 hover:bg-red-500/20 p-2.5 rounded-xl border border-white/5 active:scale-95">
+                    <button onClick={alCerrar} aria-label="Cerrar" className="rounded-xl border border-slate-200 bg-slate-100 p-2.5 text-slate-500 transition-colors hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 active:scale-95">
                         <X size={20} />
                     </button>
                 </div>
@@ -109,33 +112,33 @@ export function ModalEditorOrden({ abierto, alCerrar, alCompletar, ordenEdicion 
                     <form id="orden-form" onSubmit={handleSubmit} className="space-y-8">
                         
                         {/* SECCIÓN 1: DATOS GENERALES */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-900/40 p-5 rounded-2xl border border-white/5">
+                        <div className="grid grid-cols-1 gap-5 rounded-2xl border border-sky-200 bg-sky-100/50 p-4 sm:p-5 md:grid-cols-2">
                             <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Cliente Registrado</label>
+                                <label className="text-xs font-bold uppercase tracking-widest text-slate-600">Cliente</label>
                                 <div className="relative">
                                     <select 
                                         required 
                                         value={nombreCliente} 
                                         onChange={(e) => setNombreCliente(e.target.value)}
-                                        className="w-full bg-[#0A0F1D] border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500 cursor-pointer appearance-none"
+                                        className="w-full cursor-pointer appearance-none rounded-xl border border-slate-300 bg-[#edf3f6] px-4 py-3 text-sm text-slate-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500/30"
                                     >
                                         <option value="" disabled>Seleccione un cliente...</option>
-                                        <option value="Consumidor Final" className="font-bold text-blue-400">Consumidor Final</option>
+                                        <option value="Consumidor Final" className="font-bold text-[#147e9d]">Consumidor Final</option>
                                         {clientes.map(cli => (
                                             <option key={cli.IdCliente} value={cli.NombreCliente}>
                                                 {cli.NombreCliente}
                                             </option>
                                         ))}
                                     </select>
-                                    {cargandoClientes && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-blue-500" size={16}/>}
+                                    {cargandoClientes && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-[#147e9d]" size={16}/>}
                                 </div>
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Estado Operativo</label>
+                                <label className="text-xs font-bold uppercase tracking-widest text-slate-600">Estado de la orden</label>
                                 <select 
                                     value={estado} onChange={(e) => setEstado(e.target.value)}
-                                    className="w-full bg-[#0A0F1D] border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500 cursor-pointer appearance-none"
+                                    className="w-full cursor-pointer appearance-none rounded-xl border border-slate-300 bg-[#edf3f6] px-4 py-3 text-sm text-slate-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500/30"
                                 >
                                     <option value="PENDIENTE">⏳ Pendiente</option>
                                     <option value="ENTREGADO">✅ Entregado / Pagado</option>
@@ -146,16 +149,16 @@ export function ModalEditorOrden({ abierto, alCerrar, alCompletar, ordenEdicion 
 
                         {/* SECCIÓN 2: DETALLES DE PLATILLOS */}
                         <div className="space-y-4">
-                            <div className="flex justify-between items-center border-b border-white/5 pb-3">
-                                <label className="text-sm font-black text-slate-300 uppercase tracking-widest">Platillos de la Orden</label>
-                                <button type="button" onClick={() => handleAgregarPlatillo()} className="text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-xl flex items-center gap-2 transition-colors shadow-lg shadow-blue-500/20 active:scale-95">
+                            <div className="flex items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                                <label className="text-sm font-black uppercase tracking-widest text-slate-700">Platillos de la orden</label>
+                                <button type="button" onClick={() => handleAgregarPlatillo()} className="flex items-center gap-2 rounded-xl bg-[#147e9d] px-4 py-2 text-xs font-bold text-white shadow-md shadow-sky-900/15 transition-colors hover:bg-[#106c87] active:scale-95">
                                     <Plus size={16}/> Añadir Fila
                                 </button>
                             </div>
 
                             <div className="space-y-3">
                                 {detalles.map((det, index) => (
-                                    <div key={index} className="flex flex-col sm:flex-row gap-3 items-start sm:items-center bg-slate-800/40 p-3 rounded-2xl border border-slate-700/50">
+                                    <div key={index} className="flex flex-col items-start gap-3 rounded-2xl border border-slate-300 bg-slate-200/50 p-3 sm:flex-row sm:items-center">
                                         
                                         {/* Selector de Platillo */}
                                         <div className="w-full sm:flex-1">
@@ -163,7 +166,7 @@ export function ModalEditorOrden({ abierto, alCerrar, alCompletar, ordenEdicion 
                                                 required 
                                                 value={det.nombre_platillo} 
                                                 onChange={(e) => handleActualizarPlatillo(index, "nombre_platillo", e.target.value)}
-                                                className="w-full bg-[#0A0F1D] border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 cursor-pointer"
+                                                className="w-full cursor-pointer rounded-xl border border-slate-300 bg-[#edf3f6] px-3 py-2.5 text-sm text-slate-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500/30"
                                             >
                                                 <option value="" disabled>Elegir del catálogo...</option>
                                                 {platillos.map(p => (
@@ -177,29 +180,29 @@ export function ModalEditorOrden({ abierto, alCerrar, alCompletar, ordenEdicion 
                                         <div className="flex gap-3 w-full sm:w-auto">
                                             {/* Input Cantidad */}
                                             <div className="flex-1 sm:w-24 relative">
-                                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-bold">Cant:</span>
+                                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-500">Cant:</span>
                                                 <input 
                                                     type="number" required min="1" 
                                                     value={det.cantidad || ''} 
                                                     onChange={(e) => handleActualizarPlatillo(index, "cantidad", parseInt(e.target.value) || 0)}
-                                                    className="w-full bg-[#0A0F1D] border border-slate-700 rounded-xl py-2.5 pl-12 pr-3 text-sm text-white focus:outline-none focus:border-blue-500 font-mono"
+                                                    className="w-full rounded-xl border border-slate-300 bg-[#edf3f6] py-2.5 pl-12 pr-3 font-mono text-sm text-slate-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500/30"
                                                 />
                                             </div>
 
                                             {/* Input Precio Manual */}
                                             <div className="flex-1 sm:w-32 relative">
-                                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-bold">C$</span>
+                                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-500">C$</span>
                                                 <input 
                                                     type="number" required min="0" step="0.01" 
                                                     value={det.precio_unitario || ''} 
                                                     onChange={(e) => handleActualizarPlatillo(index, "precio_unitario", parseFloat(e.target.value) || 0)}
                                                     placeholder="0.00"
-                                                    className="w-full bg-slate-950 border border-slate-700 rounded-xl py-2.5 pl-9 pr-3 text-sm text-emerald-400 focus:outline-none focus:border-emerald-500 font-mono font-bold"
+                                                    className="w-full rounded-xl border border-slate-300 bg-[#edf3f6] py-2.5 pl-9 pr-3 font-mono text-sm font-bold text-slate-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500/30"
                                                 />
                                             </div>
 
                                             {/* Botón Borrar */}
-                                            <button type="button" onClick={() => handleQuitarPlatillo(index)} className="p-2.5 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-colors border border-transparent hover:border-red-500/20 shrink-0">
+                                            <button type="button" onClick={() => handleQuitarPlatillo(index)} aria-label="Quitar platillo" className="shrink-0 rounded-xl border border-transparent p-2.5 text-slate-400 transition-colors hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600">
                                                 <Trash2 size={18}/>
                                             </button>
                                         </div>
@@ -207,8 +210,8 @@ export function ModalEditorOrden({ abierto, alCerrar, alCompletar, ordenEdicion 
                                 ))}
 
                                 {detalles.length === 0 && (
-                                    <div className="text-center py-8 bg-slate-900/30 rounded-2xl border border-dashed border-slate-700">
-                                        <p className="text-sm text-slate-500 font-medium">Inicia añadiendo una fila o selecciona una sugerencia abajo.</p>
+                                    <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 py-8 text-center">
+                                        <p className="text-sm font-medium text-slate-500">Añade un platillo o elige una sugerencia del menú.</p>
                                     </div>
                                 )}
                             </div>
@@ -216,10 +219,10 @@ export function ModalEditorOrden({ abierto, alCerrar, alCompletar, ordenEdicion 
 
                         {/* SECCIÓN 3: SUGERENCIAS / MENÚ DEL DÍA */}
                         {!loadingPlatillos && destacados && destacados.length > 0 && (
-                            <div className="bg-blue-900/10 border border-blue-500/20 p-4 rounded-2xl">
+                            <div className="rounded-2xl border border-amber-200 bg-amber-50/70 p-4">
                                 <div className="flex items-center gap-2 mb-3">
-                                    <ChefHat size={16} className="text-blue-400" />
-                                    <span className="text-xs font-black text-blue-400 uppercase tracking-widest">Sugerencias (Menú del Día)</span>
+                                    <ChefHat size={16} className="text-amber-700" />
+                                    <span className="text-xs font-black uppercase tracking-widest text-amber-800">Sugerencias del menú del día</span>
                                 </div>
                                 <div className="flex flex-wrap gap-2">
                                     {destacados.map((p: any, i: number) => (
@@ -227,7 +230,7 @@ export function ModalEditorOrden({ abierto, alCerrar, alCompletar, ordenEdicion 
                                             key={i} 
                                             type="button"
                                             onClick={() => handleAgregarPlatillo(p.nombre_platillo)}
-                                            className="bg-slate-800 hover:bg-blue-600 text-slate-300 hover:text-white px-3 py-1.5 text-xs font-bold rounded-lg border border-slate-700 hover:border-blue-500 transition-colors active:scale-95"
+                                            className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-slate-700 transition-colors hover:border-amber-400 hover:bg-amber-100 active:scale-95"
                                         >
                                             + {p.nombre_platillo}
                                         </button>
@@ -240,17 +243,17 @@ export function ModalEditorOrden({ abierto, alCerrar, alCompletar, ordenEdicion 
                 </div>
 
                 {/* FOOTER DEL MODAL */}
-                <div className="p-6 lg:p-8 border-t border-white/5 bg-slate-900/80 flex flex-col sm:flex-row justify-between items-center rounded-b-[2rem] gap-4">
-                    <div className="w-full sm:w-auto text-center sm:text-left bg-[#0A0F1D] px-6 py-3 rounded-2xl border border-slate-800">
-                        <span className="text-[10px] text-slate-500 font-black uppercase tracking-widest block mb-0.5">Total a Cobrar</span>
-                        <span className="text-2xl font-black text-emerald-400 font-mono tracking-tighter">C${totalCalculado.toFixed(2)}</span>
+                <div className="flex flex-col items-center justify-between gap-4 border-t border-sky-100 bg-slate-200/60 p-5 sm:flex-row sm:p-6 lg:p-8">
+                    <div className="w-full rounded-2xl border border-emerald-100 bg-emerald-50 px-6 py-3 text-center sm:w-auto sm:text-left">
+                        <span className="mb-0.5 block text-[10px] font-black uppercase tracking-widest text-slate-500">Total a cobrar</span>
+                        <span className="font-mono text-2xl font-black tracking-tighter text-emerald-700">C${totalCalculado.toFixed(2)}</span>
                     </div>
                     
                     <div className="flex gap-3 w-full sm:w-auto">
-                        <button type="button" onClick={alCerrar} className="flex-1 sm:flex-none px-6 py-3 rounded-xl font-bold text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 transition-colors border border-slate-700">
+                        <button type="button" onClick={alCerrar} className="flex-1 rounded-xl border border-slate-200 bg-slate-100 px-6 py-3 font-bold text-slate-600 transition-colors hover:bg-slate-200 sm:flex-none">
                             Cancelar
                         </button>
-                        <button type="submit" form="orden-form" disabled={procesando} className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-8 py-3 rounded-xl font-bold text-white bg-emerald-600 hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-500/20 active:scale-95 disabled:opacity-50 border border-emerald-500/50">
+                        <button type="submit" form="orden-form" disabled={procesando} className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#147e9d] to-[#3b5bc6] px-8 py-3 font-bold text-white shadow-lg shadow-blue-900/15 transition-all hover:brightness-105 active:scale-95 disabled:opacity-50 sm:flex-none">
                             {procesando ? <Loader2 size={20} className="animate-spin"/> : <Save size={20}/>}
                             Confirmar Orden
                         </button>

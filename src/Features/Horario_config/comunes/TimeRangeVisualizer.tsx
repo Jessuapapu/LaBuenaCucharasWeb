@@ -39,14 +39,14 @@ export function TimeRangeVisualizer({ inicio, fin, colorIndex = 0 }: TimeRangeVi
   return (
     <div className="mt-4 mb-2 select-none w-full">
       <div className="flex justify-between items-end mb-2">
-        <span className="text-sm font-bold text-slate-400">00:00</span>
-        <span className="text-xs font-black px-3 py-1 bg-slate-900/80 border border-slate-700/50 rounded-lg text-slate-200 shadow-sm">
+        <span className="text-sm font-bold text-slate-700">00:00</span>
+        <span className="text-xs font-black px-3 py-1 bg-[#d5e9e7] border border-teal-200 rounded-lg text-teal-950 shadow-sm">
           Duración: {durationText}
         </span>
-        <span className="text-sm font-bold text-slate-400">23:59</span>
+        <span className="text-sm font-bold text-slate-700">23:59</span>
       </div>
       
-      <div className="relative h-4 bg-slate-950/60 border border-slate-800/80 rounded-full overflow-hidden shadow-inner w-full">
+      <div className="relative h-4 bg-[#cbdedc] border border-teal-200 rounded-full overflow-hidden shadow-inner w-full">
         {!isOvernight ? (
           <div 
             className={`absolute top-0 bottom-0 bg-gradient-to-r ${activeGradient} rounded-full transition-all duration-300`}

@@ -28,7 +28,7 @@ function CeldaImagenPlatillo({ IdPlatillo }: { IdPlatillo: number }) {
 
     return (
         <img
-            src={Urlimagen || "https://placehold.co/100x100/1f2937/ffffff?text=🍽️"}
+            src={Urlimagen || "https://placehold.co/100x100/dce8ed/475569?text=🍽️"}
             alt={`Platillo${IdPlatillo}`}
             className="w-9 h-9 rounded-xl object-cover border border-slate-200/80 bg-slate-50 shadow-sm transition-transform duration-300 group-hover:scale-105"
         />
@@ -90,20 +90,20 @@ export default function TablaMenus({ data, modalDta, setmodalDta, guardarOEditar
     return (
         <div className="w-full space-y-4 animate-in fade-in duration-500">
             {/* Buscador Simple */}
-            <div className="bg-white/80 backdrop-blur-md p-4 rounded-2xl shadow-sm border border-sky-100/80 flex justify-between items-center">
+            <div className="bg-[#e8f0f3]/85 backdrop-blur-md p-4 rounded-2xl shadow-sm border border-sky-200/80 flex justify-between items-center">
                 <input
                     type="text"
                     placeholder="🔍 Buscar por platillo o fecha..."
-                    className="w-full md:w-80 bg-slate-50/80 border border-slate-200 text-slate-800 text-sm rounded-xl px-4 py-2.5 outline-none focus:border-sky-500 focus:bg-white transition-all placeholder-slate-400 font-medium"
+                    className="w-full md:w-80 bg-[#f0f5f7] border border-slate-300 text-slate-800 text-sm rounded-xl px-4 py-2.5 outline-none focus:border-cyan-700 focus:bg-[#f7fafb] transition-all placeholder-slate-500 font-medium"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                 />
             </div>
 
             {/* Tabla */}
-            <div className="relative overflow-x-auto shadow-md rounded-2xl border border-sky1800 bg-white">
+            <div className="relative overflow-x-auto shadow-sm rounded-2xl border border-sky-200/80 bg-[#e8f0f3]/90">
                 <table className="w-full text-sm text-left text-slate-600">
-                    <thead className="bg-slate-50/70 border-b border-skyy-100">
+                    <thead className="bg-[#dce8ed] border-b border-slate-300">
                         <tr>
                             <HeaderCell label="Fecha Programada" sKey="Fecha" />
                             <HeaderCell label="Platillo" sKey="NombrePlatillo" />
@@ -141,18 +141,18 @@ export default function TablaMenus({ data, modalDta, setmodalDta, guardarOEditar
                 </table>
 
                 {/* Paginación */}
-                <div className="flex flex-col md:flex-row justify-between items-center p-4 border-t border-sky-100 bg-slate-50/50 gap-4 text-xs font-medium text-slate-500">
+            <div className="flex flex-col md:flex-row justify-between items-center p-4 border-t border-slate-300 bg-[#dfe9ed] gap-4 text-xs font-medium text-slate-600">
                     <div className="flex items-center gap-2">
                         <span>Mostrar</span>
-                        <select className="bg-white border border-slate-200 text-slate-700 rounded-lg px-2 py-1 outline-none font-bold" value={itemsPerPage} onChange={(e) => setItemsPerPage(Number(e.target.value))}>
+                        <select className="bg-[#f0f5f7] border border-slate-300 text-slate-700 rounded-lg px-2 py-1.5 outline-none font-bold" value={itemsPerPage} onChange={(e) => setItemsPerPage(Number(e.target.value))}>
                             <option value={10}>10</option><option value={20}>20</option><option value={-1}>Todos</option>
                         </select>
                     </div>
                     <span className="font-semibold">{paginatedRows.length} de {processedData.length} registros</span>
                     {itemsPerPage !== -1 && (
                         <div className="flex gap-2 w-full sm:w-auto justify-end">
-                            <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold disabled:opacity-40 transition-colors shadow-sm">Anterior</button>
-                            <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold disabled:opacity-40 transition-colors shadow-sm">Siguiente</button>
+                            <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="px-3 py-1.5 rounded-lg bg-[#edf3f5] border border-slate-300 hover:bg-slate-200 text-slate-700 font-bold disabled:opacity-40 transition-colors shadow-sm">Anterior</button>
+                            <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="px-3 py-1.5 rounded-lg bg-[#edf3f5] border border-slate-300 hover:bg-slate-200 text-slate-700 font-bold disabled:opacity-40 transition-colors shadow-sm">Siguiente</button>
                         </div>
                     )}
                 </div>

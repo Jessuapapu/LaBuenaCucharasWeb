@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import type { Menu_dario } from "../../../context/Interfaces/Platillos";
 
 // Estructura para el select de platillos disponibles
@@ -73,15 +74,16 @@ export default function ModalMenuDia({ MenuData, listaPlatillos, onClose, onSave
     }
   };
 
-  return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
-      <div className="bg-slate-900 p-6 rounded-2xl text-white max-w-md w-full shadow-2xl border border-slate-800 relative">
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/55 p-3 backdrop-blur-sm animate-in fade-in duration-200 sm:p-5">
+      <div role="dialog" aria-modal="true" aria-labelledby="asignar-platillo-titulo" className="relative flex max-h-[calc(100dvh-1.5rem)] w-full max-w-lg flex-col overflow-hidden rounded-3xl border border-sky-200 bg-[#e6eef2] text-slate-800 shadow-2xl shadow-slate-950/25 sm:max-h-[calc(100dvh-2.5rem)]">
         
         {/* Botón de Cierre */}
         <button 
           type="button" 
           onClick={onClose} 
-          className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors p-1 rounded-lg hover:bg-slate-800"
+          aria-label="Cerrar formulario"
+          className="absolute right-4 top-4 z-10 rounded-lg p-1 text-slate-500 transition-colors hover:bg-slate-200 hover:text-slate-800"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -89,22 +91,25 @@ export default function ModalMenuDia({ MenuData, listaPlatillos, onClose, onSave
         </button>
 
         {/* Encabezado */}
-        <h2 className="text-xl font-black text-blue-400 tracking-tight">
-          {isEditing ? "Modificar Programación" : "Asignar Platillo al Menú"}
-        </h2>
-        <p className="text-slate-400 text-xs mt-1 mb-5">
-          Establece el precio (Monto) y la hora de disponibilidad del servicio diario.
-        </p>
+        <div className="shrink-0 border-b border-slate-300/80 bg-[#dbe8ed] px-5 py-5 pr-14 sm:px-7">
+          <p className="mb-1 text-xs font-bold uppercase tracking-[0.16em] text-cyan-800">Planificación diaria</p>
+          <h2 id="asignar-platillo-titulo" className="text-xl font-extrabold tracking-tight text-slate-800">
+            {isEditing ? "Modificar programación" : "Asignar platillo al menú"}
+          </h2>
+          <p className="mt-1 text-sm text-slate-600">
+            Define el precio y el horario de disponibilidad.
+          </p>
+        </div>
 
         {/* Formulario */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="min-h-0 space-y-4 overflow-y-auto px-5 py-5 custom-scrollbar sm:px-7">
           
           {/* Fecha */}
           <div>
-            <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Fecha del Menú</label>
+            <label className="block text-sm font-semibold text-slate-700 mb-1.5">Fecha del menú</label>
             <input
               type="date"
-              className="w-full px-3.5 py-2 rounded-xl bg-slate-800 border border-slate-700 text-white text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none disabled:opacity-50 transition-all font-medium"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-[#f3f7f8] border border-slate-300 text-slate-800 text-sm focus:border-cyan-700 focus:ring-2 focus:ring-cyan-700/20 outline-none disabled:opacity-50 transition-all font-medium"
               value={fechadia}
               onChange={(e) => setFecha(e.target.value)}
               disabled={isEditing}
@@ -112,20 +117,20 @@ export default function ModalMenuDia({ MenuData, listaPlatillos, onClose, onSave
             />
           </div>
 
-          <div className="space-y-3.5 bg-slate-950 p-4 rounded-xl border border-slate-800/80">
+          <div className="space-y-3.5 bg-[#dce7eb] p-4 rounded-2xl border border-slate-300">
             
             {/* Nombre del Platillo */}
             <div>
-              <label className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Seleccionar Platillo</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-1">Seleccionar platillo</label>
               <select
-                className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm focus:border-blue-500 outline-none transition-all font-medium"
+                className="w-full px-3 py-2.5 rounded-xl bg-[#f3f7f8] border border-slate-300 text-slate-800 text-sm focus:border-cyan-700 outline-none transition-all font-medium"
                 value={nombrePlatillo}
                 onChange={(e) => setNombrePlatillo(e.target.value)}
                 required
               >
-                <option value="" disabled className="text-slate-500">Elige un platillo de la base...</option>
+                <option value="" disabled className="text-slate-500">Elige un platillo disponible...</option>
                 {(listaPlatillos || []).map((p, i) => (
-                  <option key={i} value={p.nombre_platillo} className="bg-slate-900">
+                  <option key={i} value={p.nombre_platillo}>
                     {p.nombre_platillo}
                   </option>
                 ))}
@@ -134,13 +139,13 @@ export default function ModalMenuDia({ MenuData, listaPlatillos, onClose, onSave
 
             {/* Monto*/}
             <div>
-              <label className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Monto del Día (C$)</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-1">Monto del día (C$)</label>
               <input
                 type="number"
                 step="1"
                 min="0"
                 placeholder="0"
-                className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm focus:border-blue-500 outline-none transition-all font-mono font-bold disabled:opacity-50"
+                className="w-full px-3 py-2.5 rounded-xl bg-[#f3f7f8] border border-slate-300 text-slate-800 text-sm focus:border-cyan-700 outline-none transition-all font-mono font-bold disabled:opacity-50"
                 value={precioUnitario || ""}
                 onChange={(e) => setPrecioUnitario(Number(e.target.value))}
                 disabled={isEditing} // Bloqueado en edición según tu código original
@@ -150,10 +155,10 @@ export default function ModalMenuDia({ MenuData, listaPlatillos, onClose, onSave
 
             {/* Hora */}
             <div>
-              <label className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Hora de Servicio</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-1">Hora de servicio</label>
               <input
                 type="time"
-                className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm focus:border-blue-500 outline-none transition-all font-medium"
+                className="w-full px-3 py-2.5 rounded-xl bg-[#f3f7f8] border border-slate-300 text-slate-800 text-sm focus:border-cyan-700 outline-none transition-all font-medium"
                 value={horaMenu}
                 onChange={(e) => sethoraMenu(e.target.value)}
                 required
@@ -163,19 +168,19 @@ export default function ModalMenuDia({ MenuData, listaPlatillos, onClose, onSave
           </div>
 
           {/* Acciones */}
-          <div className="flex gap-3 pt-3">
+          <div className="flex gap-3 pt-2">
             <button 
               type="button" 
               onClick={onClose} 
-              className="flex-1 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs uppercase tracking-wider transition-colors"
+              className="flex-1 py-2.5 rounded-xl border border-slate-300 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold transition-colors"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={loading}
-              className={`flex-1 py-2 rounded-xl font-black text-xs uppercase tracking-wider text-white transition-all shadow-md flex justify-center items-center
-                ${loading ? "bg-slate-700 cursor-wait text-slate-400" : "bg-blue-600 hover:bg-blue-500 active:scale-98"}`}
+              className={`flex-1 py-2.5 rounded-xl font-bold text-white transition-all shadow-md flex justify-center items-center
+                ${loading ? "bg-slate-500 cursor-wait" : "bg-gradient-to-r from-cyan-700 to-blue-700 hover:from-cyan-600 hover:to-blue-600 shadow-cyan-900/15 active:scale-98"}`}
             >
               {loading ? "Guardando..." : isEditing ? "Actualizar" : "Confirmar"}
             </button>
@@ -183,6 +188,7 @@ export default function ModalMenuDia({ MenuData, listaPlatillos, onClose, onSave
 
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

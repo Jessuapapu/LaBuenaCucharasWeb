@@ -57,11 +57,11 @@ export function InteractiveTimeSlider({ inicio, fin, onChange }: InteractiveTime
     <div className="relative mt-8 mb-6 select-none w-full">
       
       {/* Etiqueta dinámica superior */}
-      <div className="absolute -top-7 left-1/2 -translate-x-1/2 text-xs font-bold text-sky-400 bg-sky-500/10 border border-sky-500/20 px-3 py-1 rounded-lg">
+      <div className="absolute -top-7 left-1/2 -translate-x-1/2 text-xs font-bold text-sky-950 bg-[#cde7eb] border border-sky-300 px-3 py-1 rounded-lg">
         Rango de {durationText}
       </div>
 
-      <div className="flex justify-between text-xs sm:text-sm text-slate-400 font-bold mb-3 px-1">
+      <div className="flex justify-between text-xs sm:text-sm text-slate-700 font-bold mb-3 px-1">
         <span>00:00</span>
         <span>06:00</span>
         <span>12:00</span>
@@ -70,16 +70,16 @@ export function InteractiveTimeSlider({ inicio, fin, onChange }: InteractiveTime
       </div>
       
       {/* Track más grueso y oscuro */}
-      <div className="relative h-4 bg-slate-950/40 border border-slate-800/60 rounded-full w-full shadow-inner">
+      <div className="relative h-4 bg-[#cbdedc] border border-teal-200 rounded-full w-full shadow-inner">
         {!isOvernight ? (
           <div 
-            className="absolute top-0 bottom-0 bg-gradient-to-r from-sky-500 to-blue-500 rounded-full transition-all duration-75 shadow-sm"
+            className="absolute top-0 bottom-0 bg-gradient-to-r from-sky-700 to-teal-600 rounded-full transition-all duration-75 shadow-sm"
             style={{ left: `${startPercent}%`, width: `${endPercent - startPercent}%` }}
           />
         ) : (
           <>
-            <div className="absolute top-0 bottom-0 left-0 bg-gradient-to-r from-blue-500 to-sky-500 rounded-r-full transition-all duration-75 shadow-sm" style={{ width: `${endPercent}%` }} />
-            <div className="absolute top-0 bottom-0 right-0 bg-gradient-to-r from-sky-500 to-blue-500 rounded-l-full transition-all duration-75 shadow-sm" style={{ width: `${100 - startPercent}%` }} />
+            <div className="absolute top-0 bottom-0 left-0 bg-gradient-to-r from-teal-600 to-sky-700 rounded-r-full transition-all duration-75 shadow-sm" style={{ width: `${endPercent}%` }} />
+            <div className="absolute top-0 bottom-0 right-0 bg-gradient-to-r from-sky-700 to-teal-600 rounded-l-full transition-all duration-75 shadow-sm" style={{ width: `${100 - startPercent}%` }} />
           </>
         )}
       </div>

@@ -20,51 +20,31 @@ interface DatoGrafico {
 }
 
 const KpiCard = ({ title, value, sub, icon, color, onClick, isActive }: any) => {
-    const colors: any = {
-        emerald: {
-            border: isActive ? 'border-emerald-500/60 ring-2 ring-emerald-500/20' : 'border-slate-800/60 hover:border-emerald-500/40',
-            bg: isActive ? 'bg-gradient-to-br from-emerald-950/40 via-slate-900/80 to-emerald-900/20' : 'bg-slate-900/40 via-slate-900/30 to-slate-950/20',
-            iconBg: isActive ? 'bg-emerald-500 text-white' : 'bg-emerald-950/50 text-emerald-400 border border-emerald-800/30'
-        },
-        blue: {
-            border: isActive ? 'border-sky-500/60 ring-2 ring-sky-500/20' : 'border-slate-800/60 hover:border-sky-500/40',
-            bg: isActive ? 'bg-gradient-to-br from-sky-950/40 via-slate-900/80 to-sky-900/20' : 'bg-slate-900/40 via-slate-900/30 to-slate-950/20',
-            iconBg: isActive ? 'bg-sky-500 text-white' : 'bg-sky-950/50 text-sky-400 border border-sky-800/30'
-        },
-        yellow: {
-            border: isActive ? 'border-amber-500/60 ring-2 ring-amber-500/20' : 'border-slate-800/60 hover:border-amber-500/40',
-            bg: isActive ? 'bg-gradient-to-br from-amber-950/40 via-slate-900/80 to-amber-900/20' : 'bg-slate-900/40 via-slate-900/30 to-slate-950/20',
-            iconBg: isActive ? 'bg-amber-500 text-white' : 'bg-amber-950/50 text-amber-400 border border-amber-800/30'
-        },
-        purple: {
-            border: isActive ? 'border-violet-500/60 ring-2 ring-violet-500/20' : 'border-slate-800/60 hover:border-violet-500/40',
-            bg: isActive ? 'bg-gradient-to-br from-violet-950/40 via-slate-900/80 to-violet-900/20' : 'bg-slate-900/40 via-slate-900/30 to-slate-950/20',
-            iconBg: isActive ? 'bg-violet-500 text-white' : 'bg-violet-950/50 text-violet-400 border border-violet-800/30'
-        },
+    const colors: Record<string, { card: string; icon: string; value: string }> = {
+        emerald: { card: "border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50", icon: "bg-emerald-200/80 text-emerald-800", value: "text-emerald-950" },
+        blue: { card: "border-blue-200 bg-gradient-to-br from-blue-100 to-sky-50", icon: "bg-blue-200/80 text-blue-800", value: "text-blue-950" },
+        amber: { card: "border-amber-200 bg-gradient-to-br from-amber-100 to-yellow-50", icon: "bg-amber-200/80 text-amber-900", value: "text-amber-950" },
+        cyan: { card: "border-cyan-200 bg-gradient-to-br from-cyan-100 to-sky-50", icon: "bg-cyan-200/80 text-cyan-900", value: "text-cyan-950" },
     };
-    const currentTheme = colors[color] || colors.blue;
+    const theme = colors[color] || colors.blue;
 
     return (
-        <div 
+        <button
+            type="button"
             onClick={onClick}
-            className={`relative p-5 rounded-2xl border backdrop-blur-xl shadow-lg transition-all duration-300 cursor-pointer group select-none flex flex-col justify-between h-32 ${currentTheme.bg} ${currentTheme.border}'}`}
+            disabled={!onClick}
+            aria-pressed={onClick ? isActive : undefined}
+            className={`group flex min-h-36 w-full flex-col justify-between rounded-2xl border p-4 text-left shadow-sm transition-all duration-200 disabled:opacity-100 ${theme.card} ${onClick ? "cursor-pointer hover:-translate-y-0.5 hover:shadow-md" : "cursor-default"} ${isActive ? "ring-2 ring-[#147e9d]/25" : ""}`}
         >
-            <div className={`absolute -right-4 -top-4 w-16 h-16 rounded-full blur-2xl transition-opacity opacity-0 group-hover:opacity-20 ${isActive ? 'opacity-30 bg-sky-400' : 'bg-white'}`} />
-            <div className="flex justify-between items-start z-10">
-                <div className="space-y-0.5">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{title}</p>
-                    <h3 className="text-2xl font-black text-white tracking-tight">{value}</h3>
-                </div>
-                <div className={`p-2.5 rounded-xl transition-all duration-300 shadow-sm ${currentTheme.iconBg}`}>
-                    {icon}
-                </div>
-            </div>
-            <div className="mt-2 z-10">
-                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-md border transition-all ${isActive ? 'bg-white/10 text-white border-white/20' : 'bg-slate-950/40 text-slate-400 border-slate-800/60'}">
-                    {sub}
-                 </span>
-            </div>
-        </div>
+            <span className="flex w-full items-start justify-between gap-3">
+                <span>
+                    <span className="block text-[10px] font-extrabold uppercase tracking-widest text-slate-600">{title}</span>
+                    <span className={`mt-1 block text-2xl font-black tracking-tight ${theme.value}`}>{value}</span>
+                </span>
+                <span className={`rounded-xl p-2.5 shadow-sm ${theme.icon}`}>{icon}</span>
+            </span>
+            <span className="mt-3 text-xs font-semibold text-slate-600">{sub}</span>
+        </button>
     );
 };
 
@@ -153,142 +133,74 @@ export default function PedidosPage() {
     const hasNextPage = pedidos.length === rows;
 
     return (
-        <div className="min-h-screen bg-[#070a13] text-slate-200 p-4 md:p-6 space-y-6 animate-in fade-in duration-500">
-
-            {/* HEADER */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-white-800 backdrop-blur-md p-6 rounded-2xl border border-slate-200/60 shadow-xl gap-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-white-800 backdrop-blur-md p-6 rounded-2xl border border-slate-200/60 shadow-xl gap-4">
-                    <div className="p-3 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl text-white shadow-lg shadow-blue-500/20">
-                        <Package className="w-6 h-6" />
-                    </div>
+        <div className="space-y-7 pb-8 animate-in fade-in duration-500">
+            <header className="flex flex-col justify-between gap-5 rounded-3xl border border-sky-200/80 bg-[#e3edf2]/95 p-5 shadow-[0_16px_45px_-34px_rgba(15,70,100,0.4)] backdrop-blur-sm sm:flex-row sm:items-center sm:p-7">
+                <div className="flex items-center gap-4">
+                    <div className="rounded-2xl bg-gradient-to-br from-[#3b5bc6] to-[#5db8c3] p-3.5 text-white shadow-lg shadow-sky-900/15"><Package className="h-6 w-6" /></div>
                     <div>
-                        <h1 className="text-2xl font-black text-white tracking-tight">Gestión de Pedidos</h1>
-                        <p className="text-slate-400 mt-0.5 text-xs font-medium">Flujo transaccional y despacho automatizado para La Buena Cuchara.</p>
+                        <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-[#147e9d]">Gestión del restaurante</p>
+                        <h1 className="mt-1 text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">Pedidos</h1>
+                        <p className="mt-1 text-sm text-slate-600 sm:text-base">Agrupa órdenes de consumo para eventos y contratos.</p>
                     </div>
                 </div>
-                <button 
-                    onClick={() => { setPedidoAEditar(null); setModalAbierto(true); }} 
-                    className="bg-gradient-to-r from-blue-400 to-cyan-400 hover:from-blue-500 hover:to-cyan-500 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-blue-500/10 transition-all flex items-center justify-center gap-2 active:scale-95"
+                <button
+                    onClick={() => { setPedidoAEditar(null); setModalAbierto(true); }}
+                    className="group flex min-h-14 w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-[#147e9d] to-[#3b5bc6] px-6 py-3 text-white shadow-lg shadow-blue-900/20 transition-all hover:-translate-y-0.5 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-sky-500/25 sm:w-auto"
                 >
-                    <Plus className="w-6 h-6" /> Nuevo Pedido
+                    <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/15 transition-colors group-hover:bg-white/25"><Plus className="h-5 w-5" /></span>
+                    <span className="text-left"><span className="block text-sm font-extrabold">Nuevo pedido</span><span className="block text-[11px] font-medium text-white/80">Agrupar órdenes</span></span>
                 </button>
-            </div>
+            </header>
 
-            {/* KPIs */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-                {/* Bloque Izquierdo: Matriz de 4 KPIs */}
-                <div className="lg:col-span-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
-                    <KpiCard
-                        title="Ingresos Vista (Neto)" 
-                        value={formatMoney(kpis.ingresos)} 
-                        sub="Excluye anulados" 
-                        gradientClass= "from cyan-500 to-blue-500" 
-                        icon={<DollarSign className="w-5 h-5" />} 
-                        onClick={() => handleFilterClick("")} 
-                        isActive={activeFilter === ""}
-                     />
-                     <KpiCard 
-                        title="Pedidos Totales" 
-                        value={kpis.totalPedidos} 
-                        sub="Ver listado completo" 
-                        gradientClass= "from cyan-500 to-blue-500"
-                        icon={<Layers className="w-5 h-5" />}
-                        onClick={() => handleFilterClick("")} 
-                        isActive={activeFilter === ""}
-                    />
-                     <KpiCard 
-                        title="Órdenes Pendientes" 
-                        value={kpis.pendientes} 
-                        sub="Filtrar pendientes" 
-                        gradientClass= "from cyan-500 to-blue-500" 
-                        icon={<Clock className="w-5 h-5" />}
-                        onClick={() => handleFilterClick("PENDIENTE")}
-                        isActive={activeFilter === "PENDIENTE"}
-                    />
-                    <KpiCard 
-                        title="Órdenes Entregadas" 
-                        value={kpis.entregados} 
-                        sub="Filtrar despachados" 
-                        gradientClass= "from cyan-500 to-blue-500" 
-                        icon={<CheckCircle className="w-5 h-5" />}
-                        onClick={() => handleFilterClick("ENTREGADO")}
-                        isActive={activeFilter === "ENTREGADO"}
-                    />
+            <section className="space-y-3">
+                <div className="px-1"><h2 className="text-lg font-extrabold text-slate-800">Resumen de pedidos</h2><p className="text-sm text-slate-500">Indicadores de los pedidos cargados</p></div>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                    <KpiCard title="Ingresos cargados" value={formatMoney(kpis.ingresos)} sub="Sin pedidos anulados" color="emerald" icon={<DollarSign className="h-5 w-5" />} />
+                    <KpiCard title="Pedidos cargados" value={kpis.totalPedidos} sub="Mostrar todos los estados" color="blue" icon={<Layers className="h-5 w-5" />} onClick={() => handleFilterClick("")} isActive={activeFilter === ""} />
+                    <KpiCard title="Pendientes" value={kpis.pendientes} sub="Filtrar pendientes" color="amber" icon={<Clock className="h-5 w-5" />} onClick={() => handleFilterClick("PENDIENTE")} isActive={activeFilter === "PENDIENTE"} />
+                    <KpiCard title="Entregados" value={kpis.entregados} sub="Filtrar entregados" color="cyan" icon={<CheckCircle className="h-5 w-5" />} onClick={() => handleFilterClick("ENTREGADO")} isActive={activeFilter === "ENTREGADO"} />
                 </div>
+            </section>
 
-                {/* Bloque Derecho: Gráfica de Tendencia Semanal */}
-                <div className="lg:col-span-2 bg-white-800 backdrop-blur-md border border-slate-200/60 rounded-2xl p-5 shadow-sm shadow-slate-900/5 flex flex-col justify-between h-full min-h-[300px] lg:h-[560px]">
-                    <div className="flex justify-between items-center mb-4">
-                        <div>
-                            <h3 className="text-base font-bold text-white flex items-center gap-2">
-                                <TrendingUp className="w-4 h-4 text-slate-800" /> Histórico de Demanda Semanal
-                            </h3>
-                            <p className="text-[11px] text-slate-500 mt-0.5">Volumen total de órdenes procesadas por día.</p>
-                        </div>
+            <section className="overflow-hidden rounded-3xl border border-slate-200 bg-[#e2ebf0]/95 p-3 shadow-[0_20px_55px_-40px_rgba(15,55,80,0.5)] backdrop-blur-sm sm:p-5">
+                <div className="mb-3 flex flex-col justify-between gap-3 px-1 sm:flex-row sm:items-end">
+                    <div><h2 className="text-xl font-extrabold text-slate-800">Pedidos agrupados</h2><p className="mt-1 text-sm text-slate-500">Consulta los grupos creados y sus órdenes vinculadas.</p></div>
+                    {activeFilter && <div className="flex items-center gap-3 self-start sm:self-auto"><span className="rounded-lg border border-sky-200 bg-sky-100 px-3 py-1.5 text-xs font-bold text-sky-800">Filtro: {activeFilter}</span><button onClick={() => setActiveFilter("")} className="text-xs font-bold text-sky-800 underline underline-offset-4 hover:text-sky-950">Limpiar filtro</button></div>}
+                </div>
+                <TablaPedidos
+                    pedidos={pedidosFiltrados}
+                    cargando={cargando}
+                    paginaActual={page}
+                    cambiarPagina={setPage}
+                    hayMasPaginas={hasNextPage}
+                    alEditar={(pedido: PedidoHistorial) => { setPedidoAEditar(pedido); setModalAbierto(true); }}
+                    filasPorPagina={rows}
+                    alCambiarFilas={(r: number) => { setRows(r); setPage(1); }}
+                    filtroTipo={filtroTipo}
+                    setFiltroTipo={setFiltroTipo}
+                />
+            </section>
+
+            <section className="space-y-4">
+                <div className="flex items-end justify-between border-b border-slate-200 pb-3">
+                    <div><h2 className="text-xl font-extrabold text-slate-800">Órdenes recientes</h2><p className="mt-1 text-sm text-slate-500">Actividad de consumo reciente de tus clientes.</p></div>
+                </div>
+                {pedidosFiltrados.length > 0 ? (
+                    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                        {pedidosFiltrados.slice(0, 6).map((pedido: any) => <CardPedido key={pedido.IdPedido} Pedido={pedido} listaPlatillos={listaPlatillos} Actualizar={() => refetch()} />)}
                     </div>
-                    
-                    <div className="w-full flex-1 bg-slate-950/40 rounded-xl border border-slate-900 flex items-center justify-center p-2 relative">
-                        {loadingDashboard ? (
-                            <div className="flex flex-col items-center gap-2">
-                                <RefreshCw className="w-5 h-5 animate-spin text-cyan-500" />
-                                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest animate-pulse">Analizando métricas...</span>
-                            </div>
-                        ) : (
-                            <CardGraficoLinealSemanal datos={datosVentas} />
-                        )}
-                    </div>
-                </div>
-            </div>
+                ) : <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-100/70 p-8 text-center text-sm font-medium text-slate-500">No hay órdenes recientes para mostrar con este filtro.</div>}
+            </section>
 
-            <div className="space-y-4">
-                <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                    <h2 className="text-sm font-bold uppercase tracking-wider text-slate-300">Monitoreo de Comensales (Últimos activos)</h2>
+            <section className="rounded-3xl border border-slate-200 bg-[#e2ebf0]/95 p-4 shadow-sm sm:p-6">
+                <div className="mb-4">
+                    <h2 className="flex items-center gap-2 text-lg font-extrabold text-slate-800"><TrendingUp className="h-5 w-5 text-[#147e9d]" /> Demanda semanal</h2>
+                    <p className="mt-1 text-sm text-slate-500">Volumen de órdenes procesadas por día.</p>
                 </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                    {pedidosFiltrados.slice(0, 6).map((pedido: any) => (
-                        <CardPedido 
-                            key={pedido.IdPedido} 
-                            Pedido={pedido}
-                            listaPlatillos={listaPlatillos} 
-                            Actualizar={() => refetch()} 
-                        />
-                    ))}
+                <div className="flex min-h-[300px] items-center justify-center rounded-2xl border border-slate-200 bg-slate-100/80 p-3">
+                    {loadingDashboard ? <div className="flex flex-col items-center gap-2"><RefreshCw className="h-5 w-5 animate-spin text-[#147e9d]" /><span className="animate-pulse text-[10px] font-bold uppercase tracking-widest text-slate-500">Analizando métricas...</span></div> : <CardGraficoLinealSemanal datos={datosVentas} />}
                 </div>
-            </div>
-
-            {/* TABLA PRINCIPAL MODULAR */}
-            <div className="bg-white-800/50 backdrop-blur-md rounded-2xl border border-slate-200/60 overflow-hidden shadow-2xl">
-                <div className="p-5 border-b border-slate-900/60 bg-slate-900/40 flex justify-between items-center">
-                <div>
-                    <h3 className="text-base font-bold text-white">Auditoría Operativa de Órdenes</h3>
-                        <p className="text-[11px] text-slate-700 mt-0.5">Historial transaccional completo e impresiones de comandas.</p>
-                </div>
-                    {activeFilter && (
-                        <div className="flex items-center gap-3">
-                            <span className="text-[10px] font-bold text-slate-700 border border-slate-500/30 bg-slate-200/20 px-2 py-0.5 rounded-md">
-                                Filtro: {activeFilter}
-                            </span>
-                        <button onClick={() => setActiveFilter("")} className="text-xs text-slate-700 font-bold hover:text-white transition-colors underline underline-offset-4">Reestablecer vista</button>
-                        </div>
-                    )}
-                </div>
-
-                <div className="p-2 bg-slate-800/50">
-                    <TablaPedidos 
-                        pedidos={pedidosFiltrados} 
-                        cargando={cargando}
-                        paginaActual={page}
-                        cambiarPagina={setPage}
-                        hayMasPaginas={hasNextPage}
-                        alEditar={(pedido: PedidoHistorial) => { setPedidoAEditar(pedido); setModalAbierto(true); }}
-                        filasPorPagina={rows}
-                        alCambiarFilas={(r: number) => { setRows(r); setPage(1); }}
-                        filtroTipo={filtroTipo}
-                        setFiltroTipo={setFiltroTipo}
-                    />
-                </div>
-            </div>
+            </section>
 
             {/* MODAL CREADOR/EDITOR */}
             <ModalEditorPedido

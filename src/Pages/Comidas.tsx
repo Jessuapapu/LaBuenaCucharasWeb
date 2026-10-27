@@ -4,120 +4,94 @@ import { Utensils, TrendingUp, Layers, Sparkles, RefreshCw } from "lucide-react"
 import { FoodCard } from "../components/cards/FoodCard";
 import { usePlatillos, useVentasPlatillos } from "../context/Hooks/hookPlatillos";
 
-
 export default function ComidasPage() {
-  // Consumimos los estados independientes
   const { platillos, destacados, loadingPlatillos, errorPlatillos } = usePlatillos();
   const { ventas, loadingVentas, errorVentas } = useVentasPlatillos();
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
-
-      {/* Opcional: Mostrar mensaje si alguna petición falla */}
+    <div className="space-y-6 pb-8 animate-in fade-in duration-500">
       {(errorPlatillos || errorVentas) && (
-        <div className="bg-red-900/50 border border-red-500 p-4 rounded-xl text-red-200">
+        <div className="rounded-2xl border border-rose-200 bg-rose-100/90 p-4 text-rose-800">
           ⚠️ Hubo problemas al sincronizar algunos datos con el servidor.
         </div>
       )}
 
-      {/* 1. Encabezado */}
-      <div className="bg-white-800 backdrop-blur-md p-6 rounded-xl border border-slate-200/60 shadow-sm shadow-slate-900/5 flex flex-col md:flex-row md:items-center justify-between gap-6">
-        
+      <header className="flex flex-col justify-between gap-5 rounded-3xl border border-sky-200/80 bg-[#e3edf2]/90 p-5 shadow-lg shadow-slate-900/5 backdrop-blur-md sm:p-6 lg:flex-row lg:items-center">
         <div className="flex items-center gap-4">
-          <div className="p-3 bg-gradient-to-br from-blue-500 to-sky-600 rounded-xl text-white-400 shadow-lg shadow-blue-500/20">
-            <Utensils className="w-6 h-6" />
+          <div className="rounded-2xl bg-gradient-to-br from-cyan-600 to-blue-700 p-3.5 text-white shadow-lg shadow-cyan-900/15">
+            <Utensils className="h-6 w-6" />
           </div>
           <div>
-            <h1 className="text-4xl font-black text-slate-800 tracking-tight">Gestión de Comidas</h1>
-            <p className="text-slate-800 mt-0.5 text-2xl font-medium">Administra el catálogo, categorías y popularidad.</p>
+            <p className="mb-1 text-xs font-bold uppercase tracking-[0.18em] text-cyan-800">Catálogo y rendimiento</p>
+            <h1 className="text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">Gestión de Comidas</h1>
+            <p className="mt-1 text-sm font-medium text-slate-600 sm:text-base">Administra el catálogo y descubre los platillos favoritos.</p>
           </div>
         </div>
 
-        {/* Mini KPI - Atado a la carga de platillos */}
-        {!loadingPlatillos && (
-          <div className="bg-slate-100 backdrop-blur-md p-6 rounded-xl border border-slate-200/60 shadow-sm shadow-slate-900/5 flex items-center gap-4 self-start md:self-auto group transition-all hover:border-sky-500/30">
-            <div className="p-2 text-cyan-400 rounded-lg">
-              <Layers className="w-6 h-6" />
-            </div>
-            <div>
-              <span className="block text-base text-slate-700 uppercase font-bold tracking-wider">Total en Menú</span>
-              <p className="text-2xl font-black text-blue-500 tracking-tight mt-0.5">{platillos.length}</p>
-            </div>
+        <div className="flex w-full items-center gap-4 rounded-2xl border border-sky-200 bg-[#d7e8ef]/80 px-5 py-4 lg:w-auto">
+          <div className="rounded-xl bg-cyan-100 p-2.5 text-cyan-800"><Layers className="h-5 w-5" /></div>
+          <div>
+            <span className="block text-xs font-bold uppercase tracking-wider text-slate-600">Total en menú</span>
+            <p className="mt-0.5 text-2xl font-black leading-none text-slate-800">
+              {loadingPlatillos ? <span className="inline-block h-7 w-10 animate-pulse rounded bg-sky-200" /> : platillos.length}
+            </p>
           </div>
-        )}
-      </div>
-
-      {/* 1.5 Destacados */}
-      <div className="bg-white-800 backdrop-blur-md p-6 rounded-xl border border-slate-200/60 shadow-sm shadow-slate-900/5 flex flex-col justify-between space-y-3">
-        
-        <div className="flex items-center gap-2 border-b border-slate-800/60 pb-2">
-          <Sparkles className="w-4 h-4 text-sky-400" />
-          <h2 className="text-2xl font-bold uppercase tracking-wider text-slate-700">Platillos Destacados</h2>
         </div>
+      </header>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {/* Evaluamos solo loadingPlatillos */}
+      <section className="overflow-hidden rounded-3xl border border-sky-200/80 bg-[#e5eef2]/90 p-4 shadow-lg shadow-slate-900/5 backdrop-blur-md sm:p-6">
+        <div className="mb-5 flex items-center gap-3 border-b border-slate-300/70 pb-4">
+          <div className="rounded-xl bg-amber-100 p-2 text-amber-700"><Sparkles className="h-5 w-5" /></div>
+          <div>
+            <h2 className="text-lg font-extrabold tracking-tight text-slate-800 sm:text-xl">Platillos destacados</h2>
+            <p className="text-sm text-slate-600">Los favoritos que más se mueven en tu menú.</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {loadingPlatillos ? (
-            [1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-64 bg-slate-900/30 animate-pulse rounded-2xl border border-slate-800/60 shadow-inner" />
-            ))
+            [1, 2, 3, 4].map((i) => <div key={i} className="h-64 animate-pulse rounded-2xl border border-sky-200 bg-slate-200/70" />)
+          ) : destacados.length ? (
+            destacados.map((item) => <div key={item.id} className="transition-transform duration-200 hover:-translate-y-0.5"><FoodCard platillo={item} ventas /></div>)
           ) : (
-            destacados.map((item) => (
-              <div key={item.id} className="transition-transform duration-200 hover:scale-[1.01]">
-                <FoodCard
-                  key={item.id}
-                  platillo={item}
-                  ventas={true}
-                />
-              </div>
-            ))
-          )}
-        </div>
-      </div>
-
-
-      {/* 3. Tabla de Datos */}
-      <div className="bg-white-800 backdrop-blur-md p-6 rounded-xl border border-slate-200/60 shadow-sm shadow-slate-900/5 overflow-hidden shadow-2xl">
-        <div className="p-5 border-b border-slate-800/50 bg-slate-900/40">
-          <h3 className="text-2xl font-bold text-white">Inventario de Platillos</h3>
-        </div>
-
-        {/* Evaluamos solo loadingPlatillos */}
-        <div className="p-2 bg-slate-950/20">
-          {loadingPlatillos ? (
-            <div className="h-64 flex flex-col items-center justify-center text-sky-500 gap-3">
-              <RefreshCw className="w-6 h-6 animate-spin text-sky-500" />
-              <span className="text-slate-500 font-bold text-xs uppercase tracking-widest animate-pulse">Sincronizando catálogo...</span>
+            <div className="col-span-full rounded-2xl border border-dashed border-slate-300 bg-slate-100/70 px-5 py-8 text-center text-sm text-slate-600">
+              Aún no hay platillos destacados.
             </div>
-          ) : (
-            <TablaPlatillos data={platillos} />
           )}
         </div>
-      </div>
+      </section>
 
-
-      {/* 2. Sección de Análisis (Gráfica Completa) */}
-      <div className="bg-slate-900/40 backdrop-blur-md p-6 rounded-2xl border border-slate-800/60 shadow-xl flex flex-col justify-between">
-        <div className="mb-4">
-          <h3 className="text-2xl font-bold text-white flex items-center gap-2 mb-1">
-            <TrendingUp className="w-5 h-5 text-blue-500" />
-            Ranking de Ventas Global
-          </h3>
-          <p className="text-base text-slate-900">Distribución total de platillos mas vendidos este mes</p>
+      <section className="overflow-hidden rounded-3xl border border-sky-200/80 bg-[#e3edf2]/90 shadow-lg shadow-slate-900/5 backdrop-blur-md">
+        <div className="flex flex-col gap-1 border-b border-slate-300/70 bg-[#d7e6ec]/80 px-5 py-4 sm:px-6">
+          <h2 className="text-xl font-extrabold tracking-tight text-slate-800">Inventario de platillos</h2>
+          <p className="text-sm text-slate-600">Busca, filtra y actualiza los platillos disponibles.</p>
         </div>
+        <div className="p-3 sm:p-5">
+          {loadingPlatillos ? (
+            <div className="flex h-64 flex-col items-center justify-center gap-3 text-cyan-800">
+              <RefreshCw className="h-6 w-6 animate-spin" />
+              <span className="animate-pulse text-xs font-bold uppercase tracking-widest text-slate-600">Sincronizando catálogo...</span>
+            </div>
+          ) : <TablaPlatillos data={platillos} />}
+        </div>
+      </section>
 
-        <div className="w-full min-h-[400px] bg-slate-950/20 rounded-xl border border-slate-900/40 p-4 relative flex items-center justify-center">
-          {/* Evaluamos solo loadingVentas */}
+      <section className="rounded-3xl border border-sky-200/80 bg-[#e3edf2]/90 p-5 shadow-lg shadow-slate-900/5 backdrop-blur-md sm:p-6">
+        <div className="mb-5 flex items-center gap-3">
+          <div className="rounded-xl bg-blue-100 p-2.5 text-blue-800"><TrendingUp className="h-5 w-5" /></div>
+          <div>
+            <h2 className="text-xl font-extrabold tracking-tight text-slate-800">Ranking de ventas</h2>
+            <p className="text-sm text-slate-600">Distribución de los platillos más vendidos este mes.</p>
+          </div>
+        </div>
+        <div className="relative flex min-h-[360px] w-full items-center justify-center rounded-2xl border border-slate-200 bg-[#dce8ed]/75 p-4 sm:min-h-[400px]">
           {loadingVentas ? (
-            <div className="flex flex-col items-center gap-2">
-              <RefreshCw className="w-5 h-5 animate-spin text-sky-500" />
-              <span className="text-gray-500 text-sm">Cargando gráfica...</span>
+            <div className="flex flex-col items-center gap-2 text-slate-600">
+              <RefreshCw className="h-5 w-5 animate-spin text-cyan-700" />
+              <span className="text-sm">Cargando gráfica...</span>
             </div>
-          ) : (
-            <GraficoPlatillosVendidos data={ventas} />
-          )}
+          ) : <GraficoPlatillosVendidos data={ventas} />}
         </div>
-      </div>
+      </section>
     </div>
   );
 }

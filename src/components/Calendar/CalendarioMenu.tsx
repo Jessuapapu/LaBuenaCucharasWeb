@@ -46,25 +46,26 @@ const Calendario: React.FC= ()=>{
 };
     
     return(
-        <div className="bg-gray-900 rounded-xl border border-gray-800 p-2 shadow-2xl">
+        <div className="rounded-2xl border border-sky-200/80 bg-[#e8f0f3]/90 p-3 shadow-sm sm:p-5">
             {/* Cabecera del Calendario */}
             <div className="flex justify-center items-center mb-6">
                 <button 
                     onClick={() => cambiarMes(-1)}
-                    className="p-2 hover:bg-gray-800 rounded-full text-gray-400 transition-colors"
+                    aria-label="Mes anterior"
+                    className="rounded-xl border border-slate-300 bg-[#edf3f5] p-2 text-slate-600 transition-colors hover:bg-sky-100 hover:text-cyan-900"
                 >
                     <ChevronLeft size={24} />
                 </button>
-                <h2 className="text-xl font-bold text-white capitalize">
+                <h2 className="min-w-36 text-center text-xl font-extrabold text-slate-800 capitalize">
                     {MesTexto}
                 </h2>
-                <button onClick={()=> cambiarMes(1)} className="p-2 hover:bg-gray-800 rounded-full text-gray-400 transition-colors">
+                <button onClick={()=> cambiarMes(1)} aria-label="Mes siguiente" className="rounded-xl border border-slate-300 bg-[#edf3f5] p-2 text-slate-600 transition-colors hover:bg-sky-100 hover:text-cyan-900">
                     <ChevronRight size={24} />
                 </button>
             </div>
             {/*Dias de semana*/}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-4 mb-2 text-sm">
-                {diasSemanas.map(d=> (<div key={d} className="text-center text-gray-500 text-xs font-bold uppercase tracking-wider py-2">
+            <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-2 text-[9px] sm:text-xs">
+                {diasSemanas.map(d=> (<div key={d} className="text-center text-slate-500 font-bold uppercase tracking-wider py-2">
                     {d.substring(0,3)}</div> ))}
             </div>
             {/* Cuadrícula de días */}
@@ -79,20 +80,21 @@ const Calendario: React.FC= ()=>{
                             onClick={(e) => {if (dia && e.target === e.currentTarget) manejarClickDia(dia)}} 
                             //el group relative respone al hover, asi se edita o se anade
                             className={`min-h-[140px] rounded-xl border p-3 transition-all flex flex-col justify-between group relative lg:h-40
-                                ${!dia ? 'bg-transparent border-transparent' : 'bg-gray-800/40 border-gray-800 hover:border-gray-600'}
-                                ${esHoy ? 'ring-2 ring-blue-500/50 border-blue-500/50' : ''}
+                                ${!dia ? 'bg-transparent border-transparent' : 'bg-[#edf3f5]/80 border-slate-200 hover:bg-sky-50 hover:border-sky-300'}
+                                ${esHoy ? 'ring-2 ring-cyan-600/35 border-cyan-500 bg-cyan-50/80' : ''}
                             `}
                         >
                             {dia && (
                                 <>
                                     <div className="flex justify-between items-center">
-                                        <span className={`text-sm font-medium ${esHoy ? 'text-blue-400' : 'text-gray-400'}`}>
+                                        <span className={`text-sm font-bold ${esHoy ? 'text-cyan-800' : 'text-slate-600'}`}>
                                             {dia}
                                         </span>
                                             {/*Para agregar*/}
                                             <button 
                                                 onClick={(e) =>{ e.stopPropagation(); manejarClickDia(dia)}}
-                                                className="opacity-0 group-hover:opacity-100 p-1 hover:bg-gray-700 rounded text-gray-500"
+                                                aria-label={`Agregar platillo para el día ${dia}`}
+                                                className="rounded-lg p-1 text-slate-500 opacity-0 transition-all hover:bg-cyan-100 hover:text-cyan-900 group-hover:opacity-100"
                                             >
                                                 <Plus size={16}/>
                                             </button>
@@ -103,9 +105,9 @@ const Calendario: React.FC= ()=>{
                                             infoMenu.map((platillo: Menu_dario) => (
                                                 <div 
                                                     key={platillo.id ?? `${platillo.Fecha}-${platillo.NombrePlatillo}`} 
-                                                    className="bg-blue-600/20 border border-blue-500/30 p-1 px-2 rounded-md relative group/item flex items-center justify-between"
+                                                    className="bg-cyan-100/80 border border-cyan-200 p-1.5 px-2 rounded-lg relative group/item flex items-center justify-between"
                                                 >
-                                                    <p className="text-[10px] text-blue-200 font-medium leading-tight truncate pr-4">
+                                                    <p className="text-[10px] text-cyan-950 font-semibold leading-tight truncate pr-4">
                                                         {platillo.NombrePlatillo}
                                                     </p>
                                                     <button 
@@ -114,15 +116,16 @@ const Calendario: React.FC= ()=>{
                                                             e.stopPropagation();
                                                             setmodalDta(platillo); 
                                                         }}
-                                                        className="absolute right-1 opacity-0 group-hover/item:opacity-100 bg-blue-600 p-0.5 rounded shadow-lg transition-opacity"
+                                                        aria-label={`Editar ${platillo.NombrePlatillo}`}
+                                                        className="absolute right-1 opacity-0 group-hover/item:opacity-100 bg-cyan-700 text-white p-1 rounded-md shadow-sm transition-opacity"
                                                     >
                                                         <Edit2 size={12} className="text-white" />
                                                     </button>
                                                 </div>
                                             ))
                                         ) : (
-                                            <div className="h-full flex items-center justify-center opacity-5 mt-2">
-                                                <Utensils size={16} className="text-white" />
+                                            <div className="h-full flex items-center justify-center mt-2 opacity-40">
+                                                <Utensils size={16} className="text-slate-400" />
                                             </div>
                                         )}   
                                     </div>

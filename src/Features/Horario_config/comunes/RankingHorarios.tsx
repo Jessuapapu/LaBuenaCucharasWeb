@@ -15,23 +15,31 @@ export function RankingHoras({ variant = "page" }: RankingHorasProps) {
 
   // Calculamos el valor máximo para que la barra de progreso sea relativa al top 1
   const maxPromedio = data.length > 0 ? Math.max(...data.map(d => d.PromedioOrdenes)) : 1;
+  const acentosBarras = [
+    "from-sky-700 to-cyan-500",
+    "from-emerald-700 to-teal-500",
+    "from-amber-700 to-orange-500",
+    "from-violet-700 to-purple-500",
+    "from-rose-700 to-pink-500",
+    "from-indigo-700 to-blue-500",
+  ];
 
   // --- VARIANTE: MODAL (Sugerencia Compacta) ---
   if (variant === "modal") {
-    if (loading) return <div className="animate-pulse h-10 bg-slate-800/50 rounded-xl mt-4 w-full"></div>;
+    if (loading) return <div className="animate-pulse h-10 bg-[#d6e8e6] rounded-xl mt-4 w-full"></div>;
     if (error || data.length === 0) return null;
 
     return (
-      <div className="mt-4 p-4 bg-sky-900/10 border border-sky-500/20 rounded-2xl shadow-inner">
-        <div className="flex items-center gap-2 mb-3 text-sky-400">
+      <div className="mt-4 p-4 bg-[#dcecef] border border-sky-200 rounded-2xl shadow-inner">
+        <div className="flex items-center gap-2 mb-3 text-sky-900">
           <Flame className="w-4 h-4" />
           <span className="text-xs font-bold uppercase tracking-wider">Horas más concurridas (Último mes)</span>
         </div>
         <div className="flex flex-wrap gap-2">
           {data.map((item) => (
-            <div key={item.hora} className="px-3 py-1.5 bg-slate-900/60 border border-slate-700/50 rounded-lg flex items-center gap-2 shadow-sm">
-              <span className="text-sm font-black text-white">{item.hora.toString().padStart(2, '0')}:00</span>
-              <span className="text-[10px] text-slate-400 font-bold border-l border-slate-700 pl-2">
+            <div key={item.hora} className="px-3 py-1.5 bg-[#c8e3e7] border border-sky-300 rounded-lg flex items-center gap-2 shadow-sm">
+              <span className="text-sm font-black text-sky-950">{item.hora.toString().padStart(2, '0')}:00</span>
+              <span className="text-[10px] text-sky-900 font-bold border-l border-sky-300 pl-2">
                 {item.PromedioOrdenes} <span className="hidden sm:inline">ord/día</span>
               </span>
             </div>
@@ -43,39 +51,39 @@ export function RankingHoras({ variant = "page" }: RankingHorasProps) {
 
   // --- VARIANTE: PAGE (Panel Completo) ---
   return (
-    <div className="bg-slate-900/40 backdrop-blur-md p-6 sm:p-8 rounded-2xl border border-slate-800/60 shadow-xl mb-6">
+    <div className="bg-gradient-to-br from-[#d9edf0] to-[#e4eddf] p-6 sm:p-8 rounded-2xl border border-sky-200 shadow-sm mb-6">
       
       {/* Encabezado y Filtros */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 border-b border-slate-800/60 pb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 border-b border-sky-200 pb-6">
         <div>
-          <h3 className="text-xl font-bold text-white uppercase tracking-wider flex items-center gap-2">
-            <TrendingUp className="w-6 h-6 text-sky-400" />
+          <h3 className="text-xl font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+            <TrendingUp className="w-6 h-6 text-teal-800" />
             Ranking de Horas Pico
           </h3>
-          <p className="text-sm text-slate-400 mt-1">Identifica en qué momento del día hay más tráfico de órdenes.</p>
+          <p className="text-sm text-slate-700 mt-1">Identifica en qué momento del día hay más tráfico de órdenes.</p>
         </div>
 
-        <div className="flex items-center gap-3 bg-slate-950/40 p-2 rounded-xl border border-slate-800/50 shadow-inner">
-          <Calendar className="w-5 h-5 text-slate-500 ml-2" />
+        <div className="flex items-center gap-3 bg-[#eaf2e8] p-2 rounded-xl border border-emerald-200 shadow-inner">
+          <Calendar className="w-5 h-5 text-teal-800 ml-2" />
           <input 
             type="date" 
             value={fechaInicio}
             onChange={(e) => setFechaInicio(e.target.value)}
-            className="bg-transparent text-sm font-bold text-white outline-none cursor-pointer [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert"
+            className="bg-transparent text-sm font-bold text-slate-900 outline-none cursor-pointer"
           />
-          <span className="text-slate-600 font-black">-</span>
+          <span className="text-teal-800 font-black">-</span>
           <input 
             type="date" 
             value={fechaFinal}
             onChange={(e) => setFechaFinal(e.target.value)}
-            className="bg-transparent text-sm font-bold text-white outline-none cursor-pointer [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert"
+            className="bg-transparent text-sm font-bold text-slate-900 outline-none cursor-pointer"
           />
         </div>
       </div>
 
       {/* Contenido / Estado de Carga */}
       {error ? (
-        <div className="flex items-center gap-2 text-rose-400 bg-rose-900/20 p-4 rounded-xl border border-rose-500/20">
+        <div className="flex items-center gap-2 text-rose-900 bg-rose-100 p-4 rounded-xl border border-rose-300">
           <AlertCircle className="w-5 h-5" /> {error}
         </div>
       ) : loading ? (
@@ -84,7 +92,7 @@ export function RankingHoras({ variant = "page" }: RankingHorasProps) {
           <span className="text-slate-500 font-bold text-xs uppercase tracking-widest animate-pulse">Analizando tráfico...</span>
         </div>
       ) : data.length === 0 ? (
-        <div className="text-center py-10 text-slate-500 font-medium bg-slate-950/20 rounded-xl border border-dashed border-slate-800">
+        <div className="text-center py-10 text-slate-700 font-medium bg-[#e8f0e7] rounded-xl border border-dashed border-emerald-300">
           No hay órdenes registradas en este rango de fechas.
         </div>
       ) : (
@@ -92,22 +100,22 @@ export function RankingHoras({ variant = "page" }: RankingHorasProps) {
           {data.map((item, index) => {
             const widthPercent = (item.PromedioOrdenes / maxPromedio) * 100;
             return (
-              <div key={item.hora} className="flex items-center gap-4 bg-slate-950/20 p-3 sm:p-4 rounded-xl border border-slate-800/40 transition-colors hover:bg-slate-800/40 group">
+              <div key={item.hora} className="flex items-center gap-4 bg-[#eaf1e8] p-3 sm:p-4 rounded-xl border border-sky-200 transition-colors hover:bg-[#dceced] group">
                 
                 {/* Indicador de Posición */}
-                <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-800 text-slate-400 font-black text-sm group-hover:text-sky-400 group-hover:bg-sky-900/30 transition-colors">
+                <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-[#cde4e8] text-sky-900 font-black text-sm group-hover:text-white group-hover:bg-sky-700 transition-colors">
                   #{index + 1}
                 </div>
                 
                 {/* Hora */}
                 <div className="w-16">
-                  <span className="text-lg sm:text-xl font-black text-white">{item.hora.toString().padStart(2, '0')}:00</span>
+                  <span className="text-lg sm:text-xl font-black text-slate-900">{item.hora.toString().padStart(2, '0')}:00</span>
                 </div>
 
                 {/* Barra de Progreso */}
-                <div className="flex-1 relative h-6 bg-slate-900 rounded-md overflow-hidden shadow-inner">
+                <div className="flex-1 relative h-6 bg-[#cddbd9] rounded-md overflow-hidden shadow-inner">
                   <div 
-                    className="absolute top-0 bottom-0 left-0 bg-gradient-to-r from-sky-600 to-sky-400 rounded-md transition-all duration-1000 ease-out"
+                    className={`absolute top-0 bottom-0 left-0 bg-gradient-to-r ${acentosBarras[index % acentosBarras.length]} rounded-md transition-all duration-1000 ease-out`}
                     style={{ width: `${widthPercent}%` }}
                   />
                   <div className="absolute inset-y-0 left-3 flex items-center">
@@ -119,8 +127,8 @@ export function RankingHoras({ variant = "page" }: RankingHorasProps) {
 
                 {/* Promedio Final */}
                 <div className="w-24 text-right">
-                  <span className="block text-xl font-black text-sky-400">{item.PromedioOrdenes}</span>
-                  <span className="text-[10px] font-bold uppercase text-slate-500">Promedio</span>
+                  <span className="block text-xl font-black text-teal-900">{item.PromedioOrdenes}</span>
+                  <span className="text-[10px] font-bold uppercase text-slate-700">Promedio</span>
                 </div>
 
               </div>

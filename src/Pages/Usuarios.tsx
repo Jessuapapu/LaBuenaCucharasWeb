@@ -54,16 +54,16 @@ export default function UsuarioPage() {
       )}
 
       {/* ENCABEZADO */}
-      <header className="flex flex-col sm:flex-row sm:items-center justify-between bg-white-800 backdrop-blur-md p-6 rounded-2xl border border-slate-200/60 shadow-sm shadow-slate-900/5 gap-6">
+      <header className="flex flex-col sm:flex-row sm:items-center justify-between bg-gradient-to-r from-[#d2eaf0] via-[#e1eee7] to-[#f2e5d0] p-6 rounded-2xl border border-sky-200 shadow-sm gap-6">
         <div className="flex items-center gap-4">
-          <div className="p-3 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl text-white shadow-lg shadow-blue-500/20">
+          <div className="p-3 bg-gradient-to-br from-sky-700 to-teal-700 rounded-xl text-white shadow-md shadow-teal-900/10">
             <Users className="w-6 h-6" />
           </div>
           <div>
-            <h1 className="text-2xl font-black text-black tracking-tight">
+            <h1 className="text-2xl font-black text-slate-900 tracking-tight">
               Control de Usuarios
             </h1>
-            <p className="text-slate-500 mt-0.5 text-[10px] font-semibold">
+            <p className="text-slate-700 mt-0.5 text-xs font-semibold">
               Administra las credenciales, accesos y roles del personal del restaurante.
             </p>
           </div>
@@ -74,7 +74,7 @@ export default function UsuarioPage() {
           whileHover={{ scale: 1.02, y: -1 }}
           whileTap={{ scale: 0.98 }}
           onClick={handleAbrirCrear}
-          className="flex items-center justify-center gap-2 px-5 py-2.5 bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold rounded-xl shadow-md shadow-blue-600/10 transition-colors uppercase tracking-wider self-start sm:self-auto"
+          className="flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-sky-700 to-teal-700 hover:from-sky-600 hover:to-teal-600 text-white text-xs font-bold rounded-xl shadow-md shadow-sky-900/10 transition-colors uppercase tracking-wider self-start sm:self-auto"
         >
           <UserPlus size={16} />
           Nuevo Usuario
@@ -82,23 +82,23 @@ export default function UsuarioPage() {
       </header>
 
       {/* TABLA DE DATOS */}
-      <div className="bg-white/70 backdrop-blur-md rounded-2xl border border-slate-200/60 overflow-hidden shadow-sm shadow-slate-900/5">
+      <div className="bg-[#e4efec] rounded-2xl border border-teal-200 overflow-hidden shadow-sm">
         {/* Sub-header de la Tabla */}
-        <div className="p-5 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+        <div className="p-5 border-b border-teal-200 bg-gradient-to-r from-[#d1e8e7] to-[#dcebdc] flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-emerald-500" />
-            <h3 className="text-sm font-bold text-slate-700">Personal Registrado</h3>
+            <ShieldCheck className="w-4 h-4 text-emerald-800" />
+            <h3 className="text-sm font-bold text-slate-900">Personal Registrado</h3>
           </div>
-          <span className="text-[10px] font-mono text-slate-400 uppercase bg-slate-100 px-2.5 py-1 rounded-md border border-slate-200/40 font-bold">
+          <span className="text-[10px] font-mono text-teal-950 uppercase bg-[#cce5df] px-2.5 py-1 rounded-md border border-teal-300 font-bold">
             Seguridad Activa
           </span>
         </div>
         
-        <div className="p-4 bg-slate-800/50 backdrop-blur-md">
+        <div className="p-4 bg-[#dcebe8]">
           {loading ? (
-            <div className="h-48 flex flex-col items-center justify-center text-blue-500 gap-3">
+            <div className="h-48 flex flex-col items-center justify-center text-sky-800 gap-3">
               <RefreshCw className="w-5 h-5 animate-spin" />
-              <span className="text-slate-800 font-bold text-[10px] tracking-widest uppercase animate-pulse">
+              <span className="text-sky-950 font-bold text-[10px] tracking-widest uppercase animate-pulse">
                 Cargando...
               </span>
             </div>
