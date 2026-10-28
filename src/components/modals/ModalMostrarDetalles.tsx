@@ -19,6 +19,7 @@ export interface ModalDetalleOrdenProps {
 export interface ComedorOrdenIN {
     IdMesa: number;
     Detalles: Detalles[];
+    Mesero: string
 }
 
 export function ModalDetalleOrden({ 

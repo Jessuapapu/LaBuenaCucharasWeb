@@ -343,3 +343,55 @@ export function useMandarACaja() {
     return { mandarACaja, cargando };
 }
 
+export function useNotificarMesero() {
+  const [cargando, setCargando] = useState(false);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const notificar = useCallback((id_mesa: number, id_orden: number, onSuccess: () => void) => {
+    if (cargando) return;
+    setCargando(true);
+
+    const limpiarListeners = () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+      socket.off("orden_actualizada", onExito);
+      socket.off("error_actualizar", onError);
+    };
+
+    const onExito = () => { 
+      limpiarListeners(); 
+      setCargando(false); 
+      onSuccess(); 
+    };
+
+    const onError = (data: any) => { 
+      limpiarListeners(); 
+      setCargando(false); 
+      alert(data?.MENSAJE || "Error al actualizar estado en cocina."); 
+    };
+
+    // Limpieza preventiva por si quedaron listeners colgados
+    socket.off("orden_actualizada");
+    socket.off("error_actualizar");
+
+    socket.on("orden_actualizada", onExito);
+    socket.on("error_actualizar", onError);
+
+    timeoutRef.current = setTimeout(() => {
+      limpiarListeners();
+      setCargando(false);
+      alert("Timeout: El servidor tardó demasiado en responder.");
+    }, 15000); // 15 segundos es suficiente para un aviso interno
+
+    // Emitimos el evento exacto que espera tu backend en Python
+    socket.emit("actualizar_cocina", { id_mesa, id_orden });
+  }, [cargando]);
+
+  useEffect(() => () => { 
+    if (timeoutRef.current) clearTimeout(timeoutRef.current); 
+  }, []);
+
+  return { notificar, cargando };
+} 

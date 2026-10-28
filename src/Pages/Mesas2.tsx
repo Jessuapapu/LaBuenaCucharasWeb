@@ -24,6 +24,10 @@ export default   function MenuMesas() {
     const menu = useMenu();
     const { detallesOrden, cargandoDetalles, obtenerDetalle } = useDetalleOrden();
 
+    const usuario = localStorage.getItem('user_info')
+    //@ts-ignore
+    const User = JSON.parse(usuario)['username']
+
     const { crear, cargando: creando } = useCrearOrden();
     const { actualizar, cargando: actualizando } = useActualizarOrden();
     const { mandarACaja, cargando: enviandoCaja } = useMandarACaja(); 
@@ -121,7 +125,7 @@ export default   function MenuMesas() {
         }).filter(item => item.cantidad > 0)); 
     };
 
-    const generarPayload = (): ComedorOrdenIN => ({ IdMesa: Number(id), Detalles: borrador });
+    const generarPayload = (): ComedorOrdenIN => ({ IdMesa: Number(id), Detalles: borrador, Mesero: User});
 
     const manejarCrearOActualizar = () => {
         if (borrador.length === 0) return;

@@ -1,4 +1,4 @@
-import { ImagenPlatilloWrapper } from "../../../components/Cards/imagenesWrapped";
+import { ImagenPlatilloWrapper } from "../../../components/cards/imagenesWrapped";
 import type { Platillos } from "../../../context/Interfaces/Platillos";
 
 export interface MenuDiaGridProps {

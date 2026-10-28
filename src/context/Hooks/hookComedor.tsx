@@ -2,8 +2,7 @@
 import type { Platillos, PlatilloExtraDB } from '../Interfaces/Platillos';
 import { socket } from '../Services/websocket';
 
-const UrlApi = import.meta.env.VITE_URL_API || 'http://127.0.0.1:8001';
-
+const UrlApi = import.meta.env.VITE_API_URL;
 export interface mesa {
     id_mesa: number;
     Estado: boolean;

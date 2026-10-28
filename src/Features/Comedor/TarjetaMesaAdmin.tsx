@@ -4,7 +4,7 @@ import { BotonMesa } from './grid/botonMesa';
 import { socket } from '../../context/Services/websocket';
 import { useOrdenesMesa, useDetalleOrden } from "../../context/Hooks/hookOrdenes";
 import { Loader2, ArrowUpRight, UtensilsCrossed, Receipt } from 'lucide-react';
-import type { Detalles } from "../../components/Modals/ModalMostrarDetalles";
+import type { Detalles } from "../../components/modals/ModalMostrarDetalles";
 
 interface TarjetaProps {
   idMesa: number;

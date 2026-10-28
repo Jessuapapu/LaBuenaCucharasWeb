@@ -24,6 +24,7 @@ import HorariosPage from "./Pages/HorariosPage";
 import UsuarioPage from "./Pages/Usuarios";
 import ConfiguracionPage from "./Pages/Configuracion";
 import IngredientesPage from "./Pages/IngredientesPage";
+import { IndexCocina } from "./Pages/Cocina";
 
 const router = createBrowserRouter([
   {
@@ -70,6 +71,9 @@ const router = createBrowserRouter([
               {path: '/Configuracion/usuarios', element: <UsuarioPage />}
             ]
 
+          },
+          {
+            path: '/Cocina', element: <IndexCocina/>
           }
         ]
       }
