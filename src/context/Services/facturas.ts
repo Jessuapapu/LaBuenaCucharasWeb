@@ -11,16 +11,22 @@ const getHeaders = () => {
   };
 };
 
-export async function crearFactura(payload: PayloadFactura): Promise<{ message: string; id: number }> {
+async function mensajeDeError(response: Response, porDefecto: string): Promise<string> {
+      const err = await response.json().catch(() => null);
+      return typeof err?.detail === "string" ? err.detail : porDefecto;
+    }
+
+export async function crearFactura(payload: PayloadFactura): Promise<void> {
   const bodyBackend = FacturaMapper.toApiPayload(payload);
   const response = await fetch(`${API_URL}/facturas/`, {
     method: "POST",
     headers: getHeaders(),
     body: JSON.stringify(bodyBackend)
   });
-
-  if (!response.ok) throw new Error("Error al emitir la factura. Verifica los datos.");
-  return await response.json();
+    
+  if (!response.ok) {
+  throw new Error(await mensajeDeError(response, "Error al emitir la factura. Verifica los datos."));
+}
 }
 
 export async function getFacturas(signal?: AbortSignal): Promise<Factura[]> {
@@ -80,7 +86,7 @@ export async function obtenerDetalleFactura(id_factura: number): Promise<Detalle
   return FacturaMapper.toDetallesFactura(filadata);
 }
 
-export async function actualizarFactura(id_factura: number, payload: PayloadFactura): Promise<{message: string}> {
+export async function actualizarFactura(id_factura: number, payload: PayloadFactura): Promise<void> {
   if (!id_factura) throw new Error("El ID de la factura es obligatorio para actualizar.");
   const bodyBackend = FacturaMapper.toApiPayload(payload);
 
@@ -90,6 +96,7 @@ export async function actualizarFactura(id_factura: number, payload: PayloadFact
     body: JSON.stringify(bodyBackend)
   });
 
-  if (!response.ok) throw new Error(`Error al actualizar la factura #${id_factura}.`);
-  return await response.json();
+  if (!response.ok) {
+  throw new Error(await mensajeDeError(response, `Error al actualizar la factura #${id_factura}.`));
+}
 }

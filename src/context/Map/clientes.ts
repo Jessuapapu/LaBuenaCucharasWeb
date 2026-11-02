@@ -1,4 +1,4 @@
-import type { cliente } from "../interfaces/Clientes";
+import type { cliente } from "../Interfaces/Clientes";
 
 export function mapCliente(raw: any): cliente {
   console.log(raw)

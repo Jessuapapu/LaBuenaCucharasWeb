@@ -152,16 +152,23 @@ export function useFacturaModal(BusquedaNombre: string, id_factura?: number) {
   });
 
   useEffect(() => {
-    if (!BusquedaNombre.trim()) { 
+    const nombre= BusquedaNombre.trim();
+    if (nombre.length < 2) { 
       setPedidosPendientes([]); 
+      setFormulario(prev => ({ ...prev, idCliente: 0, OrdenesSeleccion: [] }));
+      setError(null);
+      setFetching(false);
       return;
     }
 
-    const cargarOrdenes = async () => {
+    let cancelled = false;
+
+    const cargarOrdenes = setTimeout(async () => {
       setFetching(true);
       setError(null);
       try {
-        const datos = await obtenerOrdenesFacturables(BusquedaNombre);
+        const datos = await obtenerOrdenesFacturables(nombre);
+        if (cancelled) return; // Evitar actualización si el componente se desmontó
         const datosNormalizados = (Array.isArray(datos) ? datos : []).map((o: any) => ({
           IdOrden: o.id_orden,
           IdCliente: o.id_cliente,
@@ -171,24 +178,28 @@ export function useFacturaModal(BusquedaNombre: string, id_factura?: number) {
         }));
 
         setPedidosPendientes(datosNormalizados);
-        if (datosNormalizados.length > 0) {
-          setFormulario(prev => { 
-            if (prev.idCliente === datosNormalizados[0].IdCliente) return prev;
-             return{ ...prev, idCliente: datosNormalizados[0].IdCliente }});
-        }
+          setFormulario(prev => ({ ...prev, idCliente: datosNormalizados[0]?.IdCliente || 0, OrdenesSeleccion: [], }));
+          if(datosNormalizados.length === 0) {
+            setError("No hay órdenes activas para este cliente");
+          }
       } catch (err) {
+        if (cancelled) return;
         setError("No hay órdenes activas para este cliente");
         setPedidosPendientes([]);
+        setFormulario(prev => ({ ...prev, idCliente: 0, OrdenesSeleccion: [] }));
       } finally {
-        setFetching(false);
+        if (!cancelled) setFetching(false); 
       }
-    };
-
-    const delayDebounce = setTimeout(() => {
-      cargarOrdenes();
     }, 400);
 
-    return () => clearTimeout(delayDebounce);
+    //const delayDebounce = setTimeout(() => {
+     // cargarOrdenes();
+   // }, 400);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(cargarOrdenes);
+    };
   }, [BusquedaNombre]);
 
   const alternarSeleccionOrden = useCallback((idOrden: number) => {

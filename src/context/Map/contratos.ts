@@ -1,4 +1,4 @@
-import type { Contrato } from "../interfaces/Contratos";
+import type { Contrato } from "../Interfaces/Contratos";
 
 export function mapContrato(raw: any): Contrato {
   return {

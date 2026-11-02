@@ -26,6 +26,7 @@ const normalizarDetalle = (d: any) => ({
   nombre: d?.nombre_platillo ?? d?.NombrePlatillo ?? d?.nombre ?? "Platillo Genérico"
 });
 
+
 export default function ModalNuevaFactura({ 
   onClose, 
   onSave,
@@ -76,6 +77,11 @@ export default function ModalNuevaFactura({
     ).slice(0, 5);
   }, [BusquedaCliente, clientes]);
 
+  const nombreClienteComprobante = useMemo(() => {
+  const orden = pedidosPendientes.find((p: any) => ordenesSeleccionadas.includes(p.IdOrden));
+  return orden?.NombreCliente ?? BusquedaCliente.trim();
+}, [pedidosPendientes, ordenesSeleccionadas, BusquedaCliente]);
+
   const seleccionarCliente = (nombre: string) => {
     setBusquedaCliente(nombre);
     setMostrarAutocompletado(false); 
@@ -97,7 +103,7 @@ export default function ModalNuevaFactura({
       const heightPDF = (canvas.height * widthPDF) / canvas.width;
       pdf.addImage(imgData, "PNG", 0, 0, widthPDF, heightPDF);
       
-      const clienteLimpio = BusquedaCliente.trim().replace(/\s+/g, "_");
+      const clienteLimpio = nombreClienteComprobante.trim().replace(/\s+/g, "_");
       pdf.save(`Ticket_${clienteLimpio || "Consumidor_Final"}.pdf`);
     } catch (err) {
       console.error("Error al exportar:", err);
@@ -224,7 +230,9 @@ export default function ModalNuevaFactura({
                                               {seleccionado ? <CheckSquare size={24}/> : <Square size={24}/>}
                                           </div>
                                           <div>
-                                              <span className="block font-mono text-lg font-black leading-none text-slate-900">Orden #{pedido.id}</span>
+                                              <span className="block font-mono text-lg font-black leading-none text-slate-900">Orden #{pedido.id}
+                                                {rawPedido.NombreCliente && (<span className="block text-[10px] font-semibold text-slate-600">{rawPedido.NombreCliente}</span>)}
+                                              </span>
                                               <span className="mt-1 block text-[10px] font-medium text-slate-600">
                                                   {new Date(pedido.fecha).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short'})}
                                               </span>
@@ -287,7 +295,8 @@ export default function ModalNuevaFactura({
                       className="group flex items-center justify-between rounded-xl border border-slate-300 bg-slate-100 p-3 transition-colors hover:border-sky-200"
                     >
                       <div className="space-y-0.5">
-                        <div className="font-mono text-xs font-bold text-slate-700">Orden #{pedido.id}</div>
+                        <div className="font-mono text-xs font-bold text-slate-700">Orden #
+                          {pedido.id}</div>
                         <div className="font-mono text-[11px] font-bold text-emerald-800">C$ {Number(pedido.monto).toFixed(2)}</div>
                       </div>
                       <button
@@ -391,7 +400,7 @@ export default function ModalNuevaFactura({
                     <div className="space-y-1 text-[9px] font-medium text-slate-700 mt-4">
                       <div className="flex justify-between items-start">
                         <span className="text-slate-500 uppercase font-bold text-[7px]">Cliente:</span>
-                        <span className="font-bold text-right text-slate-900 max-w-[130px] truncate">{BusquedaCliente}</span>
+                        <span className="font-bold text-right text-slate-900 max-w-[130px] truncate">{nombreClienteComprobante}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-slate-500 uppercase font-bold text-[7px]">Fecha:</span>
