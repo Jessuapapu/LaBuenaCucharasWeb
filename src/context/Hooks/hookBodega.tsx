@@ -13,7 +13,15 @@ export function useBodega() {
     // Solo hacemos fetch al historial
     obtenerRegistrosBodega()
       .then((jsonBodega) => {
-        setData(jsonBodega);
+        if(Array.isArray(jsonBodega)){
+          setData(jsonBodega);
+        } else if (jsonBodega && typeof jsonBodega === "object") {
+          // Si viene dentro de una propiedad común (como .data, .registros, etc.)
+          const possibleArray = (jsonBodega as any).data || (jsonBodega as any).registros;
+          setData(Array.isArray(possibleArray) ? possibleArray : []);
+        } else {
+          setData([]);
+        }
       })
       .catch((err) => console.error("Error cargando historial:", err))
       .finally(() => setLoading(false));
@@ -64,7 +72,7 @@ export function useinsumoseIngredientes(idRegistro?:number){
     setError(null);
     try {
       const data = await obtenerRegistrosBodega();
-      setInventarioGeneral(data);
+      setInventarioGeneral(Array.isArray(data) ? data : (data?.data ||[]));
     } catch (err: any) {
       setError(err.message || "Error al recopilar el inventario general de bodega.");
     } finally {
