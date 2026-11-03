@@ -75,6 +75,7 @@ export function useinsumoseIngredientes(idRegistro?:number){
       setInventarioGeneral(Array.isArray(data) ? data : (data?.data ||[]));
     } catch (err: any) {
       setError(err.message || "Error al recopilar el inventario general de bodega.");
+      setInventarioGeneral([]);
     } finally {
       setloading(false);
     }
