@@ -11,7 +11,8 @@ export function RankingHoras({ variant = "page" }: RankingHorasProps) {
   const [fechaInicio, setFechaInicio] = useState("2026-05-23");
   const [fechaFinal, setFechaFinal] = useState("2026-06-23");
 
-  const { data, loading, error } = useHorasConcurridas(fechaInicio, fechaFinal);
+  const { data: dataRaw, loading, error } = useHorasConcurridas(fechaInicio, fechaFinal);
+  const data = Array.isArray(dataRaw) ? dataRaw : [];
 
   // Calculamos el valor máximo para que la barra de progreso sea relativa al top 1
   const maxPromedio = data.length > 0 ? Math.max(...data.map(d => d.PromedioOrdenes)) : 1;

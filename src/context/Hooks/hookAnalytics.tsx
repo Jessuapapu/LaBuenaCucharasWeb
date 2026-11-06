@@ -38,28 +38,37 @@ export function useRankingComedor(fechaInicio?: string, fechaFin?: string) {
 
 export function useHorasConcurridas(fechaInicio: string, fechaFinal: string) {
   const [data, setData] = useState<RangoHorasData[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!fechaInicio || !fechaFinal) {
+      setLoading(false);
+      return;
+    }
+
+    let cancelado = false;
     const fetchDatos = async () => {
       setLoading(true);
+      setError(null);
       try {
         // Llamamos al servicio abstraído
         const result = await informesService.obtenerRankingHoras(fechaInicio, fechaFinal);
-        setData(result);
-        setError(null);
+        if (cancelado) return;
+        setData(Array.isArray(result) ? result : []);
+        //setError(null);
       } catch (err) {
+        if (cancelado) return;
+        setData([]);
         setError('No se pudo cargar el ranking de horas.');
       } finally {
-        setLoading(false);
+        if (!cancelado) setLoading(false);
       }
     };
 
     // Solo ejecutamos si tenemos ambas fechas válidas
-    if (fechaInicio && fechaFinal) {
       fetchDatos();
-    }
+      return () => { cancelado = true; };
   }, [fechaInicio, fechaFinal]);
 
   return { data, loading, error };

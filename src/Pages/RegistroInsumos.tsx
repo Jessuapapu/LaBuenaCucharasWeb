@@ -6,7 +6,8 @@
   //import { Cardstockmin } from "../components/cards/CardBar";
 
   export default function RegistrosPage() {
-    const { data, loading } = useBodega();
+    const { data: rawData, loading } = useBodega();
+    const data = Array.isArray(rawData) ? rawData : [];
     const totalCosto = useMemo(() => {
       if (!Array.isArray(data)) return 0;
       return data.reduce((acc, curr) => acc + (Number(curr?.CostoTotal) || 0),0);
